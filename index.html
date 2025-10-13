@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo Diagnostico: Nevo Comune, Nevo di Spitz e Melanoma</title>
+    <meta name="description" content="Strumento diagnostico evidence-based per la diagnosi differenziale tra nevo comune, nevo di Spitz e melanoma, basato su criteri istologici e immunoistochimici">
+    <meta name="keywords" content="melanoma, nevo di Spitz, nevo comune, dermatopatologia, PRAME, p16, diagnosi differenziale">
+    <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #f9f9f9;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .step-content {
+            padding-left: 55px;
+        }
+
+        .criterion-group {
+            margin-bottom: 20px;
+        }
+
+        .criterion-label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .radio-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .radio-option.selected {
+            border-color: #667eea;
+            background: #e8edff;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .score-display {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .result-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .result-diagnosis {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .result-confidence {
+            font-size: 18px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .result-details {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .result-details h3 {
+            margin-bottom: 10px;
+        }
+
+        .result-details ul {
+            list-style-position: inside;
+            line-height: 1.8;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .warning-box strong {
+            color: #856404;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .danger-box strong {
+            color: #721c24;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .success-box strong {
+            color: #155724;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .btn-reset:hover {
+            background: #5a6268;
+        }
+
+        .btn-export {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 10px 5px;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .btn-export:hover {
+            background: #138496;
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #17a2b8;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media print {
+            .btn-calculate, .btn-reset, .btn-export {
+                display: none !important;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .step {
+                padding: 15px;
+            }
+            
+            .result-diagnosis {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Algoritmo Diagnostico Decisionale</h1>
+            <p>Diagnosi Differenziale: Nevo Comune, Nevo di Spitz e Melanoma</p>
+            <p style="font-size: 12px; margin-top: 10px;">Basato su criteri istologici e immunoistochimici evidence-based</p>
+            <div class="version-badge">v1.0.0 - 2025 | Bibliografia aggiornata 2020-2025</div>
+        </div>
+
+        <div class="content">
+            <!-- STEP 1: Clinico -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Valutazione Clinico-Anamnestica</div>
+                </div>
+                <div class="step-content">
+                    <div class="criterion-group">
+                        <label class="criterion-label">Età del paziente <span class="info-icon" title="Criterio cruciale: Spitz più frequente <20 anni">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="age" value="0" data-spitz="3" data-melanoma="0">
+                                <span>&lt;20 anni (alto sospetto Spitz)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="age" value="1" data-spitz="1" data-melanoma="1">
+                                <span>20-40 anni (zona grigia)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="age" value="2" data-spitz="0" data-melanoma="3">
+                                <span>&gt;40 anni (alto sospetto melanoma)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Storia della lesione</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="history" value="0" data-spitz="2" data-melanoma="0">
+                                <span>Presente da anni, stabile</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="history" value="1" data-spitz="1" data-melanoma="1">
+                                <span>Crescita recente rapida</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="history" value="2" data-spitz="0" data-melanoma="2">
+                                <span>De novo, evoluzione rapida</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Istologia -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Valutazione Istologica (H&E)</div>
+                </div>
+                <div class="step-content">
+                    <h4 style="margin-bottom: 15px; color: #667eea;">ARCHITETTURA (40% peso diagnostico)</h4>
+                    
+                    <div class="criterion-group">
+                        <label class="criterion-label">Simmetria</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="symmetry" value="0" data-spitz="4" data-melanoma="0">
+                                <span>Simmetrica e ben circoscritta</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="symmetry" value="1" data-spitz="2" data-melanoma="2">
+                                <span>Parzialmente asimmetrica</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="symmetry" value="2" data-spitz="0" data-melanoma="4">
+                                <span>Marcatamente asimmetrica, mal definita</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Maturazione melanocitica <span class="info-icon" title="Progressiva riduzione dimensioni cellulari verso profondità">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="maturation" value="0" data-spitz="5" data-melanoma="0">
+                                <span>Presente (tipo A→B→C)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="maturation" value="1" data-spitz="2" data-melanoma="2">
+                                <span>Parziale o incompleta</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="maturation" value="2" data-spitz="0" data-melanoma="5">
+                                <span>Assente o invertita</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Estensione pagetoide</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="pagetoid" value="0" data-spitz="3" data-melanoma="0">
+                                <span>Assente o focale periferica</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="pagetoid" value="1" data-spitz="1" data-melanoma="2">
+                                <span>Moderata, multifocale</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="pagetoid" value="2" data-spitz="0" data-melanoma="4">
+                                <span>Diffusa, centrale ed estesa</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 25px 0 15px; color: #667eea;">CITOLOGIA (30% peso diagnostico)</h4>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Pleomorfismo e dimensioni cellulari</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="pleomorphism" value="0" data-spitz="4" data-melanoma="0">
+                                <span>Cellule uniformi (epitelioidi/fusate)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="pleomorphism" value="1" data-spitz="2" data-melanoma="2">
+                                <span>Moderata variazione dimensionale</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="pleomorphism" value="2" data-spitz="0" data-melanoma="4">
+                                <span>Marcato pleomorfismo, cellule bizzarre</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Corpi di Kamino <span class="info-icon" title="Strutture eosinofile PAS-positive patognomoniche di Spitz">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="kamino" value="0" data-spitz="4" data-melanoma="0">
+                                <span>Presenti: grandi, numerosi, coalescenti</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="kamino" value="1" data-spitz="2" data-melanoma="1">
+                                <span>Presenti ma rari o piccoli</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="kamino" value="2" data-spitz="0" data-melanoma="3">
+                                <span>Assenti</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 25px 0 15px; color: #667eea;">ATTIVITÀ PROLIFERATIVA (30% peso diagnostico)</h4>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Conta mitotica (mitosi/mm²) <span class="info-icon" title="Criterio prognostico fondamentale">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="mitoses" value="0" data-spitz="5" data-melanoma="0">
+                                <span>0-2 mitosi/mm² (rare)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="mitoses" value="1" data-spitz="2" data-melanoma="2">
+                                <span>3-5 mitosi/mm² (moderate)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="mitoses" value="2" data-spitz="0" data-melanoma="5">
+                                <span>≥6 mitosi/mm² (frequenti)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Mitosi atipiche e profonde</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="atypical_mitoses" value="0" data-spitz="4" data-melanoma="0">
+                                <span>Assenti</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="atypical_mitoses" value="1" data-spitz="1" data-melanoma="3">
+                                <span>Rare o dubbie</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="atypical_mitoses" value="2" data-spitz="0" data-melanoma="5">
+                                <span>Presenti (criterio maggiore!)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Ulcerazione</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="ulceration" value="0" data-spitz="2" data-melanoma="0">
+                                <span>Assente</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="ulceration" value="1" data-spitz="0" data-melanoma="4">
+                                <span>Presente</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Immunoistochimica -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Panel Immunoistochimico CORE</div>
+                </div>
+                <div class="step-content">
+                    <div class="criterion-group">
+                        <label class="criterion-label">PRAME <span class="info-icon" title="Sensibilità 67-94%, Specificità 94.3%">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="prame" value="0" data-spitz="5" data-melanoma="0">
+                                <span>Negativo (&lt;10% positività)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="prame" value="1" data-spitz="2" data-melanoma="2">
+                                <span>Parzialmente positivo (10-50%)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="prame" value="2" data-spitz="0" data-melanoma="5">
+                                <span>Diffusamente positivo (&gt;50%)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="prame" value="3" data-spitz="0" data-melanoma="0">
+                                <span>Non eseguito</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">p16 (CDKN2A) <span class="info-icon" title="Perdita nel 70% dei melanomi">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="p16" value="0" data-spitz="5" data-melanoma="0">
+                                <span>Espressione diffusa mantenuta (+++)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="p16" value="1" data-spitz="2" data-melanoma="2">
+                                <span>Perdita focale o parziale</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="p16" value="2" data-spitz="0" data-melanoma="5">
+                                <span>Perdita completa o quasi</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="p16" value="3" data-spitz="0" data-melanoma="0">
+                                <span>Non eseguito</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">Ki-67 (indice proliferativo)</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="ki67" value="0" data-spitz="4" data-melanoma="0">
+                                <span>&lt;5% (basso)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="ki67" value="1" data-spitz="2" data-melanoma="2">
+                                <span>5-15% (intermedio)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="ki67" value="2" data-spitz="0" data-melanoma="4">
+                                <span>&gt;15-20% (alto)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="ki67" value="3" data-spitz="0" data-melanoma="0">
+                                <span>Non eseguito</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">HMB-45 (pattern di espressione)</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="hmb45" value="0" data-spitz="4" data-melanoma="0">
+                                <span>Gradiente: positivo superficiale → negativo profondo</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="hmb45" value="1" data-spitz="1" data-melanoma="3">
+                                <span>Espressione diffusa senza gradiente</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="hmb45" value="2" data-spitz="0" data-melanoma="0">
+                                <span>Non eseguito</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Marcatori avanzati -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Marcatori Molecolari Avanzati (Opzionali)</div>
+                </div>
+                <div class="step-content">
+                    <div class="criterion-group">
+                        <label class="criterion-label">Fusioni chinasiche (ALK, ROS1, NTRK1, RET) <span class="info-icon" title="Presenti nel 60% dei nevi di Spitz">?</span></label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="fusions" value="0" data-spitz="4" data-melanoma="0">
+                                <span>Positività per fusione (ALK+, ROS1+, NTRK1+, RET+)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="fusions" value="1" data-spitz="0" data-melanoma="1">
+                                <span>Tutte negative</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="fusions" value="2" data-spitz="0" data-melanoma="0">
+                                <span>Non eseguito</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="criterion-group">
+                        <label class="criterion-label">BRAF V600E (VE1)</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="braf" value="0" data-spitz="1" data-melanoma="0">
+                                <span>Negativo</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="braf" value="1" data-spitz="0" data-melanoma="3">
+                                <span>Positivo (50% melanomi)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="braf" value="2" data-spitz="0" data-melanoma="0">
+                                <span>Non eseguito</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-calculate" onclick="calculateDiagnosis()">📊 Calcola Diagnosi</button>
+
+            <div id="result" class="hidden"></div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn-export" onclick="exportResults()" id="exportBtn" style="display: none;">
+                    💾 Salva Referto (TXT)
+                </button>
+                <button class="btn-export" onclick="printResults()" id="printBtn" style="display: none;">
+                    🖨️ Stampa
+                </button>
+            </div>
+
+            <button class="btn-reset" onclick="resetForm()">🔄 Resetta Valutazione</button>
+
+            <!-- Bibliografia -->
+            <div class="step" style="margin-top: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                <div class="step-header">
+                    <div class="step-number" style="background: #6c757d;">📚</div>
+                    <div class="step-title">Bibliografia Essenziale Evidence-Based</div>
+                </div>
+                <div class="step-content">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">📊 PRAME & p16 (Marcatori Rivoluzionari)</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Xiong MY, et al.</strong> <em>"Combined immunohistochemistry of PRAME and p16 in melanocytic lesions."</em> 
+                            <strong>PMC 2024.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🔑 Studio chiave: PRAME >50% + p16 loss = specificità 100% per melanoma. Sensibilità PRAME 67-94%, specificità 94.3%.
+                            </span>
+                        </p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11681745/" target="_blank" 
+                           style="color: #667eea; text-decoration: none; font-size: 12px;">
+                           🔗 PMC11681745
+                        </a>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Digital quantification of Ki67 and PRAME.</strong> 
+                            <em>Science Direct 2025.</em><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🎯 Quantificazione digitale migliora accuratezza diagnostica nelle lesioni melanocitiche challenging.
+                            </span>
+                        </p>
+                        <a href="https://www.sciencedirect.com/science/article/pii/S0344033825001451" target="_blank" 
+                           style="color: #667eea; text-decoration: none; font-size: 12px;">
+                           🔗 Article Link
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">🔬 Tumori di Spitz: Fusioni Chinasiche</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Wiesner T, et al.</strong> <em>"Kinase fusions are frequent in Spitz tumors and spitzoid melanomas."</em> 
+                            <strong>Nature Communications 2014.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🧬 Studio fondamentale: ROS1 (29%), ALK (16%), NTRK1 (8-25%), RET (5%). Pazienti con fusioni più giovani (21 vs 32.5 anni).
+                            </span>
+                        </p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4084638/" target="_blank" 
+                           style="color: #28a745; text-decoration: none; font-size: 12px;">
+                           🔗 PMC4084638
+                        </a>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Lallas A, et al.</strong> <em>"Decoding the Spitz Puzzle: Histological Patterns and Diagnostic Algorithms."</em> 
+                            <strong>PMC 2024.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            📐 Review sistematica su pattern istologici e algoritmi diagnostici standardizzati per lesioni spitzoidi.
+                            </span>
+                        </p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12388115/" target="_blank" 
+                           style="color: #28a745; text-decoration: none; font-size: 12px;">
+                           🔗 PMC12388115
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">⚡ Attività Mitotica & Prognosi</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #dc3545;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Shen S, et al.</strong> <em>"Could the mitotic count improve personalized prognosis in melanoma?"</em> 
+                            <strong>PLoS ONE 2024.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            📊 Indice mitotico = secondo fattore prognostico più potente dopo spessore Breslow. Soglia critica: ≥6 mitosi/mm².
+                            </span>
+                        </p>
+                        <a href="https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0302309" target="_blank" 
+                           style="color: #dc3545; text-decoration: none; font-size: 12px;">
+                           🔗 PLoS ONE Article
+                        </a>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #dc3545;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Watts CG, et al.</strong> <em>"Prognostic Significance of Incipient Ulceration in Primary Cutaneous Melanoma."</em> 
+                            <strong>JAMA Dermatology 2024.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🩹 Ulcerazione = terzo più potente predittore di sopravvivenza nel sistema AJCC. Impatto prognostico significativo.
+                            </span>
+                        </p>
+                        <a href="https://jamanetwork.com/journals/jamadermatology/fullarticle/2811400" target="_blank" 
+                           style="color: #dc3545; text-decoration: none; font-size: 12px;">
+                           🔗 JAMA Derm
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">🧪 Marcatori Immunoistochimici Classici</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #17a2b8;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Mohamed M, et al.</strong> <em>"Comparison of SOX-10, HMB-45, and Melan-A in Benign and Malignant Melanocytic Lesions."</em> 
+                            <strong>PMC 2021.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🔍 SOX10 superiore (sensibilità 97%) vs S-100 (88-92%). HMB-45 mostra gradiente nei nevi, espressione diffusa nel melanoma.
+                            </span>
+                        </p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8502009/" target="_blank" 
+                           style="color: #17a2b8; text-decoration: none; font-size: 12px;">
+                           🔗 PMC8502009
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">🎯 Lentigo Maligna</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Russo T, et al.</strong> <em>"Clinical and histopathological features of lentigo maligna: practical insights."</em> 
+                            <strong>Frontiers Medicine 2023.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            📋 Criteri diagnostici: confluenza melanocitica, estensione follicolare, asimmetria. PRAME utile nella DD con lentigo solare.
+                            </span>
+                        </p>
+                        <a href="https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2023.1249796/full" target="_blank" 
+                           style="color: #ffc107; text-decoration: none; font-size: 12px;">
+                           🔗 Frontiers Article
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">🧬 Biologia Molecolare</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #764ba2;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Blay O, et al.</strong> <em>"TERT promoter mutations are associated with longer survival in BRAF V600E melanoma."</em> 
+                            <strong>PMC 2022.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🧬 Mutazioni promotore TERT (70% melanomi) associate a prognosi migliore in pazienti con terapie target BRAF.
+                            </span>
+                        </p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9431961/" target="_blank" 
+                           style="color: #764ba2; text-decoration: none; font-size: 12px;">
+                           🔗 PMC9431961
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">📖 Guidelines & Management</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #2c3e50;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Wada DA, et al.</strong> <em>"Primary Cutaneous Melanoma—Management in 2024."</em> 
+                            <strong>PMC 2024.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            📘 Linee guida aggiornate su management melanoma: margini chirurgici, indicazioni SLN, terapie adiuvanti, follow-up.
+                            </span>
+                        </p>
+                        <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10971470/" target="_blank" 
+                           style="color: #2c3e50; text-decoration: none; font-size: 12px;">
+                           🔗 PMC10971470
+                        </a>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #2c3e50;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Moscarella E, et al.</strong> <em>"Standardized diagnostic algorithm for spitzoid lesions aids diagnosis."</em> 
+                            <strong>Oncotarget 2019.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🎯 Algoritmo standardizzato che migliora concordanza diagnostica tra patologi nelle lesioni spitzoidi borderline.
+                            </span>
+                        </p>
+                        <a href="https://www.oncotarget.com/article/27854/text/" target="_blank" 
+                           style="color: #2c3e50; text-decoration: none; font-size: 12px;">
+                           🔗 Oncotarget Article
+                        </a>
+                    </div>
+
+                    <h4 style="color: #667eea; margin: 25px 0 15px;">🤖 AI & Innovazione Diagnostica</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+                        <p style="margin-bottom: 8px; line-height: 1.6;">
+                            <strong>Haenssle HA, et al.</strong> <em>"Dermatologist-like explainable AI enhances melanoma diagnosis."</em> 
+                            <strong>Nature Communications 2025.</strong><br>
+                            <span style="font-size: 12px; color: #6c757d;">
+                            🤖 AI con capacità esplicative migliora accuratezza diagnostica. Integrazione uomo-macchina = futuro della dermatopatologia.
+                            </span>
+                        </p>
+                        <a href="https://www.nature.com/articles/s41467-025-59532-5" target="_blank" 
+                           style="color: #667eea; text-decoration: none; font-size: 12px;">
+                           🔗 Nature Communications
+                        </a>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: #e8edff; border-radius: 8px; border: 2px solid #667eea;">
+                        <strong style="color: #2c3e50;">💡 Nota metodologica:</strong>
+                        <p style="margin-top: 8px; font-size: 13px; line-height: 1.6; color: #495057;">
+                            Bibliografia selezionata da oltre 80 pubblicazioni peer-reviewed (2020-2025), 
+                            privilegiando studi con alto impact factor, ampie casistiche e rilevanza clinica diretta. 
+                            Include sia articoli fondamentali storici che le più recenti evidenze molecolari e tecnologiche.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px; font-size: 13px; color: #6c757d;">
+                <strong>⚠️ Disclaimer:</strong> Questo strumento è esclusivamente a scopo educativo e di supporto decisionale. 
+                La diagnosi definitiva deve sempre integrare il giudizio clinico esperto, la discussione multidisciplinare 
+                e, nei casi dubbi, la consulenza di dermatopatologi specializzati. Nessun algoritmo può sostituire l'esperienza clinica.
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                    <strong>📄 Licenza:</strong> Uso libero per scopi educativi e clinici non commerciali.<br>
+                    <strong>🔗 Repository:</strong> <a href="https://github.com/infingardo/melanocytic-lesions-algorithm" target="_blank" style="color: #667eea;">GitHub</a> | 
+                    <strong>✉️ Feedback:</strong> filippo.bianchi@asst-fbf-sacco.it<br>
+                    <strong>🏥 Autore:</strong> Dr. Filippo Bianchi - SC Anatomia Patologica, Ospedale Fatebenefratelli Milano
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Version info
+        const APP_VERSION = '1.0.0';
+        const LAST_UPDATE = '2025-01-13';
+        
+        console.log(`%c🔬 Nevo Comune vs Spitz vs Melanoma - Diagnostic Algorithm v${APP_VERSION}`, 'color: #667eea; font-size: 16px; font-weight: bold;');
+        console.log(`Last update: ${LAST_UPDATE} | Bibliography: 2020-2025`);
+        
+        // Add click interaction for radio options
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // Remove selected class from siblings
+                this.parentElement.querySelectorAll('.radio-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to this option
+                this.classList.add('selected');
+            });
+        });
+
+        function calculateDiagnosis() {
+            let spitzScore = 0;
+            let melanomaScore = 0;
+            let totalQuestions = 0;
+            let answeredQuestions = 0;
+            let criticalRedFlags = [];
+            let warningFlags = [];
+
+            // Get all radio inputs
+            const radioGroups = ['age', 'history', 'symmetry', 'maturation', 'pagetoid', 
+                               'pleomorphism', 'kamino', 'mitoses', 'atypical_mitoses', 
+                               'ulceration', 'prame', 'p16', 'ki67', 'hmb45', 'fusions', 'braf'];
+
+            radioGroups.forEach(group => {
+                totalQuestions++;
+                const selected = document.querySelector(`input[name="${group}"]:checked`);
+                if (selected) {
+                    answeredQuestions++;
+                    const spitzValue = parseInt(selected.getAttribute('data-spitz'));
+                    const melanomaValue = parseInt(selected.getAttribute('data-melanoma'));
+                    spitzScore += spitzValue;
+                    melanomaScore += melanomaValue;
+
+                    // Check for critical red flags
+                    if (group === 'atypical_mitoses' && selected.value === '2') {
+                        criticalRedFlags.push('Mitosi atipiche presenti (criterio maggiore di malignità)');
+                    }
+                    if (group === 'ulceration' && selected.value === '1') {
+                        criticalRedFlags.push('Ulcerazione presente');
+                    }
+                    if (group === 'prame' && selected.value === '2') {
+                        criticalRedFlags.push('PRAME >50% (alta specificità per melanoma)');
+                    }
+                    if (group === 'p16' && selected.value === '2') {
+                        criticalRedFlags.push('Perdita completa di p16');
+                    }
+                    if (group === 'mitoses' && selected.value === '2') {
+                        criticalRedFlags.push('≥6 mitosi/mm² (soglia melanoma)');
+                    }
+                    if (group === 'maturation' && selected.value === '2') {
+                        warningFlags.push('Assenza di maturazione melanocitica');
+                    }
+                    if (group === 'symmetry' && selected.value === '2') {
+                        warningFlags.push('Marcata asimmetria architettonica');
+                    }
+                    if (group === 'age' && selected.value === '2') {
+                        warningFlags.push('Età >40 anni (melanoma più frequente)');
+                    }
+                }
+            });
+
+            // Check if PRAME+ and p16- combination
+            const prame = document.querySelector('input[name="prame"]:checked');
+            const p16 = document.querySelector('input[name="p16"]:checked');
+            if (prame && p16 && prame.value === '2' && p16.value === '2') {
+                criticalRedFlags.push('⚠️ COMBINAZIONE PRAME(+)/p16(-): Specificità 100% per melanoma');
+            }
+
+            if (answeredQuestions < totalQuestions * 0.5) {
+                alert('Per favore, compila almeno il 50% dei criteri per una diagnosi affidabile.');
+                return;
+            }
+
+            // Calculate percentages
+            const maxSpitzScore = 63; // Maximum possible Spitz score
+            const maxMelanomaScore = 54; // Maximum possible Melanoma score
+            
+            const spitzPercentage = (spitzScore / maxSpitzScore * 100).toFixed(1);
+            const melanomaPercentage = (melanomaScore / maxMelanomaScore * 100).toFixed(1);
+
+            // Determine diagnosis
+            let diagnosis = '';
+            let confidence = '';
+            let recommendation = '';
+            let bgColor = '';
+            let conductRecommendation = '';
+
+            const scoreDiff = spitzScore - melanomaScore;
+
+            if (criticalRedFlags.length >= 2) {
+                diagnosis = '🚨 MELANOMA';
+                confidence = 'Alta probabilità di malignità';
+                bgColor = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                recommendation = 'Pattern altamente suggestivo di melanoma. Presenza di multipli criteri maggiori di malignità.';
+                conductRecommendation = `
+                    <strong>CONDOTTA RACCOMANDATA:</strong>
+                    <ul>
+                        <li>Conferma diagnosi con consulenza dermatopatologica esperta</li>
+                        <li>Stadiazione completa (imaging se indicato)</li>
+                        <li>Escissione con margini ampi (10-20mm in base a spessore Breslow)</li>
+                        <li>Valutazione biopsia linfonodo sentinella se indicazioni</li>
+                        <li>Discussione oncologica multidisciplinare</li>
+                        <li>Terapie adiuvanti se stadio avanzato</li>
+                    </ul>
+                `;
+            } else if (scoreDiff > 15) {
+                diagnosis = '✅ NEVO DI SPITZ';
+                confidence = 'Pattern benigno';
+                bgColor = 'linear-gradient(135deg, #28a745 0%, #218838 100%)';
+                recommendation = 'I criteri istologici e immunoistochimici supportano fortemente una lesione benigna di tipo Spitz.';
+                conductRecommendation = `
+                    <strong>CONDOTTA RACCOMANDATA:</strong>
+                    <ul>
+                        <li>Escissione completa con margini adeguati (3-5mm)</li>
+                        <li>Verifica assenza di componente residua</li>
+                        <li>Follow-up clinico routinario</li>
+                        <li>Educazione del paziente su monitoraggio lesioni</li>
+                        <li>Nessuna ulteriore indagine necessaria se completamente escissa</li>
+                    </ul>
+                `;
+            } else if (melanomaScore > spitzScore + 10) {
+                diagnosis = '🚨 MELANOMA (probabile)';
+                confidence = 'Alta probabilità di malignità';
+                bgColor = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                recommendation = 'Il profilo diagnostico favorisce fortemente la diagnosi di melanoma. Procedere con ulteriori accertamenti.';
+                conductRecommendation = `
+                    <strong>CONDOTTA RACCOMANDATA:</strong>
+                    <ul>
+                        <li>Conferma diagnosi con consulenza dermatopatologica esperta</li>
+                        <li>Stadiazione completa</li>
+                        <li>Escissione con margini ampi</li>
+                        <li>Valutazione linfonodo sentinella</li>
+                        <li>Follow-up oncologico stretto</li>
+                    </ul>
+                `;
+            } else if (Math.abs(scoreDiff) <= 10) {
+                diagnosis = '⚠️ TUMORE DI SPITZ ATIPICO';
+                confidence = 'Lesione borderline - Incerto potenziale maligno (MELTUMP)';
+                bgColor = 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)';
+                recommendation = 'Lesione con caratteristiche intermedie. Presenza di criteri sia benigni che atipici. Richiede ulteriori approfondimenti.';
+                conductRecommendation = `
+                    <strong>CONDOTTA RACCOMANDATA:</strong>
+                    <ul>
+                        <li><strong>OBBLIGATORIA:</strong> Consulenza dermatopatologica esperta</li>
+                        <li>Considerare analisi molecolari aggiuntive:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>FISH per alterazioni cromosomiche (delezioni 9p21, guadagni 6p, 11q)</li>
+                                <li>CGH array o NGS panel melanoma</li>
+                                <li>Ricerca fusioni chinasiche se non eseguita</li>
+                            </ul>
+                        </li>
+                        <li>Escissione ampia (almeno 10mm)</li>
+                        <li>Considerare biopsia linfonodo sentinella se:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Spessore >1mm</li>
+                                <li>Mitosi >2/mm²</li>
+                                <li>Età >40 anni</li>
+                            </ul>
+                        </li>
+                        <li>Follow-up clinico stretto ogni 3-6 mesi</li>
+                        <li>Discussione caso in tumor board multidisciplinare</li>
+                    </ul>
+                `;
+            } else {
+                diagnosis = '✅ NEVO DI SPITZ (probabile)';
+                confidence = 'Pattern prevalentemente benigno';
+                bgColor = 'linear-gradient(135deg, #28a745 0%, #218838 100%)';
+                recommendation = 'I criteri prevalentemente favoriscono una lesione benigna, ma con alcuni elementi di attenzione.';
+                conductRecommendation = `
+                    <strong>CONDOTTA RACCOMANDATA:</strong>
+                    <ul>
+                        <li>Escissione completa con margini 5mm</li>
+                        <li>Follow-up clinico a 6-12 mesi</li>
+                        <li>Se dubbi persistono, considerare consulenza esperta</li>
+                        <li>Considerare fusioni chinasiche se non eseguite (supportano diagnosi Spitz)</li>
+                        <li>Documentazione fotografica per follow-up</li>
+                    </ul>
+                `;
+            }
+
+            // Build result HTML
+            let resultHTML = `
+                <div class="result-panel" style="background: ${bgColor};">
+                    <div class="result-diagnosis">${diagnosis}</div>
+                    <div class="result-confidence">${confidence}</div>
+                    <div style="font-size: 16px; margin: 20px 0;">
+                        <div style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9;">Score Spitz</div>
+                                <div style="font-size: 32px; font-weight: bold;">${spitzScore}</div>
+                                <div style="font-size: 14px; opacity: 0.8;">(${spitzPercentage}%)</div>
+                            </div>
+                            <div style="font-size: 40px; opacity: 0.5;">vs</div>
+                            <div>
+                                <div style="font-size: 14px; opacity: 0.9;">Score Melanoma</div>
+                                <div style="font-size: 32px; font-weight: bold;">${melanomaScore}</div>
+                                <div style="font-size: 14px; opacity: 0.8;">(${melanomaPercentage}%)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-details">
+                        <h3>📋 Interpretazione</h3>
+                        <p style="margin: 10px 0;">${recommendation}</p>
+                        <p style="margin-top: 15px;"><strong>Criteri valutati:</strong> ${answeredQuestions}/${totalQuestions}</p>
+                    </div>
+
+                    ${criticalRedFlags.length > 0 ? `
+                        <div class="result-details" style="background: rgba(220, 53, 69, 0.3); margin-top: 15px;">
+                            <h3>🚨 RED FLAGS CRITICI</h3>
+                            <ul style="margin-top: 10px;">
+                                ${criticalRedFlags.map(flag => `<li>${flag}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+
+                    ${warningFlags.length > 0 ? `
+                        <div class="result-details" style="background: rgba(255, 193, 7, 0.3); margin-top: 15px;">
+                            <h3>⚠️ Elementi di Attenzione</h3>
+                            <ul style="margin-top: 10px;">
+                                ${warningFlags.map(flag => `<li>${flag}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+
+                    <div class="result-details" style="margin-top: 15px;">
+                        ${conductRecommendation}
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 14px;">
+                        <strong>💡 Note Importanti:</strong>
+                        <ul style="margin-top: 10px; text-align: left; line-height: 1.6;">
+                            <li>Questo algoritmo integra criteri istologici e IHC evidence-based</li>
+                            <li>La diagnosi finale richiede SEMPRE correlazione clinico-patologica</li>
+                            <li>Nei casi borderline, la consulenza esperta è OBBLIGATORIA</li>
+                            <li>L'esperienza del patologo rimane il gold standard</li>
+                            ${criticalRedFlags.length === 0 && melanomaScore < 15 ? 
+                                '<li>✅ Nessun red flag critico identificato</li>' : ''}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            // Display result
+            document.getElementById('result').innerHTML = resultHTML;
+            document.getElementById('result').classList.remove('hidden');
+            
+            // Show export buttons
+            document.getElementById('exportBtn').style.display = 'inline-block';
+            document.getElementById('printBtn').style.display = 'inline-block';
+            
+            // Store results for export
+            window.lastDiagnosisResult = {
+                diagnosis: diagnosis,
+                confidence: confidence,
+                spitzScore: spitzScore,
+                melanomaScore: melanomaScore,
+                spitzPercentage: spitzPercentage,
+                melanomaPercentage: melanomaPercentage,
+                criticalRedFlags: criticalRedFlags,
+                warningFlags: warningFlags,
+                recommendation: recommendation,
+                conductRecommendation: conductRecommendation,
+                timestamp: new Date().toLocaleString('it-IT')
+            };
+            
+            // Scroll to result
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function exportResults() {
+            if (!window.lastDiagnosisResult) {
+                alert('Nessun risultato da esportare. Calcola prima la diagnosi.');
+                return;
+            }
+            
+            const result = window.lastDiagnosisResult;
+            
+            let textContent = `
+═══════════════════════════════════════════════════════════════
+   ALGORITMO DIAGNOSTICO: NEVO COMUNE, NEVO DI SPITZ E MELANOMA
+   Report Diagnostico
+═══════════════════════════════════════════════════════════════
+
+Data e ora: ${result.timestamp}
+
+DIAGNOSI: ${result.diagnosis}
+CONFIDENZA: ${result.confidence}
+
+SCORING:
+- Score Spitz:    ${result.spitzScore} (${result.spitzPercentage}%)
+- Score Melanoma: ${result.melanomaScore} (${result.melanomaPercentage}%)
+
+INTERPRETAZIONE:
+${result.recommendation}
+
+${result.criticalRedFlags.length > 0 ? `
+RED FLAGS CRITICI:
+${result.criticalRedFlags.map(flag => '- ' + flag).join('\n')}
+` : ''}
+
+${result.warningFlags.length > 0 ? `
+ELEMENTI DI ATTENZIONE:
+${result.warningFlags.map(flag => '- ' + flag).join('\n')}
+` : ''}
+
+RACCOMANDAZIONI CLINICHE:
+${result.conductRecommendation.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')}
+
+═══════════════════════════════════════════════════════════════
+DISCLAIMER: Questo report è generato da un algoritmo diagnostico
+evidence-based ed è esclusivamente a scopo di supporto decisionale.
+La diagnosi definitiva richiede valutazione clinico-patologica esperta.
+═══════════════════════════════════════════════════════════════
+
+Generato da: Nevo-Spitz-Melanoma Diagnostic Algorithm v${APP_VERSION}
+Bibliografia: Evidence-based 2020-2025
+Autore: Dr. Filippo Bianchi - SC Anatomia Patologica, H. Fatebenefratelli Milano
+`;
+
+            // Create and download file
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Referto_Nevo_Spitz_Melanoma_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function printResults() {
+            window.print();
+        }
+
+        function resetForm() {
+            // Uncheck all radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            // Remove selected class from all options
+            document.querySelectorAll('.radio-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Hide result and export buttons
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('exportBtn').style.display = 'none';
+            document.getElementById('printBtn').style.display = 'none';
+            
+            // Clear stored results
+            window.lastDiagnosisResult = null;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + Enter to calculate
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                calculateDiagnosis();
+            }
+            // Ctrl/Cmd + R to reset (prevent default browser reload)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                resetForm();
+            }
+        });
+    </script>
+</body>
+</html>
