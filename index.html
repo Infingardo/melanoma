@@ -300,6 +300,37 @@
             font-weight: bold;
             margin-left: 5px;
             cursor: help;
+            position: relative;
+        }
+
+        .info-icon:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 50%;
+            bottom: 125%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: normal;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        .info-icon:hover::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 115%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #2c3e50;
+            z-index: 1000;
+            pointer-events: none;
         }
 
         .tooltip {
@@ -708,6 +739,97 @@
 
             <button class="btn-reset" onclick="resetForm()">🔄 Resetta Valutazione</button>
 
+            <!-- Sezione Educativa: Maturazione Melanocitica -->
+            <div class="step" style="margin-top: 30px; background: linear-gradient(135deg, #e8edff 0%, #f0f4ff 100%); border: 2px solid #667eea;">
+                <div class="step-header">
+                    <div class="step-number" style="background: #667eea;">🎓</div>
+                    <div class="step-title">Approfondimento: Maturazione Melanocitica</div>
+                </div>
+                <div class="step-content">
+                    <p style="margin-bottom: 15px; line-height: 1.8; color: #2c3e50;">
+                        La <strong>maturazione melanocitica A→B→C</strong> (Classificazione di Unna) è un criterio istologico fondamentale 
+                        per distinguere nevi benigni dal melanoma. Nei nevi benigni, i melanociti mostrano una progressiva maturazione 
+                        dalla superficie verso la profondità del derma.
+                    </p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0;">
+                        <!-- Tipo A -->
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h4 style="color: #dc3545; margin-bottom: 10px; font-size: 16px;">🔴 Tipo A - Superficiale</h4>
+                            <ul style="list-style: none; padding-left: 0; font-size: 13px; line-height: 1.8; color: #495057;">
+                                <li><strong>Sede:</strong> Giunzione dermo-epidermica</li>
+                                <li><strong>Morfologia:</strong> Cellule epitelioidi grandi</li>
+                                <li><strong>Citoplasma:</strong> Abbondante</li>
+                                <li><strong>Melanina:</strong> Ricca</li>
+                                <li><strong>Nidi:</strong> Coesi e organizzati</li>
+                            </ul>
+                        </div>
+
+                        <!-- Tipo B -->
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h4 style="color: #d39e00; margin-bottom: 10px; font-size: 16px;">🟡 Tipo B - Intermedio</h4>
+                            <ul style="list-style: none; padding-left: 0; font-size: 13px; line-height: 1.8; color: #495057;">
+                                <li><strong>Sede:</strong> Derma papillare profondo</li>
+                                <li><strong>Morfologia:</strong> Cellule linfocitoidi/cuboidi</li>
+                                <li><strong>Dimensioni:</strong> Medie (ridotte vs A)</li>
+                                <li><strong>Melanina:</strong> Ridotta</li>
+                                <li><strong>Nidi:</strong> Più piccoli o cordoni</li>
+                            </ul>
+                        </div>
+
+                        <!-- Tipo C -->
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <h4 style="color: #28a745; margin-bottom: 10px; font-size: 16px;">🟢 Tipo C - Profondo</h4>
+                            <ul style="list-style: none; padding-left: 0; font-size: 13px; line-height: 1.8; color: #495057;">
+                                <li><strong>Sede:</strong> Derma reticolare profondo</li>
+                                <li><strong>Morfologia:</strong> Cellule fusate/neuronali</li>
+                                <li><strong>Dimensioni:</strong> Molto piccole</li>
+                                <li><strong>Melanina:</strong> Scarsa/assente</li>
+                                <li><strong>Aspetto:</strong> Simil-Schwanniano</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h4 style="color: #2c3e50; margin-bottom: 15px; font-size: 16px;">📊 Significato Diagnostico</h4>
+                        
+                        <div style="background: #d4edda; padding: 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #c3e6cb;">
+                            <strong style="color: #155724;">✅ NEVI BENIGNI</strong>
+                            <p style="margin: 10px 0 0 0; line-height: 1.6;">
+                                Superficie → Profondità<br>
+                                <strong>A → B → C</strong> (Grande → Intermedio → Piccolo)<br>
+                                <span style="color: #28a745; font-weight: bold;">Maturazione PRESENTE = Benignità</span>
+                            </p>
+                        </div>
+                        
+                        <div style="background: #f8d7da; padding: 15px; border-radius: 6px; border: 1px solid #f5c6cb;">
+                            <strong style="color: #721c24;">🚨 MELANOMA</strong>
+                            <p style="margin: 10px 0 0 0; line-height: 1.6;">
+                                Disorganizzato a tutti i livelli<br>
+                                Cellule grandi e atipiche anche in profondità<br>
+                                <span style="color: #dc3545; font-weight: bold;">Maturazione ASSENTE/INVERTITA = Malignità</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffc107; margin: 15px 0;">
+                        <strong style="color: #856404; font-size: 15px;">💡 Perché è importante:</strong>
+                        <ul style="margin-top: 10px; line-height: 1.8; color: #856404; padding-left: 20px;">
+                            <li><strong>Criterio gold standard:</strong> La presenza di maturazione è uno dei criteri più affidabili di benignità</li>
+                            <li><strong>Nel melanoma:</strong> Le cellule mantengono lo stesso aspetto atipico (o peggiorano) in profondità</li>
+                            <li><strong>Maturazione invertita:</strong> Nel melanoma le cellule possono aumentare di dimensioni verso il profondo</li>
+                            <li><strong>Peso diagnostico:</strong> Rappresenta il 40% del nostro algoritmo (criterio architettonico principale)</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 12px; background: #e9ecef; border-radius: 6px; font-size: 12px; color: #6c757d; border-left: 3px solid #6c757d;">
+                        <strong>📖 Note storiche:</strong> La classificazione fu descritta da <strong>Paul Gerson Unna</strong> 
+                        (1850-1929), dermatologo tedesco pioniere della dermatopatologia. Rimane valida ancora oggi come 
+                        criterio diagnostico fondamentale nella valutazione delle lesioni melanocitiche.
+                    </div>
+                </div>
+            </div>
+
             <!-- Bibliografia -->
             <div class="step" style="margin-top: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
                 <div class="step-header">
@@ -715,6 +837,7 @@
                     <div class="step-title">Bibliografia Essenziale Evidence-Based</div>
                 </div>
                 <div class="step-content">
+                    <h4 style="color: #667eea; margin-bottom: 15px;">📊 PRAME & p16 (Marcatori Rivoluzionari)</h4>
                     <h4 style="color: #667eea; margin-bottom: 15px;">📊 PRAME & p16 (Marcatori Rivoluzionari)</h4>
                     <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea;">
                         <p style="margin-bottom: 8px; line-height: 1.6;">
