@@ -1,13 +1,13 @@
 # 🔬 Algoritmo Diagnostico: Lesioni Melanocitiche
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/infingardo/melanocytic-lesions-algorithm)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/infingardo/melanoma)
 [![License](https://img.shields.io/badge/license-Educational%20Use-green.svg)](LICENSE)
-[![Last Update](https://img.shields.io/badge/updated-January%202025-orange.svg)](https://github.com/infingardo/melanocytic-lesions-algorithm)
-[![Bibliography](https://img.shields.io/badge/bibliography-2020--2025-purple.svg)](https://github.com/infingardo/melanocytic-lesions-algorithm#bibliografia)
+[![Last Update](https://img.shields.io/badge/updated-January%202025-orange.svg)](https://github.com/infingardo/melanoma)
+[![Bibliography](https://img.shields.io/badge/bibliography-2020--2025-purple.svg)](https://github.com/infingardo/melanoma#bibliografia)
 
 > **Strumento diagnostico evidence-based per la diagnosi differenziale tra nevo comune, nevo di Spitz (tipico/atipico) e melanoma, basato su criteri istologici e immunoistochimici.**
 
-[🚀 **Demo Live**](https://infingardo.github.io/melanocytic-lesions-algorithm/) | [📖 **Documentazione**](#features) | [🤝 **Contribuisci**](#contributing)
+[🚀 **Demo Live**](https://infingardo.github.io/melanoma/) | [📖 **Documentazione**](#features-principali) | [🤝 **Contribuisci**](#contributing)
 
 ---
 
@@ -119,23 +119,15 @@ La diagnosi differenziale tra **nevo comune**, **nevo di Spitz** (incluse varian
 
 ### Opzione 1: Uso Online (Raccomandato)
 
-Accedi direttamente alla **[Demo Live](https://infingardo.github.io/melanocytic-lesions-algorithm/)** - nessuna installazione richiesta!
+Accedi direttamente alla **[Demo Live](https://infingardo.github.io/melanoma/)** - nessuna installazione richiesta!
 
 ### Opzione 2: Uso Locale
 ```bash
 # Clone repository
-git clone https://github.com/infingardo/melanocytic-lesions-algorithm.git
+git clone https://github.com/infingardo/melanoma.git
 
 # Apri index.html nel browser
-cd melanocytic-lesions-algorithm
+cd melanoma
 open index.html  # macOS
 start index.html # Windows
-xdg-open index.html # Linux@software{melanocytic_lesions_algorithm,
-  author = {Bianchi, Filippo},
-  title = {Algoritmo Diagnostico per Lesioni Melanocitiche: Nevo vs Spitz vs Melanoma},
-  year = {2025},
-  institution = {SC Anatomia Patologica, Ospedale Fatebenefratelli, Milano},
-  version = {1.0.0},
-  url = {https://github.com/infingardo/melanocytic-lesions-algorithm},
-  note = {Evidence-based diagnostic tool. Bibliography: 2020-2025}
-}
+xdg-open index.html # Linux
