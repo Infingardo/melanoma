@@ -1,0 +1,24 @@
+fix: correct citations Bastian 2014, replace "duro" with "solido" terminology
+
+Critical corrections:
+- Bastian 2024 → 2014 (Annual Reviews in Pathology vol 9)
+- All instances "criterio duro" → "criterio solido" throughout codebase
+- Massi 2016 Ackerman's → 2014 Springer 2nd Edition
+- GitHub username: infingardo
+- Email: filippo.bianchi@asst-fbf-sacco.it
+
+New features:
+- Interactive bibliography tab with filters/search/BibTeX export
+- Tooltip links to scientific citations
+- Complete MAP3K8 genomics (Newman 2019, Houlier 2020)
+- Copyright warning for Bastian 2014 PDF
+
+BREAKING: Terminology change from "criterio duro" to "criterio solido"
+reflects scientific accuracy - TERT/CNA are strong indicators but require
+expert clinical-pathological correlation, not absolute mathematical
+overrides per Bastian 2014 methodology.
+
+Files modified:
+- index.html: All tooltips, genetica analysis, bibliography database
+- README.md: Complete bibliography, methodology, author info
+- Meta tags updated with v3.3 description

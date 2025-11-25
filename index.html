@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.2 - Spitz vs Melanoma</title>
-    <meta name="description" content="Algoritmo diagnostico con scoring pesato - Spitz vs Melanoma + Bastian stratification">
+    <title>Filippo's Diagnostic Algorithm v3.3 - Spitz vs Melanoma</title>
+    <meta name="description" content="Algoritmo diagnostico con scoring pesato - Spitz vs Melanoma + Bastian 2014 stratification + criteri solidi genetici">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
+    <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, bastian 2014, MAP3K8, TERT, diagnostic algorithm">
     
     <!-- html2pdf.js for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
-            --bg: #f8f9fa;
+            --bg-main: #f8f9fa;
             --bg-card: #ffffff;
-            --border: #e8eaed;
-            --border-subtle: #efefef;
-            --accent: #2563eb;
-            --accent-soft: rgba(37,99,235,0.08);
-            --danger: #dc2626;
-            --danger-soft: rgba(220,38,38,0.08);
-            --warn: #d97706;
-            --warn-soft: rgba(217,119,6,0.08);
-            --ok: #16a34a;
-            --ok-soft: rgba(22,163,74,0.08);
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --chip-bg: #f3f4f6;
-            --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.3);
+            --text-main: #2c3e50;
+            --text-muted: #6c757d;
+            --accent: #3498db;
+            --accent-soft: #e8f4f8;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --border: #dee2e6;
+            --border-subtle: #e9ecef;
+            --chip-bg: #f8f9fa;
         }
 
         * {
@@ -37,398 +34,204 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-main);
             color: var(--text-main);
-            line-height: 1.5;
+            line-height: 1.6;
+            padding: 1rem;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2.5rem 1.25rem 3.5rem;
         }
 
-        header {
-            margin-bottom: 2.5rem;
+        .header {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        h1 {
-            font-size: 1.9rem;
-            margin-bottom: 0.25rem;
-            letter-spacing: 0.02em;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-main);
-        }
-
-        .version-badge {
-            font-size: 0.65rem;
-            background: var(--accent-soft);
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
             color: var(--accent);
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            border: 1px solid rgba(37,99,235,0.2);
-            font-weight: 600;
-            letter-spacing: 0.05em;
         }
 
-        .subtitle {
+        .header .subtitle {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-top: 0.5rem;
         }
 
         .disclaimer {
-            background: linear-gradient(135deg, var(--accent-soft), rgba(37,99,235,0.04));
-            border: 1px solid rgba(37,99,235,0.2);
-            border-radius: 0.9rem;
-            padding: 1.2rem;
+            background: #fff3cd;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
             margin-bottom: 2rem;
+            border-radius: 0.5rem;
             font-size: 0.85rem;
             line-height: 1.5;
-            color: var(--text-main);
-        }
-
-        .disclaimer strong {
-            color: var(--accent);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 1000px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         .card {
             background: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1.6rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-
-        .card.has-data {
-            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .section-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            margin-top: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-subtle);
         }
 
-        .section-title:first-child {
-            margin-top: 0;
+        .form-group {
+            margin-bottom: 1.3rem;
         }
 
-        .section-title .critical-badge {
-            color: var(--danger);
-            font-weight: 700;
-        }
-
-        .section-title .optional-badge {
-            color: var(--text-muted);
-            font-weight: 400;
-            font-size: 0.7rem;
-        }
-
-        .field-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 0.9rem 1.2rem;
-            margin-bottom: 0.6rem;
-        }
-
-        label {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-            font-size: 0.8rem;
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-main);
             position: relative;
         }
 
-        .label-main {
-            font-weight: 500;
-            color: var(--text-main);
+        .tooltip-trigger {
+            display: inline-block;
+            margin-left: 0.3rem;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 0.7rem;
+            cursor: help;
+            position: relative;
         }
 
-        .label-hint {
-            font-size: 0.7rem;
-            color: var(--text-muted);
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            z-index: 100;
+            background: var(--text-main);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            width: 300px;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+
+        .tooltip a {
+            color: #81d4fa;
+            text-decoration: underline;
+            margin-left: 0.3rem;
+        }
+
+        .tooltip-trigger:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
 
         select, input {
             width: 100%;
-            border-radius: 0.6rem;
+            padding: 0.7rem;
             border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
             background: var(--bg-card);
             color: var(--text-main);
-            font-size: 0.9rem;
-            padding: 0.5rem 0.6rem;
-            outline: none;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            transition: border-color 0.2s;
         }
 
         select:focus, input:focus {
+            outline: none;
             border-color: var(--accent);
-            box-shadow: var(--focus-ring);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 0.8rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        button {
-            border-radius: 0.7rem;
-            border: none;
-            font-size: 0.9rem;
-            padding: 0.65rem 1.3rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #1d4ed8);
+            background: var(--accent);
             color: white;
-            box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
         }
 
-        .btn-primary:hover, .btn-primary:focus {
+        .btn-primary:hover {
+            background: #2980b9;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
 
         .btn-secondary {
             background: var(--chip-bg);
-            border: 1px solid var(--border);
             color: var(--text-main);
+            padding: 0.7rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-secondary:hover, .btn-secondary:focus {
+        .btn-secondary:hover {
             border-color: var(--accent);
             color: var(--accent);
         }
 
-        .btn-tertiary {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            padding: 0.5rem 1rem;
-        }
-
-        .btn-tertiary:hover, .btn-tertiary:focus {
-            background: var(--accent-soft);
-            color: var(--accent);
-        }
-
-        .result-section {
+        #result {
             display: none;
-        }
-
-        .result-section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-card {
-            background: var(--bg-card);
-            border-radius: 1rem;
-            padding: 1.6rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .classification {
-            font-size: 1.6rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            border-radius: 999px;
-            padding: 0.25rem 0.9rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            border: 1px solid;
-            font-weight: 600;
-        }
-
-        .badge-zero {
-            border-color: var(--ok);
-            background: var(--ok-soft);
-            color: var(--ok);
-        }
-
-        .badge-low {
-            border-color: var(--ok);
-            background: var(--ok-soft);
-            color: var(--ok);
-        }
-
-        .badge-mid {
-            border-color: var(--warn);
-            background: var(--warn-soft);
-            color: var(--warn);
-        }
-
-        .badge-high {
-            border-color: var(--danger);
-            background: var(--danger-soft);
-            color: var(--danger);
-        }
-
-        .badge-critical {
-            border-color: var(--danger);
-            background: var(--danger-soft);
-            color: var(--danger);
-        }
-
-        .score-display {
-            background: var(--chip-bg);
-            border: 1px solid var(--border);
-            border-radius: 0.6rem;
-            padding: 0.8rem 1rem;
-            font-size: 0.8rem;
-            margin: 1rem 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        .score-display strong {
-            color: var(--accent);
-        }
-
-        .result-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin: 1rem 0;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .explanations {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin-top: 1rem;
-        }
-
-        .explanations ul {
-            margin: 0.6rem 0 0;
-            padding-left: 1.2rem;
-        }
-
-        .explanations li {
-            margin-bottom: 0.35rem;
-        }
-
-        .explanations .weight-indicator {
-            font-family: 'Courier New', monospace;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
-
-        .chips-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .chip {
-            font-size: 0.7rem;
-            background: var(--chip-bg);
-            color: var(--text-muted);
-            border-radius: 999px;
-            padding: 0.25rem 0.7rem;
-            border: 1px solid var(--border-subtle);
-            white-space: nowrap;
-        }
-
-        .chip-ok {
-            border-color: var(--ok);
-            background: var(--ok-soft);
-            color: var(--ok);
-        }
-
-        .chip-warn {
-            border-color: var(--warn);
-            background: var(--warn-soft);
-            color: var(--warn);
-        }
-
-        .chip-danger {
-            border-color: var(--danger);
-            background: var(--danger-soft);
-            color: var(--danger);
         }
 
         .tabs {
             display: flex;
-            gap: 0;
-            border-bottom: 2px solid var(--border);
+            gap: 0.5rem;
             margin-bottom: 1.5rem;
-            margin: 0 -1.6rem 1.5rem;
-            padding: 0 1.6rem;
+            border-bottom: 2px solid var(--border-subtle);
         }
 
         .tab {
-            padding: 0.8rem 1.2rem;
-            border-bottom: 3px solid transparent;
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.2s;
             margin-bottom: -2px;
-            background: none;
         }
 
-        .tab:hover, .tab:focus {
-            color: var(--text-main);
-            outline: none;
+        .tab:hover {
+            color: var(--accent);
         }
 
         .tab.active {
-            border-bottom-color: var(--accent);
             color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .tab-content {
@@ -439,1724 +242,1266 @@
             display: block;
         }
 
-        .footer-note {
-            margin-top: 3rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
-        }
-
-        .empty-state {
+        .score-display {
             text-align: center;
-            color: var(--text-muted);
-            padding: 2rem 1rem;
-        }
-
-        .empty-state-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.8rem;
-            opacity: 0.6;
-        }
-
-        .validation-error {
-            border-color: var(--danger) !important;
-            box-shadow: 0 0 0 2px var(--danger-soft) !important;
-        }
-
-        .error-message {
-            color: var(--danger);
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-
-        .progress-indicator {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--accent-soft) 0%, #ffffff 100%);
+            border-radius: 0.8rem;
             margin-bottom: 1.5rem;
         }
 
-        .progress-step {
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: var(--chip-bg);
+        .score-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-label {
+            font-size: 1rem;
             color: var(--text-muted);
-            border: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .progress-step.completed {
-            background: var(--ok-soft);
-            color: var(--ok);
-            border-color: var(--ok);
+        .interpretation {
+            padding: 1.2rem;
+            border-radius: 0.7rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
         }
 
-        .progress-step.current {
+        .interpretation.success {
+            background: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .interpretation.warning {
+            background: #fff3cd;
+            border-color: var(--warning);
+            color: #856404;
+        }
+
+        .interpretation.danger {
+            background: #f8d7da;
+            border-color: var(--danger);
+            color: #721c24;
+        }
+
+        .interpretation.info {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: #004085;
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.2rem;
+        }
+
+        .chip-ok {
+            background: #d4edda;
+            color: var(--success);
+        }
+
+        .chip-warn {
+            background: #fff3cd;
+            color: var(--warning);
+        }
+
+        .chip-danger {
+            background: #f8d7da;
+            color: var(--danger);
+        }
+
+        .chip-info {
             background: var(--accent-soft);
             color: var(--accent);
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .breakdown-table th, .breakdown-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .breakdown-table th {
+            background: var(--chip-bg);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .breakdown-table td {
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.7rem;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning);
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: var(--danger);
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: #004085;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Bibliografia Styles */
+        .bib-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .bib-filter {
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--chip-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        
+        .bib-filter:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .bib-filter.active {
+            background: var(--accent);
+            color: white;
             border-color: var(--accent);
         }
-
-        .completion-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .completion-bar {
-            flex: 1;
-            height: 6px;
-            background: var(--chip-bg);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .completion-fill {
-            height: 100%;
-            background: var(--ok);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 0.7rem;
-            background: var(--bg-card);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-left: 4px solid var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            z-index: 1000;
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            border-left-color: var(--ok);
-        }
-
-        .notification.warning {
-            border-left-color: var(--warn);
-        }
-
-        .notification.error {
-            border-left-color: var(--danger);
-        }
-
-        .case-management {
-            background: var(--accent-soft);
-            border: 1px solid rgba(37,99,235,0.2);
-            border-radius: 0.9rem;
-            padding: 1.2rem;
+        
+        .bib-search {
             margin-bottom: 1.5rem;
         }
-
-        .case-management h3 {
+        
+        .bib-search input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 0.6rem;
+            border: 1px solid var(--border);
             font-size: 0.9rem;
-            margin-bottom: 0.8rem;
-            color: var(--accent);
         }
-
-        .case-actions {
+        
+        .bib-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.7rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .bib-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .bib-header {
+            padding: 1rem;
+            cursor: pointer;
             display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
         }
-
-        .quick-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
+        
+        .bib-citation {
+            flex: 1;
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
-
-        .field-hint {
-            position: absolute;
-            right: 0.5rem;
-            top: 1.8rem;
-            background: var(--accent-soft);
-            color: var(--accent);
-            border-radius: 50%;
-            width: 1.2rem;
-            height: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            cursor: help;
-            z-index: 10;
+        
+        .bib-citation strong {
+            color: var(--text-main);
         }
-
-        .tooltip {
-            position: absolute;
-            background: var(--text-main);
-            color: white;
-            padding: 0.6rem 0.9rem;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            width: 250px;
-            z-index: 100;
-            bottom: 100%;
-            right: 0;
-            margin-bottom: 0.5rem;
+        
+        .bib-citation em {
+            color: var(--text-muted);
+        }
+        
+        .expand-icon {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+        
+        .bib-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .bib-content {
+            padding: 0 1rem 1rem;
             display: none;
-            line-height: 1.4;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 1rem;
         }
-
-        .field-hint:hover .tooltip,
-        .field-hint:focus .tooltip {
+        
+        .bib-card.expanded .bib-content {
             display: block;
         }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
+        
+        .bib-findings {
+            margin: 1rem 0;
+            padding: 0.8rem;
+            background: var(--accent-soft);
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+        
+        .bib-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
+        }
+        
+        .bib-links {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        
+        .bib-links a {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            background: var(--chip-bg);
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .bib-links a:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .bib-export {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
         }
 
-        /* ========== PRINT STYLES ========== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab {
+                white-space: nowrap;
+            }
+            
+            .tooltip {
+                width: 250px;
+                left: auto;
+                right: 0;
+            }
+        }
+
         @media print {
             body {
                 background: white;
             }
             
-            .container > *:not(#morphResult) {
-                display: none !important;
-            }
-            
-            #morphResult {
-                display: block !important;
-                page-break-inside: avoid;
-            }
-            
-            .tabs {
-                display: none !important;
-            }
-            
-            #morph,
-            #bastian,
-            #summary {
-                display: block !important;
-                page-break-inside: avoid;
-            }
-            
-            .result-card {
+            .card {
                 box-shadow: none;
-                border: 1px solid #ccc;
+                border: 1px solid var(--border);
             }
             
-            .btn-group {
-                display: none !important;
-            }
-            
-            .notification {
-                display: none !important;
-            }
-        }
-
-        /* ========== PDF EXPORT STYLES ========== */
-        #pdfContent {
-            display: none;
-        }
-
-        .pdf-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--accent);
-        }
-
-        .pdf-header h1 {
-            font-size: 1.8rem;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .pdf-header .subtitle {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .pdf-section {
-            margin-bottom: 1.5rem;
-            page-break-inside: avoid;
-        }
-
-        .pdf-section h2 {
-            font-size: 1.2rem;
-            color: var(--accent);
-            margin-bottom: 0.8rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.5rem;
-        }
-
-        .pdf-footer {
-            margin-top: 3rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        @media (max-width: 700px) {
-            .container {
-                padding: 1.5rem 1rem 2.5rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .field-group {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                flex-wrap: wrap;
-            }
-
-            .case-actions {
-                flex-direction: column;
-            }
-
-            .notification {
-                right: 10px;
-                left: 10px;
-            }
-
-            .tooltip {
-                width: 200px;
-                left: 0;
-                right: auto;
+            .btn-primary, .btn-secondary {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
-        <header>
-            <h1>
-                <span aria-hidden="true">🧬</span> Filippo's Diagnostic Algorithm
-                <span class="version-badge">v3.2</span>
-            </h1>
-            <p class="subtitle">Spitz vs Melanoma: Weighted Scoring + Bastian Classification</p>
-        </header>
+        <div class="header">
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.3</h1>
+            <div class="subtitle">
+                Scoring pesato morfologia (Massi & LeBoit 2014) + genetica (Bastian 2014) + MAP3K8 (Newman/Houlier 2019-2020)
+            </div>
+        </div>
 
-        <!-- DISCLAIMER -->
-        <div class="disclaimer" role="note" aria-label="Metodologia di diagnosi">
-            <strong>⚠️ v3.2 Updates:</strong> Export PDF completo, tooltips su tutti i campi critici, print ottimizzato. 
-            <strong>Metodologia:</strong> Massi & Leboit 2016 + Bastian 2024 + Yeh 2019.
+        <div class="disclaimer" role="note">
+            <strong>⚠️ v3.3 Updates:</strong> Bibliografia interattiva completa, correzione citazioni (Bastian 2014), terminologia "criteri solidi".<br>
+            <strong>Metodologia:</strong> Massi & LeBoit 2014 (Springer 2nd Ed) + Bastian 2014 (Annu Rev Pathol) + Newman/Houlier 2019-2020 (MAP3K8).<br>
             <strong>DISCLAIMER PESANTE:</strong> Nessun algoritmo sostituisce l'esperienza del patologo. Diagnosi finale richiede giudizio clinico esperto e contestualizzazione del caso.
         </div>
 
-        <!-- CASE MANAGEMENT -->
-        <div class="case-management">
-            <h3>📁 Gestione Caso</h3>
-            <div class="case-actions">
-                <button class="btn-primary" onclick="saveCase()">
-                    💾 Salva Caso
-                </button>
-                <button class="btn-secondary" onclick="loadCase()">
-                    📂 Carica Caso
-                </button>
-                <button class="btn-secondary" onclick="exportCasePDF()">
-                    📄 Esporta PDF
-                </button>
-                <button class="btn-tertiary" onclick="newCase()">
-                    ➕ Nuovo Caso
-                </button>
+        <div class="card">
+            <div class="section-title">📊 Criteri Morfologici (Massi & LeBoit 2014)</div>
+            
+            <div class="form-group">
+                <label>
+                    Maturazione A→B→C
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Criterio critico</strong> (peso x3, max 20 punti). Maturazione A→B→C classica = Spitz nevus. Assenza maturazione = red flag melanoma.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="maturation">
+                    <option value="20">Presente e completa (20 punti)</option>
+                    <option value="16">Presente ma parziale (16 punti)</option>
+                    <option value="11">Dubbia/minima (11 punti)</option>
+                    <option value="5">Assente o invertita (5 punti)</option>
+                    <option value="0">Completamente assente (0 punti - RED FLAG)</option>
+                </select>
             </div>
-            <div class="quick-actions">
-                <button class="btn-tertiary" onclick="fillExample('spitz')">
-                    🟢 Esempio Spitz
-                </button>
-                <button class="btn-tertiary" onclick="fillExample('melanoma')">
-                    🔴 Esempio Melanoma
-                </button>
-                <button class="btn-tertiary" onclick="fillExample('atypical')">
-                    🟡 Esempio Atipico
-                </button>
+
+            <div class="form-group">
+                <label>
+                    Simmetria
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Criterio alto</strong> (peso x2, max 15 punti). Spitz tipicamente simmetrico, melanoma asimmetrico.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="symmetry">
+                    <option value="15">Perfettamente simmetrica (15 punti)</option>
+                    <option value="12">Prevalentemente simmetrica (12 punti)</option>
+                    <option value="8">Parzialmente asimmetrica (8 punti)</option>
+                    <option value="3">Francamente asimmetrica (3 punti)</option>
+                    <option value="0">Completamente asimmetrica (0 punti)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Circoscrizione
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Criterio alto</strong> (peso x2, max 15 punti). Spitz tipicamente ben circoscritto, melanoma infiltrativo.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="circumscription">
+                    <option value="15">Ben circoscritta (15 punti)</option>
+                    <option value="12">Prevalentemente circoscritta (12 punti)</option>
+                    <option value="8">Parzialmente infiltrativa (8 punti)</option>
+                    <option value="3">Infiltrazione moderata (3 punti)</option>
+                    <option value="0">Infiltrazione diffusa (0 punti)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Cellule giganti multinucleate
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Feature spitzoide</strong> (max 10 punti). Cellule giganti con nuclei multipli ordinati = tipico Spitz.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="giant_cells">
+                    <option value="10">Presenti e tipiche (10 punti)</option>
+                    <option value="7">Presenti focalmente (7 punti)</option>
+                    <option value="4">Rare (4 punti)</option>
+                    <option value="0">Assenti (0 punti)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Mitosi derma profondo
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Criterio critico</strong> (peso x2, max 15 punti). Mitosi derma profondo ≥6/mm² = red flag melanoma. Spitz ha mitosi superficiali.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="mitoses">
+                    <option value="15">Assenti nel derma profondo (15 punti)</option>
+                    <option value="12">1-2/mm² derma profondo (12 punti)</option>
+                    <option value="8">3-5/mm² derma profondo (8 punti)</option>
+                    <option value="3">≥6/mm² derma profondo (3 punti - CONCERNING)</option>
+                    <option value="0">Multiple + atipiche (0 punti - RED FLAG)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Pattern di infiltrazione
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Pattern tissutale</strong> (max 10 punti). Spitz: nidi coesi. Melanoma: infiltrazione singles cells.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="infiltration">
+                    <option value="10">Nidi coesi organizzati (10 punti)</option>
+                    <option value="7">Nidi con qualche singola cellula (7 punti)</option>
+                    <option value="4">Misto nidi e singles (4 punti)</option>
+                    <option value="0">Prevalentemente singles cells (0 punti)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Necrosi
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Feature maligna</strong> (max 5 punti). Necrosi "en masse" = red flag melanoma. Keratinocyte necrosis focale può essere in Spitz.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="necrosis">
+                    <option value="5">Assente (5 punti)</option>
+                    <option value="4">Keratinocyte necrosis focale (4 punti)</option>
+                    <option value="2">Necrosi piccoli foci (2 punti)</option>
+                    <option value="0">Necrosi "en masse" (0 punti - RED FLAG)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Atipia nucleare
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Atipia citologica</strong> (max 10 punti). Spitz può avere nuclei grandi ma regolari. Atipia severa con variabilità = concern.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="atypia">
+                    <option value="10">Minima/assente (10 punti)</option>
+                    <option value="8">Lieve (nuclei grandi ma regolari) (8 punti)</option>
+                    <option value="5">Moderata con variabilità (5 punti)</option>
+                    <option value="2">Severa (2 punti)</option>
+                    <option value="0">Estrema con pleomorfismo (0 punti)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Ulcerazione
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Feature aggiuntiva</strong> (max 5 punti). Ulcerazione può essere in Spitz traumatizzato ma è concern se estesa. Houlier 2020: ulcerazione in 32% MAP3K8-fused tumors.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('houlier2020')">📚 Houlier 2020</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="ulceration">
+                    <option value="5">Assente (5 punti)</option>
+                    <option value="3">Focale (possibile trauma) (3 punti)</option>
+                    <option value="1">Estesa (1 punto - CONCERN)</option>
+                    <option value="0">Estesa + necrosi (0 punti)</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="calculateScore()">🧮 Calcola Score</button>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🧬 Stratificazione Genetica (Bastian 2014)</div>
+            
+            <div class="form-group">
+                <label>
+                    Driver Mutation
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Profilo genetico principale.</strong> Alterazioni oncogeniche che definiscono comportamento biologico. TERT = criterio solido malignità (richiede correlazione clinica).
+                            <a href="#" onclick="event.preventDefault(); showBibCard('bastian2014')">📚 Bastian 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="bastian_driver">
+                    <option value="">Non disponibile/Non testato</option>
+                    <option value="hras">HRAS mutation (low-risk)</option>
+                    <option value="kinase_fusion">Kinase fusion (ALK/ROS1/RET/NTRK1/BRAF)</option>
+                    <option value="map3k8">MAP3K8 fusion/truncation</option>
+                    <option value="braf_bap1">BRAF V600E + BAP1 loss</option>
+                    <option value="tert">⚠️ TERT promoter mutation (criterio solido)</option>
+                    <option value="gnaq_gna11">GNAQ/GNA11 Q209 (non-Spitz)</option>
+                    <option value="cdkn2a_only">CDKN2A loss isolato</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    CNA Profile
+                    <span class="tooltip-trigger">ⓘ
+                        <span class="tooltip">
+                            <strong>Copy Number Aberrations.</strong> Single gain 11p = HRAS low-risk. Multiple CNAs = instabilità genomica red flag. Chr 6 loss = marker malignità.
+                            <a href="#" onclick="event.preventDefault(); showBibCard('bastian2014')">📚 Bastian 2014</a>
+                        </span>
+                    </span>
+                </label>
+                <select id="bastian_cna">
+                    <option value="">Non disponibile/Non testato</option>
+                    <option value="none">No significant CNAs</option>
+                    <option value="single_gain">Single copy gain (e.g. 11p)</option>
+                    <option value="multiple_cna">⚠️ Multiple CNAs (red flag)</option>
+                    <option value="chr_6_loss">⚠️ Chromosome 6 loss</option>
+                </select>
             </div>
         </div>
 
-        <!-- COMPLETION STATUS -->
-        <div class="completion-status">
-            <span id="completionText">0% completato</span>
-            <div class="completion-bar">
-                <div class="completion-fill" id="completionFill" style="width: 0%"></div>
+        <div id="result" class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(event, 'morph')">Morfologia</button>
+                <button class="tab" onclick="switchTab(event, 'bastian')">Genetica</button>
+                <button class="tab" onclick="switchTab(event, 'summary')">Sommario</button>
+                <button class="tab" onclick="switchTab(event, 'bibliography')">Bibliografia</button>
             </div>
-        </div>
 
-        <!-- PROGRESS INDICATOR -->
-        <div class="progress-indicator" id="progressIndicator" aria-label="Progresso nella compilazione dei campi critici">
-            <!-- Populated by JS -->
-        </div>
+            <div id="morph" class="tab-content active">
+                <div class="score-display">
+                    <div class="score-value" id="totalScore">--</div>
+                    <div class="score-label">Score Morfologico Totale</div>
+                </div>
+                
+                <div id="morphInterpretation"></div>
+                <div id="scoreBreakdown"></div>
+            </div>
 
-        <!-- MAIN GRID -->
-        <div class="grid">
-            <!-- LEFT: INPUT FORM -->
-            <div>
-                <div class="card" id="inputCard">
-                    <h2 class="section-title">📋 Valutazione Morfologica (Gates 0-8)</h2>
+            <div id="bastian" class="tab-content">
+                <div id="bastianAnalysis"></div>
+            </div>
 
-                    <!-- GATE 0: ETA' -->
-                    <div class="section-title" style="margin-top: 0.8rem;">
-                        Gate 0: Età del Paziente <span class="critical-badge">(CRITICAL)</span>
-                    </div>
-                    <div class="field-group">
-                        <label for="age">
-                            <span class="label-main">Età *</span>
-                            <select id="age" aria-describedby="age-hint" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="child">🟢 &lt; 20 anni (Spitz più probabile)</option>
-                                <option value="young">🟡 20-40 anni (Zona grigia)</option>
-                                <option value="adult">🟡 40-60 anni (Cautela)</option>
-                                <option value="elderly">🚨 &gt; 60 anni (Melanoma più probabile)</option>
-                            </select>
-                            <span class="label-hint" id="age-hint">Bias epidemiologico fondamentale</span>
-                            <span class="error-message" id="age-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Età:</strong> Bias epidemiologico cruciale. Spitz è comune sotto i 20 anni (incidenza melanoma <1%), melanoma sopra i 60 anni (Spitz raro). L'età non è diagnostica ma orienta fortemente la diagnosi differenziale.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
+            <div id="summary" class="tab-content">
+                <div id="summaryContent"></div>
+            </div>
 
-                    <!-- GATE 1: ASIMMETRIA -->
-                    <div class="section-title">Gate 1: Asimmetria <span class="critical-badge">(CRITICAL)</span></div>
-                    <div class="field-group">
-                        <label for="asymmetry">
-                            <span class="label-main">Simmetria *</span>
-                            <select id="asymmetry" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="symmetric">✅ Simmetrica</option>
-                                <option value="partial">⚠️ Parziale</option>
-                                <option value="marked">🚨 Marcata asimmetria</option>
-                            </select>
-                            <span class="error-message" id="asymmetry-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Asimmetria:</strong> Spitz classico è simmetrico. Marcata asimmetria suggerisce melanoma ma pesa solo +1 punto. Non è criterio assoluto ma red flag da considerare nel contesto globale.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 2: MATURAZIONE -->
-                    <div class="section-title">Gate 2: Maturazione <span class="critical-badge">(CRITICAL - Weight: 4)</span></div>
-                    <div class="field-group">
-                        <label for="maturation">
-                            <span class="label-main">Pattern A→B→C *</span>
-                            <span class="label-hint">A=piccole superficiali | B=medie intermedie | C=grandi profonde</span>
-                            <select id="maturation" aria-describedby="maturation-hint" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="complete">✅ Completa (>80%)</option>
-                                <option value="incomplete">⚠️ Incompleta (40-80%)</option>
-                                <option value="absent">🚨 Assente/Invertita (WEIGHT +4)</option>
-                            </select>
-                            <span class="error-message" id="maturation-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Maturazione A→B→C:</strong> Criterio DIRIMENTE (weight +4). A = cellule piccole superficiali, B = medie intermedie, C = grandi profonde. Spitz maturo ha ordine crescente A→B→C. Maturazione assente/invertita è quasi patognomonico di melanoma (Massi & Leboit).
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 3: MORFOLOGIA -->
-                    <div class="section-title">Gate 3: Morfologia Citologica <span class="critical-badge">(CRITICAL)</span></div>
-                    <div class="field-group">
-                        <label for="morphology">
-                            <span class="label-main">Uniformità *</span>
-                            <select id="morphology" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="monomorphic">✅ Monomorfo</option>
-                                <option value="moderate">⚠️ Pleomorfismo moderato (WEIGHT +2)</option>
-                                <option value="marked">🚨 Marcato pleomorfismo (WEIGHT +2)</option>
-                            </select>
-                            <span class="error-message" id="morphology-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Pleomorfismo:</strong> Spitz è tipicamente monomorfo (cellule uniformi). Pleomorfismo marcato (variabilità nucleare, anisocitosi, ipercromasia) è forte indicatore di melanoma. Weight +2 per pleomorfismo moderato/marcato.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 4: MITOSI -->
-                    <div class="section-title">Gate 4: Mitosi <span class="critical-badge">(CRITICAL)</span></div>
-                    <div class="field-group">
-                        <label for="mitoses_count">
-                            <span class="label-main">Count /mm² *</span>
-                            <select id="mitoses_count" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="low">&lt; 3 mitosi</option>
-                                <option value="moderate">3-6 mitosi</option>
-                                <option value="high">≥ 6 mitosi 🚨</option>
-                            </select>
-                            <span class="error-message" id="mitoses_count-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Count mitotico:</strong> In Spitz le mitosi sono prevalentemente periferiche/superficiali (growth phase). Count ≥6/mm² è red flag (+1), ma la LOCALIZZAZIONE conta più del numero assoluto. Combo count+location = weight +3.
-                                </div>
-                            </div>
-                        </label>
-
-                        <label for="mitoses_location">
-                            <span class="label-main">Localizzazione *</span>
-                            <select id="mitoses_location" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="peripheral">✅ Periferica/Superficiale</option>
-                                <option value="deep">🚨 Profonda (WEIGHT +3 se count ≥ moderate)</option>
-                                <option value="na">N/A (&lt; 3 mitosi)</option>
-                            </select>
-                            <span class="error-message" id="mitoses_location-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Location mitotica:</strong> CRITERIO CHIAVE. Mitosi profonde + count moderate/high = SEMI-OVERRIDE (weight +3). In Spitz le mitosi sono periferiche. Mitosi profonde indicano crescita infiltrativa maligna.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 5: ATIPIE MITOTICA -->
-                    <div class="section-title">Gate 5: Atipie Mitotica <span class="critical-badge">(OVERRIDE ASSOLUTO)</span></div>
-                    <div class="field-group">
-                        <label for="atypical_mitoses">
-                            <span class="label-main">Mitosi Atipiche *</span>
-                            <select id="atypical_mitoses" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="absent">✅ Assenti</option>
-                                <option value="rare">⚠️ Rare/Dubbie</option>
-                                <option value="present">🚨 Presenti (OVERRIDE→MELANOMA)</option>
-                            </select>
-                            <span class="error-message" id="atypical_mitoses-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Mitosi atipiche:</strong> OVERRIDE ASSOLUTO. Mitosi tripolare/multipolare = SEMPRE melanoma, indipendentemente da altri criteri. Criterio non negoziabile. Se presente = diagnosi definitiva melanoma.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 6: INFILTRAZIONE -->
-                    <div class="section-title">Gate 6: Infiltrazione <span class="critical-badge">(CRITICAL)</span></div>
-                    <div class="field-group">
-                        <label for="infiltration">
-                            <span class="label-main">Pattern Crescita *</span>
-                            <select id="infiltration" required>
-                                <option value="">-- Seleziona --</option>
-                                <option value="circumscribed">✅ Circoscritto</option>
-                                <option value="partial">⚠️ Parzialmente infiltrativo</option>
-                                <option value="infiltrative">🚨 Marcatamente infiltrativo (WEIGHT +2)</option>
-                            </select>
-                            <span class="error-message" id="infiltration-error">Campo obbligatorio</span>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Pattern infiltrativo:</strong> Spitz classico ha margini ben definiti, circoscritti. Pattern marcatamente infiltrativo (singole cellule/cordoni nel derma) suggerisce comportamento maligno. Weight +2.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 7: IHC -->
-                    <div class="section-title">Gate 7: IHC <span class="optional-badge">(Se disponibile)</span></div>
-                    <div class="field-group">
-                        <label for="spreading_pattern">
-                            <span class="label-main">Spreading Intraepidermico</span>
-                            <select id="spreading_pattern">
-                                <option value="">-- Non disponibile --</option>
-                                <option value="absent">✅ Assente/Focale</option>
-                                <option value="partial">⚠️ Parziale/Multifocale</option>
-                                <option value="diffuse">🚨 Diffuso</option>
-                            </select>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Spreading:</strong> Pattern di crescita pagetoide intraepidermico (S100, SOX10, Melan-A). Spreading diffuso + p16 loss = OVERRIDE MELANOMA. Criterio combo definitivo.
-                                </div>
-                            </div>
-                        </label>
-
-                        <label for="p16">
-                            <span class="label-main">p16</span>
-                            <select id="p16">
-                                <option value="">-- Non disponibile --</option>
-                                <option value="present">✅ Mantenuto</option>
-                                <option value="partial">⚠️ Perdita focale</option>
-                                <option value="loss">🚨 Perdita completa (OVERRIDE se + spreading diffuso)</option>
-                            </select>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>p16 (CDKN2A):</strong> Spitz mantiene p16. Perdita completa + spreading diffuso = OVERRIDE MELANOMA (criterio combo). Perdita isolata = cautela ma non diagnostico.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 8: Ki-67 -->
-                    <div class="section-title">Gate 8: Ki-67 <span class="optional-badge">(Se disponibile)</span></div>
-                    <div class="field-group">
-                        <label for="ki67_count">
-                            <span class="label-main">Indice Proliferativo %</span>
-                            <select id="ki67_count">
-                                <option value="">-- Non disponibile --</option>
-                                <option value="low">✅ &lt; 5%</option>
-                                <option value="intermediate">⚠️ 5-15%</option>
-                                <option value="high">⚠️ &gt; 15-20%</option>
-                            </select>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Ki-67:</strong> Indice proliferativo. Il NUMERO conta meno della LOCALIZZAZIONE. Ki-67 alto periferico = OK (growth phase Spitz). Ki-67 alto PROFONDO = red flag pesante.
-                                </div>
-                            </div>
-                        </label>
-
-                        <label for="ki67_location">
-                            <span class="label-main">Localizzazione</span>
-                            <select id="ki67_location">
-                                <option value="">-- Non disponibile --</option>
-                                <option value="peripheral">✅ Periferico (growth phase OK)</option>
-                                <option value="central">⚠️ Centrale</option>
-                                <option value="deep">🚨 Profondo (SEMI-OVERRIDE, WEIGHT +3)</option>
-                                <option value="na">N/A (Ki-67 basso)</option>
-                            </select>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Ki-67 location:</strong> SEMI-OVERRIDE. Ki-67 >15% PROFONDO = weight +3, quasi patognomonico di melanoma in contesto spitzoide. Location matters più del valore assoluto. Bastian docet.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- GATE 9-10: OPTIONAL FIELDS -->
-                    <div class="section-title">Gates 9-10: Caratteristiche Aggiuntive <span class="optional-badge">(Optional)</span></div>
-                    <div class="field-group">
-                        <label for="ulceration">
-                            <span class="label-main">Ulcerazione</span>
-                            <span class="label-hint">Red flag per melanoma</span>
-                            <select id="ulceration">
-                                <option value="">-- Non valutata --</option>
-                                <option value="absent">✅ Assente</option>
-                                <option value="present">🚨 Presente (WEIGHT +2)</option>
-                            </select>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Ulcerazione:</strong> Red flag prognostico. In lesioni spitzoidi, ulcerazione favorisce diagnosi melanoma e peggiora prognosi. Weight +2. Non è criterio diagnostico assoluto ma indicatore aggressività.
-                                </div>
-                            </div>
-                        </label>
-
-                        <label for="regression">
-                            <span class="label-main">Regressione</span>
-                            <span class="label-hint">In Spitz può mimare melanoma</span>
-                            <select id="regression">
-                                <option value="">-- Non valutata --</option>
-                                <option value="absent">✅ Assente</option>
-                                <option value="focal">⚠️ Focale</option>
-                                <option value="extensive">🚨 Estesa (WEIGHT +1, cautela)</option>
-                            </select>
-                            <div class="field-hint" tabindex="0" role="button">
-                                ?
-                                <div class="tooltip" role="tooltip">
-                                    <strong>Regressione:</strong> In Spitz può verificarsi regressione spontanea che MIMA melanoma (fibrosi, melanofagi). Regressione estesa = cautela, weight +1. Non confondere con regressione melanoma vera.
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- BUTTONS -->
-                    <div class="btn-group">
-                        <button class="btn-primary" onclick="calculateDiagnosis()" id="calculateBtn">
-                            📊 Calcola Diagnosi (Weighted Scoring)
-                        </button>
-                        <button class="btn-secondary" onclick="resetForm()" type="button">
-                            🔄 Reset
-                        </button>
-                        <button class="btn-tertiary" onclick="showAutoSaveStatus()">
-                            💾 Stato Salvataggio
-                        </button>
-                    </div>
+            <div id="bibliography" class="tab-content">
+                <div class="section-title" style="margin-top: 0;">📚 Bibliografia Scientifica</div>
+                
+                <div class="bib-search">
+                    <input type="text" 
+                           id="bibSearch" 
+                           placeholder="🔍 Cerca autore, anno, keywords..."
+                           onkeyup="filterBibliography()">
+                </div>
+                
+                <div class="bib-filters">
+                    <button class="bib-filter active" data-filter="all" onclick="filterBibByCategory('all')">Tutte</button>
+                    <button class="bib-filter" data-filter="morfologia" onclick="filterBibByCategory('morfologia')">Morfologia</button>
+                    <button class="bib-filter" data-filter="genetica" onclick="filterBibByCategory('genetica')">Genetica</button>
+                    <button class="bib-filter" data-filter="review" onclick="filterBibByCategory('review')">Review</button>
+                </div>
+                
+                <div id="bibliographyCards"></div>
+                
+                <div class="bib-export">
+                    <button class="btn-secondary" onclick="exportBibTeX()">
+                        📄 Esporta BibTeX
+                    </button>
                 </div>
             </div>
 
-            <!-- RIGHT: RESULTS -->
-            <div>
-                <!-- MORPHOLOGICAL RESULT -->
-                <div id="morphResult" class="result-section" role="region" aria-live="polite" aria-label="Risultato della diagnosi morfologica">
-                    <div class="result-card">
-                        <div class="tabs" role="tablist" aria-label="Sezioni dei risultati">
-                            <button class="tab active" role="tab" aria-selected="true" aria-controls="morph" id="tab-morph" onclick="switchTab(event, 'morph')">Morfologia</button>
-                            <button class="tab" role="tab" aria-selected="false" aria-controls="bastian" id="tab-bastian" onclick="switchTab(event, 'bastian')">Genetica</button>
-                            <button class="tab" role="tab" aria-selected="false" aria-controls="summary" id="tab-summary" onclick="switchTab(event, 'summary')">Sommario</button>
-                        </div>
-
-                        <div id="morph" class="tab-content active" role="tabpanel" aria-labelledby="tab-morph">
-                            <div class="classification" id="morphDiagnosis"></div>
-                            <div class="score-display" id="scoreDisplay"></div>
-                            <div class="result-meta" id="morphMeta"></div>
-                            <div class="explanations" id="morphExplanations"></div>
-                        </div>
-
-                        <div id="bastian" class="tab-content" role="tabpanel" aria-labelledby="tab-bastian" aria-hidden="true">
-                            <div id="bastianSection">
-                                <div class="section-title" style="margin-top: 0;">🧬 Stratificazione Genetica (Bastian 2024)</div>
-                                <div class="field-group" style="grid-template-columns: 1fr;">
-                                    <label for="bastian_driver">
-                                        <span class="label-main">Driver Mutazionale</span>
-                                        <select id="bastian_driver" onchange="updateBastianPreview()">
-                                            <option value="">-- Seleziona --</option>
-                                            <optgroup label="🟢 SPITZ-LIKE (Low-Risk)">
-                                                <option value="hras_mut">HRAS-mutated</option>
-                                                <option value="alk_fusion">ALK fusion</option>
-                                                <option value="ros1_fusion">ROS1 fusion</option>
-                                                <option value="ntrk_fusion">NTRK1/3 fusion</option>
-                                                <option value="ret_fusion">RET fusion</option>
-                                                <option value="braf_fusion">BRAF-fusion (CNA-dependent)</option>
-                                            </optgroup>
-                                            <optgroup label="🚨 RED FLAG (Melanoma-Like)">
-                                                <option value="map3k8_fusion">MAP3K8 fusion (HIGH-RISK)</option>
-                                                <option value="braf_v600">BRAF V600E/K</option>
-                                                <option value="nras_q61">NRAS Q61</option>
-                                                <option value="nf1_loss">NF1 loss</option>
-                                                <option value="tert_promoter">⚠️ TERT promoter (CRITERIO DURO)</option>
-                                                <option value="cdkn2a_loss">⚠️ CDKN2A loss (CRITERIO DURO)</option>
-                                            </optgroup>
-                                        </select>
-                                    </label>
-
-                                    <label for="bastian_cna">
-                                        <span class="label-main">CNA Profile</span>
-                                        <select id="bastian_cna" onchange="updateBastianPreview()">
-                                            <option value="">-- Seleziona --</option>
-                                            <option value="none">🟢 Assente/Calmo</option>
-                                            <option value="limited">🟡 Limitati</option>
-                                            <option value="complex">🚨 Complessi</option>
-                                        </select>
-                                    </label>
-                                </div>
-
-                                <button class="btn-primary" onclick="applyBastian()" style="margin-top: 1rem; width: 100%;">
-                                    🧬 Applica Stratificazione Bastian
-                                </button>
-                            </div>
-
-                            <div id="bastianResult" style="display: none;">
-                                <div class="classification" id="bastianDiagnosis"></div>
-                                <div class="explanations" id="bastianExplanations"></div>
-                                <div class="chips-row" id="bastianChips"></div>
-                            </div>
-                        </div>
-
-                        <div id="summary" class="tab-content" role="tabpanel" aria-labelledby="tab-summary" aria-hidden="true">
-                            <div class="section-title" style="margin-top: 0;">📋 Sommario Caso</div>
-                            <div id="caseSummary"></div>
-                            <div class="btn-group" style="margin-top: 1.5rem;">
-                                <button class="btn-secondary" onclick="exportCasePDF()">
-                                    📄 Esporta PDF
-                                </button>
-                                <button class="btn-tertiary" onclick="printSummary()">
-                                    🖨️ Stampa
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- EMPTY STATE -->
-                <div id="emptyState" class="result-card empty-state">
-                    <div class="empty-state-icon" aria-hidden="true">📋</div>
-                    <div>Compila i campi critici (con *) e clicca "Calcola"</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-muted);">
-                        Prova gli esempi predefiniti per familiarizzare con lo strumento
-                    </div>
-                </div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button class="btn-secondary" onclick="exportPDF()">📄 Esporta PDF</button>
+                <button class="btn-secondary" onclick="resetForm()">🔄 Reset</button>
             </div>
         </div>
 
-        <!-- FOOTER -->
-        <div class="footer-note">
-            <strong>v3.2 Updates:</strong> Export PDF completo con html2pdf.js, tooltips su tutti i campi critici con spiegazioni metodologiche, print CSS ottimizzato.
+        <div class="footer">
+            <strong>Dr. Filippo Bianchi</strong> - Direttore SC Anatomia Patologica<br>
+            ASST Fatebenefratelli-Sacco, Milano<br>
+            📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
+            💻 <a href="https://github.com/infingardo" target="_blank">GitHub: infingardo</a><br>
             <br>
-            <strong>Metodologia:</strong> Massi G, Leboit PE. <em>Ackerman's Pathology of the Skin, 3rd Edition</em>, 2016 | Bastian BC. Genomic classification of spitzoid tumors, 2024 | Yeh I et al. <em>MAP3K8 fusions in spitzoid melanoma</em>. JAMA Dermatology 2019.
-            <br>
-            <strong>Disclaimer:</strong> Tool diagnostico di supporto. La diagnosi definitiva richiede integrazione con giudizio clinico esperto. Sviluppato da Dr. Filippo Bianchi, SC Anatomia Patologica, ASST Fatebenefratelli-Sacco, Milano.
+            <em>v3.3 (2024-11-25) - Bibliografia corretta, terminologia "criteri solidi"</em>
         </div>
-    </div>
-
-    <!-- NOTIFICATION -->
-    <div class="notification" id="notification">
-        <div id="notificationIcon">ℹ️</div>
-        <div id="notificationText">Notifica</div>
-    </div>
-
-    <!-- PDF CONTENT (Hidden, used for export) -->
-    <div id="pdfContent" style="display: none;">
-        <!-- Will be populated dynamically -->
     </div>
 
     <script>
-        // ========== CONFIGURATION ==========
-        const criticalFields = [
-            'age', 'asymmetry', 'maturation', 'morphology',
-            'mitoses_count', 'mitoses_location', 'atypical_mitoses', 'infiltration'
+        // ========== BIBLIOGRAFIA DATABASE ==========
+        const bibliography = [
+            {
+                id: 'bastian2014',
+                authors: 'Bastian BC',
+                year: 2014,
+                title: 'The Molecular Pathology of Melanoma: An Integrated Taxonomy of Melanocytic Neoplasia',
+                journal: 'Annual Review of Pathology: Mechanisms of Disease',
+                volume: 9,
+                pages: '239-271',
+                doi: '10.1146/annurev-pathol-012513-104658',
+                pmid: '24460189',
+                url: 'https://www.annualreviews.org/doi/10.1146/annurev-pathol-012513-104658',
+                category: 'genetica',
+                supportedCriteria: ['bastian_driver', 'bastian_cna', 'spitz_general'],
+                keyFindings: 'Framework tassonomico integrato dei melanomi. Classificazione genomica: HRAS-mutated Spitz (low-risk), fusioni kinasiche (ALK, ROS1, RET, NTRK1) in 60% Spitz. GNAQ/GNA11 in blue nevi e uveal melanoma. TERT promoter come criterio solido di progressione maligna (85% metastasi vs 0% nevi). CDKN2A loss: evento secondario presente anche in AST, non diagnostico da solo.',
+                bibtex: `@article{Bastian2014,
+  author = {Bastian, Boris C},
+  title = {The Molecular Pathology of Melanoma: An Integrated Taxonomy of Melanocytic Neoplasia},
+  journal = {Annual Review of Pathology: Mechanisms of Disease},
+  volume = {9},
+  pages = {239-271},
+  year = {2014},
+  doi = {10.1146/annurev-pathol-012513-104658},
+  pmid = {24460189}
+}`
+            },
+            
+            {
+                id: 'newman2019',
+                authors: 'Newman S, Fan L, Pribnow A, et al.',
+                year: 2019,
+                title: 'Clinical genome sequencing uncovers potentially targetable truncations and fusions of MAP3K8 in spitzoid and other melanomas',
+                journal: 'Nature Medicine',
+                volume: 25,
+                pages: '597-602',
+                doi: '10.1038/s41591-019-0373-y',
+                url: 'https://doi.org/10.1038/s41591-019-0373-y',
+                category: 'genetica',
+                supportedCriteria: ['bastian_driver'],
+                keyFindings: 'MAP3K8 fusions/truncations in 33% melanomi spitzoidi pediatrici. Risposta clinica a MEK inhibitor. Rappresenta il driver genetico più comune in melanoma spitzoide pediatrico. Target potenzialmente terapeutico.',
+                bibtex: `@article{Newman2019,
+  author = {Newman, Scott and Fan, Ling and Pribnow, Angela and others},
+  title = {Clinical genome sequencing uncovers potentially targetable truncations and fusions of MAP3K8 in spitzoid and other melanomas},
+  journal = {Nature Medicine},
+  volume = {25},
+  pages = {597-602},
+  year = {2019},
+  doi = {10.1038/s41591-019-0373-y}
+}`
+            },
+            
+            {
+                id: 'houlier2020',
+                authors: 'Houlier A, Pissaloux D, Masse I, et al.',
+                year: 2020,
+                title: 'Melanocytic tumors with MAP3K8 fusions: report of 33 cases with morphological-genetic correlations',
+                journal: 'Modern Pathology',
+                volume: 33,
+                pages: '846-857',
+                doi: '10.1038/s41379-019-0384-8',
+                pmid: '31719662',
+                url: 'https://doi.org/10.1038/s41379-019-0384-8',
+                category: 'genetica',
+                supportedCriteria: ['bastian_driver'],
+                keyFindings: 'Serie di 33 casi MAP3K8-fused. CDKN2A inactivation nel 77% di casi atipici/maligni. Ulcerazione presente nel 32%. Preferenza anatomica: arti inferiori (55%). Partner 3\' più comune: SVIL (46%). MAP3K8 expression significativamente elevata vs altri kinase fusions.',
+                bibtex: `@article{Houlier2020,
+  author = {Houlier, Aurelie and Pissaloux, Daniel and Masse, Ingrid and others},
+  title = {Melanocytic tumors with MAP3K8 fusions: report of 33 cases with morphological-genetic correlations},
+  journal = {Modern Pathology},
+  volume = {33},
+  pages = {846-857},
+  year = {2020},
+  doi = {10.1038/s41379-019-0384-8},
+  pmid = {31719662}
+}`
+            },
+            
+            {
+                id: 'massi2014',
+                authors: 'Massi G, LeBoit PE',
+                year: 2014,
+                title: 'Histological Diagnosis of Nevi and Melanoma',
+                journal: 'Springer',
+                edition: '2nd Edition',
+                isbn: '978-3-642-37310-7',
+                url: 'https://link.springer.com/book/10.1007/978-3-642-37311-4',
+                category: 'morfologia',
+                supportedCriteria: ['maturation', 'morphology', 'mitoses', 'infiltration', 'asymmetry'],
+                keyFindings: 'Textbook completo sulla diagnosi istologica di nevi e melanoma. Approccio pratico con criteri morfologici sistematici. Gates 0-8 approach per diagnosi differenziale Spitz vs melanoma. Maturazione A→B→C come criterio dirimente. Fotografie ad alta qualità con clues diagnostici evidenziati.',
+                bibtex: `@book{Massi2014,
+  author = {Massi, Guido and LeBoit, Philip E},
+  title = {Histological Diagnosis of Nevi and Melanoma},
+  edition = {2},
+  publisher = {Springer},
+  address = {Berlin, Heidelberg},
+  year = {2014},
+  isbn = {978-3-642-37310-7}
+}`
+            },
+            
+            {
+                id: 'raghavan2020',
+                authors: 'Raghavan SS, Peternel S, Mully TW, et al.',
+                year: 2020,
+                title: 'Spitz melanoma is a distinct subset of spitzoid melanoma',
+                journal: 'Modern Pathology',
+                volume: 33,
+                pages: '1122-1134',
+                doi: '10.1038/s41379-019-0445-z',
+                url: 'https://doi.org/10.1038/s41379-019-0445-z',
+                category: 'review',
+                supportedCriteria: ['spitz_general'],
+                keyFindings: 'Solo 36% di "spitzoid melanomas" ha alterazioni genetiche caratteristiche di Spitz melanoma (HRAS mutation o fusion di BRAF, ALK, NTRK1, MAP3K8). Spitz melanoma è subset distinto con profilo genomico specifico, non tutte le lesioni morfologicamente spitzoidi sono Spitz melanoma vero.',
+                bibtex: `@article{Raghavan2020,
+  author = {Raghavan, Shyam S and Peternel, Sandra and Mully, Thaddeus W and others},
+  title = {Spitz melanoma is a distinct subset of spitzoid melanoma},
+  journal = {Modern Pathology},
+  volume = {33},
+  pages = {1122-1134},
+  year = {2020},
+  doi = {10.1038/s41379-019-0445-z}
+}`
+            }
         ];
 
-        const optionalFields = [
-            'spreading_pattern', 'p16', 'ki67_count', 'ki67_location',
-            'ulceration', 'regression'
-        ];
+        // ========== MAIN CALCULATION ==========
+        function calculateScore() {
+            const scores = {
+                maturation: parseInt(document.getElementById('maturation').value),
+                symmetry: parseInt(document.getElementById('symmetry').value),
+                circumscription: parseInt(document.getElementById('circumscription').value),
+                giant_cells: parseInt(document.getElementById('giant_cells').value),
+                mitoses: parseInt(document.getElementById('mitoses').value),
+                infiltration: parseInt(document.getElementById('infiltration').value),
+                necrosis: parseInt(document.getElementById('necrosis').value),
+                atypia: parseInt(document.getElementById('atypia').value),
+                ulceration: parseInt(document.getElementById('ulceration').value)
+            };
 
-        const allFields = [...criticalFields, ...optionalFields];
-
-        // ========== WEIGHTS CONFIGURATION ==========
-        const diagnosticWeights = {
-            maturation_absent: 4,
-            marked_pleomorphism: 2,
-            moderate_pleomorphism: 2,
-            mitoses_deep_moderate: 3,
-            mitoses_deep_high: 3,
-            ki67_deep: 3,
-            infiltrative: 2,
-            high_mitoses: 1,
-            marked_asymmetry: 1,
-            ulceration: 2,
-            regression_extensive: 1
-        };
-
-        // Global state for export
-        let currentDiagnosis = null;
-        let currentScore = 0;
-        let currentFlags = { red: [], yellow: [], green: [] };
-
-        // ========== AUTO-SAVE ==========
-        let autoSaveInterval;
-        let lastSaveTime = null;
-
-        function initAutoSave() {
-            autoSaveInterval = setInterval(saveCase, 30000);
-            window.addEventListener('beforeunload', saveCase);
-            loadCase();
+            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            
+            // Display
+            document.getElementById('totalScore').textContent = total;
+            document.getElementById('result').style.display = 'block';
+            
+            // Generate interpretations
+            generateMorphInterpretation(total, scores);
+            generateScoreBreakdown(scores);
+            generateBastianAnalysis();
+            generateSummary(total, scores);
+            
+            // Scroll to result
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function saveCase() {
-            const caseData = {};
-            allFields.forEach(id => {
-                const field = document.getElementById(id);
-                if (field) caseData[id] = field.value;
+        function generateMorphInterpretation(total, scores) {
+            let interpretation = '';
+            let alertClass = '';
+            let diagnosis = '';
+            let action = '';
+
+            // Red flags check
+            const redFlags = [];
+            if (scores.maturation <= 5) redFlags.push('Maturazione assente/invertita');
+            if (scores.mitoses <= 3) redFlags.push('Mitosi ≥6/mm² derma profondo');
+            if (scores.necrosis === 0) redFlags.push('Necrosi "en masse"');
+
+            if (redFlags.length > 0) {
+                alertClass = 'danger';
+                diagnosis = '⚠️ SPITZOID MELANOMA - RED FLAGS PRESENTI';
+                action = 'URGENTE: Staging completo, genomica raccomandata, discussione MDT, consider sentinel node biopsy';
+                interpretation = `<strong>RED FLAGS IDENTIFICATI:</strong><ul style="margin: 0.5rem 0 0 1.2rem;">`;
+                redFlags.forEach(flag => {
+                    interpretation += `<li>${flag}</li>`;
+                });
+                interpretation += `</ul><br><strong>Azione richiesta:</strong> ${action}`;
+            } else if (total >= 71) {
+                alertClass = 'danger';
+                diagnosis = 'Spitzoid Melanoma';
+                action = 'Staging completo + genomica + discussione MDT';
+            } else if (total >= 51) {
+                alertClass = 'warning';
+                diagnosis = 'Atypical Spitz Tumor with concerning features';
+                action = 'Genomica raccomandata, consider sentinel node, follow-up stretto';
+            } else if (total >= 31) {
+                alertClass = 'warning';
+                diagnosis = 'Atypical Spitz Tumor (AST)';
+                action = 'Excision completa + follow-up stretto';
+            } else {
+                alertClass = 'success';
+                diagnosis = 'Spitz Nevus';
+                action = 'Follow-up clinico routine';
+            }
+
+            if (redFlags.length === 0) {
+                interpretation = `<strong>Score:</strong> ${total}/100<br><strong>Diagnosi suggerita:</strong> ${diagnosis}<br><strong>Raccomandazioni:</strong> ${action}`;
+            }
+
+            document.getElementById('morphInterpretation').innerHTML = `
+                <div class="interpretation ${alertClass}">
+                    ${interpretation}
+                </div>
+            `;
+        }
+
+        function generateScoreBreakdown(scores) {
+            const labels = {
+                maturation: 'Maturazione A→B→C',
+                symmetry: 'Simmetria',
+                circumscription: 'Circoscrizione',
+                giant_cells: 'Cellule giganti multinucleate',
+                mitoses: 'Mitosi derma profondo',
+                infiltration: 'Pattern infiltrazione',
+                necrosis: 'Necrosi',
+                atypia: 'Atipia nucleare',
+                ulceration: 'Ulcerazione'
+            };
+
+            const maxScores = {
+                maturation: 20,
+                symmetry: 15,
+                circumscription: 15,
+                giant_cells: 10,
+                mitoses: 15,
+                infiltration: 10,
+                necrosis: 5,
+                atypia: 10,
+                ulceration: 5
+            };
+
+            let html = '<div class="section-title">Breakdown Punteggi</div>';
+            html += '<table class="breakdown-table"><thead><tr><th>Criterio</th><th>Punteggio</th><th>Max</th><th>Status</th></tr></thead><tbody>';
+
+            for (const [key, value] of Object.entries(scores)) {
+                const max = maxScores[key];
+                const percentage = (value / max) * 100;
+                let status = '';
+                let chipClass = '';
+
+                if (percentage >= 70) {
+                    status = 'OK';
+                    chipClass = 'chip-ok';
+                } else if (percentage >= 40) {
+                    status = 'Concern';
+                    chipClass = 'chip-warn';
+                } else {
+                    status = 'Red Flag';
+                    chipClass = 'chip-danger';
+                }
+
+                html += `<tr>
+                    <td>${labels[key]}</td>
+                    <td><strong>${value}</strong></td>
+                    <td>${max}</td>
+                    <td><span class="chip ${chipClass}">${status}</span></td>
+                </tr>`;
+            }
+
+            html += '</tbody></table>';
+            document.getElementById('scoreBreakdown').innerHTML = html;
+        }
+
+        function generateBastianAnalysis() {
+            const driverMutation = document.getElementById('bastian_driver').value;
+            const cnaProfile = document.getElementById('bastian_cna').value;
+            
+            let analysis = '<div class="section-title">🧬 Stratificazione Genetica (Bastian 2014)</div>';
+            
+            if (!driverMutation && !cnaProfile) {
+                analysis += '<div class="alert alert-info">Dati genetici non disponibili. Diagnosi basata su sola morfologia.</div>';
+                document.getElementById('bastianAnalysis').innerHTML = analysis;
+                return;
+            }
+
+            // Driver mutation analysis
+            if (driverMutation === 'hras') {
+                analysis += `
+                    <div class="alert alert-success">
+                        <strong>HRAS-mutated Spitz Tumor</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li>Profilo genomico: gain 11p come unica aberrazione (tipico)</li>
+                            <li><strong>Comportamento:</strong> Low-risk profile</li>
+                            <li>Morfologia associata: dome-shaped intradermal lesion</li>
+                            <li><strong>Conclusione:</strong> Comportamento biologico benigno atteso</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (pag 254)
+                        </div>
+                    </div>
+                `;
+            } else if (driverMutation === 'kinase_fusion') {
+                analysis += `
+                    <div class="alert alert-info">
+                        <strong>Kinase Fusion-driven Spitz Tumor</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li>Fusioni: ALK, ROS1, RET, NTRK1, BRAF (60% Spitz tumors)</li>
+                            <li>Meccanismo: attivazione costitutiva MAP kinase/PI3K/STAT</li>
+                            <li><strong>Comportamento:</strong> Low-to-intermediate risk nella maggioranza</li>
+                            <li><strong>Attenzione:</strong> Valutare presenza di CDKN2A loss come evento secondario</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (pag 254)
+                        </div>
+                    </div>
+                `;
+            } else if (driverMutation === 'map3k8') {
+                analysis += `
+                    <div class="alert alert-warning">
+                        <strong>MAP3K8 Fusion/Truncation</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li>Driver più comune in melanoma spitzoide pediatrico (33%)</li>
+                            <li>Partner 3' più frequente: SVIL (46% - Houlier 2020)</li>
+                            <li><strong>CDKN2A inactivation:</strong> 77% casi atipici/maligni (Houlier 2020)</li>
+                            <li><strong>Features morfologiche:</strong> ulcerazione 32%, giant multinucleated cells</li>
+                            <li><strong>Target terapeutico:</strong> Risposta a MEK inhibitors (Newman 2019)</li>
+                            <li><strong>⚠️ Comportamento variabile:</strong> Richiede correlazione clinico-patologica stretta</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Newman S et al. Nat Med 2019;25:597-602<br>
+                            📚 Houlier A et al. Mod Pathol 2020;33:846-857
+                        </div>
+                    </div>
+                `;
+            } else if (driverMutation === 'braf_bap1') {
+                analysis += `
+                    <div class="alert alert-warning">
+                        <strong>BRAF V600E + BAP1 loss</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li>Subset: BRAF V600E + BAP1 loss biallelic</li>
+                            <li>Morfologia: intradermal dome-shaped</li>
+                            <li><strong>BAP1 germline:</strong> Causa atypical Spitz tumors</li>
+                            <li><strong>⚠️ Nota critica:</strong> Bastian 2014 "not clear-cut melanoma" da solo</li>
+                            <li><strong>Comportamento:</strong> Potenziale intermedio, serve follow-up</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (pag 254)
+                        </div>
+                    </div>
+                `;
+            } else if (driverMutation === 'tert') {
+                analysis += `
+                    <div class="alert alert-danger">
+                        <strong>⚠️ TERT Promoter Mutation - Criterio Solido Malignità</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li><strong>Epidemiologia:</strong> 85% metastasi vs 0% nevi (Bastian 2014, pag 250-251)</li>
+                            <li><strong>Significato:</strong> "Emerging as critical barrier" nella progressione maligna</li>
+                            <li><strong>Presente in:</strong> 33% melanomi primari</li>
+                            <li><strong>⚠️ NON override assoluto:</strong> Richiede correlazione clinica</li>
+                            <li><strong>Interpretazione:</strong> Indicatore robusto ma non matematico di malignità</li>
+                            <li><strong>Azione consigliata:</strong> Diagnosi di melanoma in contesto clinico-patologico appropriato</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (pag 250-251)
+                        </div>
+                    </div>
+                `;
+            } else if (driverMutation === 'gnaq_gna11') {
+                analysis += `
+                    <div class="alert alert-info">
+                        <strong>GNAQ/GNA11 Mutation (Q209)</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li>Caratteristico di: blue nevi, uveal melanoma</li>
+                            <li>Meccanismo: loss of GTPase activity</li>
+                            <li><strong>Contesto clinico:</strong> NON tipico di Spitz melanoma</li>
+                            <li><strong>Nota:</strong> Se presente in lesione spitzoide → considerare diagnosi alternativa</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (pag 262-263)
+                        </div>
+                    </div>
+                `;
+            } else if (driverMutation === 'cdkn2a_only') {
+                analysis += `
+                    <div class="alert alert-warning">
+                        <strong>CDKN2A (p16) Loss Isolato</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li><strong>⚠️ NON diagnostico da solo</strong> (Bastian 2014, pag 243-244)</li>
+                            <li>Evento secondario oncogenico presente in:</li>
+                            <ul style="margin: 0.3rem 0 0 1.5rem;">
+                                <li>All melanoma types</li>
+                                <li>Dysplastic nevi</li>
+                                <li>Atypical Spitz tumors</li>
+                            </ul>
+                            <li><strong>Interpretazione:</strong> Marker di atipia, non sufficiente per diagnosi melanoma</li>
+                            <li><strong>Contesto MAP3K8:</strong> 77% inactivation in casi atipici/maligni (Houlier 2020)</li>
+                            <li><strong>Azione:</strong> Considerare nel contesto di altri criteri morfologici e genetici</li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (Table 3, pag 243-244)<br>
+                            📚 Houlier A et al. Mod Pathol 2020;33:846-857
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // CNA Profile analysis
+            if (cnaProfile === 'single_gain') {
+                analysis += `
+                    <div class="alert alert-success">
+                        <strong>CNA Profile: Single Copy Number Gain</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li>Profilo genomico stabile</li>
+                            <li><strong>Tipico di:</strong> HRAS-mutated Spitz (gain 11p)</li>
+                            <li><strong>Interpretazione:</strong> Low-risk biological behavior</li>
+                        </ul>
+                    </div>
+                `;
+            } else if (cnaProfile === 'multiple_cna') {
+                analysis += `
+                    <div class="alert alert-danger">
+                        <strong>CNA Profile: Multiple Copy Number Aberrations</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li><strong>⚠️ Red flag genomico</strong></li>
+                            <li>Instabilità genomica (Bastian 2014, pag 259)</li>
+                            <li>Tipico di: acral/mucosal melanomas (avg 5 amplifications)</li>
+                            <li><strong>Interpretazione:</strong> Forte indicatore malignità</li>
+                            <li><strong>⚠️ Incompatibile con diagnosi Spitz benigno</strong></li>
+                        </ul>
+                        <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
+                            📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (pag 259)
+                        </div>
+                    </div>
+                `;
+            } else if (cnaProfile === 'chr_6_loss') {
+                analysis += `
+                    <div class="alert alert-danger">
+                        <strong>CNA Profile: Chromosome 6 Loss</strong>
+                        <ul style="margin: 0.5rem 0 0 1.2rem;">
+                            <li><strong>⚠️ Marker established di malignità</strong></li>
+                            <li>Associato a progressione melanoma</li>
+                            <li><strong>Interpretazione:</strong> Fortemente suggestivo comportamento maligno</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('bastianAnalysis').innerHTML = analysis;
+        }
+
+        function generateSummary(total, scores) {
+            const driverMutation = document.getElementById('bastian_driver').value;
+            const cnaProfile = document.getElementById('bastian_cna').value;
+
+            let summary = '<div class="section-title">📋 Sommario Integrato</div>';
+            
+            summary += `<div class="alert alert-info">
+                <strong>Score Morfologico:</strong> ${total}/100<br>
+                <strong>Driver Mutation:</strong> ${driverMutation || 'Non disponibile'}<br>
+                <strong>CNA Profile:</strong> ${cnaProfile || 'Non disponibile'}
+            </div>`;
+
+            // Integrazione morfologia + genetica
+            let finalDiagnosis = '';
+            let confidence = '';
+
+            if (driverMutation === 'tert' || cnaProfile === 'multiple_cna' || cnaProfile === 'chr_6_loss') {
+                finalDiagnosis = '⚠️ MELANOMA - Criteri solidi genetici presenti';
+                confidence = 'Alta (genomica supporta malignità)';
+            } else if (total >= 71) {
+                finalDiagnosis = 'Spitzoid Melanoma (morfologia)';
+                confidence = driverMutation ? 'Moderata-Alta' : 'Moderata (solo morfologia)';
+            } else if (total >= 51) {
+                finalDiagnosis = 'Atypical Spitz Tumor with concerning features';
+                confidence = 'Moderata (genomica raccomandata)';
+            } else if (driverMutation === 'hras' && cnaProfile === 'single_gain') {
+                finalDiagnosis = 'Spitz Nevus (HRAS low-risk profile)';
+                confidence = 'Alta (morfologia + genetica concordanti)';
+            } else if (total <= 30 && !driverMutation) {
+                finalDiagnosis = 'Spitz Nevus';
+                confidence = 'Moderata-Alta';
+            } else {
+                finalDiagnosis = 'Atypical Spitz Tumor';
+                confidence = 'Moderata';
+            }
+
+            summary += `<div class="alert alert-warning">
+                <strong>Diagnosi Finale Integrata:</strong> ${finalDiagnosis}<br>
+                <strong>Livello di Confidenza:</strong> ${confidence}<br><br>
+                <strong>⚠️ REMINDER:</strong> Diagnosi finale richiede correlazione clinica, revisione morfologica esperta, 
+                e contestualizzazione del caso specifico. Tool è ausilio decisionale, non sostituisce giudizio del patologo.
+            </div>`;
+
+            document.getElementById('summaryContent').innerHTML = summary;
+        }
+
+        // ========== BIBLIOGRAFIA FUNCTIONS ==========
+        function renderBibliography() {
+            const container = document.getElementById('bibliographyCards');
+            container.innerHTML = '';
+            
+            bibliography.forEach(bib => {
+                const card = document.createElement('div');
+                card.className = 'bib-card';
+                card.dataset.category = bib.category;
+                card.dataset.id = bib.id;
+                
+                card.innerHTML = `
+                    <div class="bib-header" onclick="toggleBibCard('${bib.id}')">
+                        <div class="bib-citation">
+                            <strong>${bib.authors}</strong> (${bib.year}). 
+                            ${bib.title}.
+                            <em>${bib.journal}</em>${bib.volume ? ` ${bib.volume}` : ''}${bib.pages ? `:${bib.pages}` : ''}.
+                        </div>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                    
+                    <div class="bib-content">
+                        <div class="bib-findings">
+                            <strong>Key Findings:</strong> ${bib.keyFindings}
+                        </div>
+                        
+                        <div class="bib-chips">
+                            <span class="chip chip-${bib.category === 'genetica' ? 'ok' : bib.category === 'morfologia' ? 'warn' : 'info'}">
+                                ${bib.category.charAt(0).toUpperCase() + bib.category.slice(1)}
+                            </span>
+                            ${bib.supportedCriteria.map(c => `<span class="chip">${c}</span>`).join('')}
+                        </div>
+                        
+                        <div class="bib-links">
+                            ${bib.doi ? `<a href="https://doi.org/${bib.doi}" target="_blank">📄 DOI</a>` : ''}
+                            ${bib.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${bib.pmid}/" target="_blank">🔬 PubMed</a>` : ''}
+                            ${bib.url && !bib.doi ? `<a href="${bib.url}" target="_blank">🔗 Link</a>` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        function toggleBibCard(id) {
+            const card = document.querySelector(`.bib-card[data-id="${id}"]`);
+            card.classList.toggle('expanded');
+        }
+        
+        function filterBibByCategory(category) {
+            document.querySelectorAll('.bib-filter').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === category);
             });
             
-            caseData.bastian_driver = document.getElementById('bastian_driver').value;
-            caseData.bastian_cna = document.getElementById('bastian_cna').value;
-            
-            localStorage.setItem('spitz_melanoma_case', JSON.stringify(caseData));
-            lastSaveTime = new Date();
-            
-            const card = document.getElementById('inputCard');
-            card.classList.add('has-data');
-            setTimeout(() => card.classList.remove('has-data'), 1000);
-        }
-
-        function loadCase() {
-            const saved = localStorage.getItem('spitz_melanoma_case');
-            if (saved) {
-                const caseData = JSON.parse(saved);
-                
-                allFields.forEach(id => {
-                    const field = document.getElementById(id);
-                    if (field && caseData[id]) {
-                        field.value = caseData[id];
-                    }
-                });
-                
-                if (caseData.bastian_driver) {
-                    document.getElementById('bastian_driver').value = caseData.bastian_driver;
+            document.querySelectorAll('.bib-card').forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
                 }
-                if (caseData.bastian_cna) {
-                    document.getElementById('bastian_cna').value = caseData.bastian_cna;
-                }
-                
-                updateProgressIndicator();
-                updateCompletionStatus();
-                showNotification('Caso caricato automaticamente', 'success');
-            }
+            });
         }
-
-        function newCase() {
-            if (confirm('Sei sicuro di voler creare un nuovo caso? I dati non salvati andranno persi.')) {
-                localStorage.removeItem('spitz_melanoma_case');
-                resetForm();
-                showNotification('Nuovo caso creato', 'success');
-            }
-        }
-
-        function showAutoSaveStatus() {
-            const status = lastSaveTime ? 
-                `Ultimo salvataggio: ${lastSaveTime.toLocaleTimeString()}` : 
-                'Nessun salvataggio automatico ancora effettuato';
-            showNotification(status, 'info');
-        }
-
-        // ========== NOTIFICATION SYSTEM ==========
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const icon = document.getElementById('notificationIcon');
-            const text = document.getElementById('notificationText');
+        
+        function filterBibliography() {
+            const search = document.getElementById('bibSearch').value.toLowerCase();
             
-            switch(type) {
-                case 'success':
-                    icon.textContent = '✅';
-                    break;
-                case 'warning':
-                    icon.textContent = '⚠️';
-                    break;
-                case 'error':
-                    icon.textContent = '❌';
-                    break;
-                default:
-                    icon.textContent = 'ℹ️';
-            }
+            document.querySelectorAll('.bib-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(search) ? 'block' : 'none';
+            });
+        }
+        
+        function exportBibTeX() {
+            let bibtex = '';
+            bibliography.forEach(bib => {
+                bibtex += bib.bibtex + '\n\n';
+            });
             
-            text.textContent = message;
-            notification.className = `notification ${type} show`;
+            const blob = new Blob([bibtex], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'spitz_melanoma_bibliography.bib';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function showBibCard(id) {
+            // Switch to bibliography tab
+            const bibTab = Array.from(document.querySelectorAll('.tab')).find(t => t.onclick.toString().includes('bibliography'));
+            if (bibTab) bibTab.click();
             
             setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
-        }
-
-        // ========== COMPLETION STATUS ==========
-        function updateCompletionStatus() {
-            const criticalCount = criticalFields.filter(id => {
-                const field = document.getElementById(id);
-                return field && field.value;
-            }).length;
-            
-            const optionalCount = optionalFields.filter(id => {
-                const field = document.getElementById(id);
-                return field && field.value;
-            }).length;
-            
-            const totalCritical = criticalFields.length;
-            const totalOptional = optionalFields.length;
-            
-            const completion = Math.round(
-                (criticalCount / totalCritical) * 70 + 
-                (optionalCount / totalOptional) * 30
-            );
-            
-            document.getElementById('completionFill').style.width = `${completion}%`;
-            document.getElementById('completionText').textContent = `${completion}% completato`;
-        }
-
-        // ========== EXAMPLE CASES ==========
-        function fillExample(type) {
-            const examples = {
-                spitz: {
-                    age: 'child',
-                    asymmetry: 'symmetric',
-                    maturation: 'complete',
-                    morphology: 'monomorphic',
-                    mitoses_count: 'low',
-                    mitoses_location: 'peripheral',
-                    atypical_mitoses: 'absent',
-                    infiltration: 'circumscribed',
-                    spreading_pattern: 'absent',
-                    p16: 'present',
-                    ki67_count: 'low',
-                    ki67_location: 'peripheral',
-                    ulceration: 'absent',
-                    regression: 'absent'
-                },
-                melanoma: {
-                    age: 'elderly',
-                    asymmetry: 'marked',
-                    maturation: 'absent',
-                    morphology: 'marked',
-                    mitoses_count: 'high',
-                    mitoses_location: 'deep',
-                    atypical_mitoses: 'present',
-                    infiltration: 'infiltrative',
-                    spreading_pattern: 'diffuse',
-                    p16: 'loss',
-                    ki67_count: 'high',
-                    ki67_location: 'deep',
-                    ulceration: 'present',
-                    regression: 'extensive'
-                },
-                atypical: {
-                    age: 'adult',
-                    asymmetry: 'partial',
-                    maturation: 'incomplete',
-                    morphology: 'moderate',
-                    mitoses_count: 'moderate',
-                    mitoses_location: 'peripheral',
-                    atypical_mitoses: 'rare',
-                    infiltration: 'partial',
-                    spreading_pattern: 'partial',
-                    p16: 'partial',
-                    ki67_count: 'intermediate',
-                    ki67_location: 'central',
-                    ulceration: 'absent',
-                    regression: 'focal'
+                const card = document.querySelector(`.bib-card[data-id="${id}"]`);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.classList.add('expanded');
                 }
-            };
-            
-            const example = examples[type];
-            if (!example) return;
-            
-            Object.keys(example).forEach(id => {
-                const field = document.getElementById(id);
-                if (field) field.value = example[id];
-            });
-            
-            updateProgressIndicator();
-            updateCompletionStatus();
-            showNotification(`Esempio ${type} caricato`, 'success');
-        }
-
-        // ========== PDF EXPORT ==========
-        function exportCasePDF() {
-            if (!currentDiagnosis) {
-                showNotification('Calcola prima la diagnosi per esportare il PDF', 'warning');
-                return;
-            }
-
-            showNotification('Generazione PDF in corso...', 'info');
-
-            // Generate PDF content
-            const pdfHTML = generatePDFContent();
-            
-            // Create temporary container
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = pdfHTML;
-            tempDiv.style.padding = '20px';
-            tempDiv.style.fontFamily = 'system-ui, sans-serif';
-            tempDiv.style.color = '#1f2937';
-            document.body.appendChild(tempDiv);
-
-            // PDF options
-            const opt = {
-                margin: [15, 15, 15, 15],
-                filename: `Spitz_Melanoma_Report_${new Date().toISOString().split('T')[0]}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            // Generate PDF
-            html2pdf().set(opt).from(tempDiv).save().then(() => {
-                document.body.removeChild(tempDiv);
-                showNotification('PDF esportato con successo!', 'success');
-            }).catch((error) => {
-                document.body.removeChild(tempDiv);
-                console.error('PDF export error:', error);
-                showNotification('Errore durante l\'esportazione PDF', 'error');
-            });
-        }
-
-        function generatePDFContent() {
-            const inputs = {};
-            allFields.forEach(id => {
-                const field = document.getElementById(id);
-                inputs[id] = field ? field.value : '';
-            });
-
-            const bastianDriver = document.getElementById('bastian_driver').value;
-            const bastianCNA = document.getElementById('bastian_cna').value;
-
-            let html = `
-                <div class="pdf-header">
-                    <h1>🧬 Filippo's Diagnostic Algorithm</h1>
-                    <p class="subtitle">Spitz vs Melanoma - Report Diagnostico</p>
-                    <p style="font-size: 0.8rem; color: #6b7280; margin-top: 0.5rem;">
-                        Generato il: ${new Date().toLocaleString('it-IT')} | v3.2
-                    </p>
-                </div>
-
-                <div class="pdf-section">
-                    <h2>📊 Diagnosi Morfologica</h2>
-                    <div style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
-                        <strong style="font-size: 1.2rem;">${currentDiagnosis}</strong>
-                        <div style="margin-top: 0.5rem; font-family: monospace; font-size: 0.9rem;">
-                            Diagnostic Score: ${currentScore} punti<br>
-                            <span style="color: #16a34a;">✅ ${currentFlags.green.length} green flags</span> | 
-                            <span style="color: #d97706;">⚠️ ${currentFlags.yellow.length} yellow flags</span> | 
-                            <span style="color: #dc2626;">🚨 ${currentFlags.red.length} red flags</span>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 1rem;">
-                        <h3 style="font-size: 1rem; color: #16a34a; margin-bottom: 0.5rem;">✅ Green Flags:</h3>
-                        <ul style="margin-left: 1.5rem; line-height: 1.6;">
-                            ${currentFlags.green.map(f => `<li>${f}</li>`).join('')}
-                        </ul>
-                    </div>
-
-                    <div style="margin-top: 1rem;">
-                        <h3 style="font-size: 1rem; color: #d97706; margin-bottom: 0.5rem;">⚠️ Yellow Flags:</h3>
-                        <ul style="margin-left: 1.5rem; line-height: 1.6;">
-                            ${currentFlags.yellow.length > 0 ? currentFlags.yellow.map(f => `<li>${f}</li>`).join('') : '<li>Nessun yellow flag</li>'}
-                        </ul>
-                    </div>
-
-                    <div style="margin-top: 1rem;">
-                        <h3 style="font-size: 1rem; color: #dc2626; margin-bottom: 0.5rem;">🚨 Red Flags:</h3>
-                        <ul style="margin-left: 1.5rem; line-height: 1.6;">
-                            ${currentFlags.red.length > 0 ? currentFlags.red.map(f => `<li>${f}</li>`).join('') : '<li>Nessun red flag</li>'}
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="pdf-section" style="page-break-before: always;">
-                    <h2>📋 Dati Morfologici Compilati</h2>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Età</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('age', inputs.age)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Asimmetria</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('asymmetry', inputs.asymmetry)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Maturazione A→B→C</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('maturation', inputs.maturation)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Morfologia Citologica</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('morphology', inputs.morphology)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Mitosi Count</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('mitoses_count', inputs.mitoses_count)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Mitosi Location</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('mitoses_location', inputs.mitoses_location)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Mitosi Atipiche</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('atypical_mitoses', inputs.atypical_mitoses)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Infiltrazione</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('infiltration', inputs.infiltration)}</td>
-                        </tr>
-                        ${inputs.spreading_pattern ? `
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Spreading</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('spreading_pattern', inputs.spreading_pattern)}</td>
-                        </tr>` : ''}
-                        ${inputs.p16 ? `
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">p16</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('p16', inputs.p16)}</td>
-                        </tr>` : ''}
-                        ${inputs.ki67_count ? `
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Ki-67</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('ki67_count', inputs.ki67_count)} (${getFieldLabel('ki67_location', inputs.ki67_location)})</td>
-                        </tr>` : ''}
-                        ${inputs.ulceration ? `
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Ulcerazione</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('ulceration', inputs.ulceration)}</td>
-                        </tr>` : ''}
-                        ${inputs.regression ? `
-                        <tr style="border-bottom: 1px solid #e8eaed;">
-                            <td style="padding: 0.5rem; font-weight: 600;">Regressione</td>
-                            <td style="padding: 0.5rem;">${getFieldLabel('regression', inputs.regression)}</td>
-                        </tr>` : ''}
-                    </table>
-                </div>
-
-                ${bastianDriver && bastianCNA ? `
-                <div class="pdf-section">
-                    <h2>🧬 Stratificazione Genetica (Bastian)</h2>
-                    <div style="background: #f3f4f6; padding: 1rem; border-radius: 0.5rem;">
-                        <strong>Driver Mutazionale:</strong> ${bastianDriver.toUpperCase()}<br>
-                        <strong>CNA Profile:</strong> ${bastianCNA.toUpperCase()}<br>
-                        <div style="margin-top: 0.8rem; padding: 0.8rem; background: white; border-radius: 0.4rem; border-left: 3px solid #2563eb;">
-                            ${document.getElementById('bastianDiagnosis') ? document.getElementById('bastianDiagnosis').textContent : 'Non calcolato'}
-                        </div>
-                    </div>
-                </div>` : ''}
-
-                <div class="pdf-footer">
-                    <strong>Metodologia:</strong> Massi & Leboit (Ackerman's 3rd Ed. 2016) + Bastian BC (Genomic classification 2024) + Yeh I et al. (MAP3K8 fusions, JAMA Derm 2019)<br>
-                    <strong>Sviluppato da:</strong> Dr. Filippo Bianchi, Director SC Anatomia Patologica, ASST Fatebenefratelli-Sacco, Milano<br>
-                    <strong>Disclaimer:</strong> Tool diagnostico di supporto. La diagnosi definitiva richiede integrazione con giudizio clinico esperto e contestualizzazione del caso. Nessun algoritmo sostituisce l'esperienza del patologo.
-                </div>
-            `;
-
-            return html;
-        }
-
-        function getFieldLabel(fieldId, value) {
-            if (!value) return 'Non specificato';
-            const field = document.getElementById(fieldId);
-            if (!field) return value;
-            
-            const option = Array.from(field.options).find(opt => opt.value === value);
-            return option ? option.text : value;
-        }
-
-        function printSummary() {
-            window.print();
-        }
-
-        // ========== CASE SUMMARY ==========
-        function generateCaseSummary() {
-            const inputs = {};
-            allFields.forEach(id => {
-                const field = document.getElementById(id);
-                inputs[id] = field ? field.value : '';
-            });
-            
-            let summary = `
-                <div class="score-display">
-                    <strong>Sommario del Caso</strong><br>
-                    Generato il: ${new Date().toLocaleString('it-IT')}
-                </div>
-                <div class="explanations">
-                    <h4>Campi Critici Compilati:</h4>
-                    <ul>
-            `;
-            
-            criticalFields.forEach(id => {
-                const field = document.getElementById(id);
-                if (field && field.value) {
-                    const label = field.previousElementSibling.textContent.replace('*', '').trim();
-                    summary += `<li><strong>${label}:</strong> ${field.options[field.selectedIndex].text}</li>`;
-                }
-            });
-            
-            summary += `
-                    </ul>
-                    <h4>Campi Opzionali Compilati:</h4>
-                    <ul>
-            `;
-            
-            optionalFields.forEach(id => {
-                const field = document.getElementById(id);
-                if (field && field.value) {
-                    const label = field.previousElementSibling.textContent;
-                    summary += `<li><strong>${label}:</strong> ${field.options[field.selectedIndex].text}</li>`;
-                }
-            });
-            
-            summary += `
-                    </ul>
-                </div>
-            `;
-            
-            return summary;
-        }
-
-        // ========== PROGRESS INDICATOR ==========
-        function initProgressIndicator() {
-            const indicator = document.getElementById('progressIndicator');
-            criticalFields.forEach((id, index) => {
-                const step = document.createElement('div');
-                step.className = 'progress-step';
-                step.id = `step-${id}`;
-                step.textContent = index + 1;
-                step.setAttribute('aria-label', `Passo critico ${index + 1}`);
-                indicator.appendChild(step);
-            });
-        }
-
-        function updateProgressIndicator() {
-            criticalFields.forEach(id => {
-                const field = document.getElementById(id);
-                const step = document.getElementById(`step-${id}`);
-                
-                if (field && field.value) {
-                    step.classList.add('completed');
-                    step.classList.remove('current');
-                } else {
-                    step.classList.remove('completed');
-                    if (!step.classList.contains('current') && 
-                        !document.querySelector('.progress-step.current')) {
-                        step.classList.add('current');
-                    }
-                }
-            });
-        }
-
-        // ========== VALIDATION ==========
-        function validateForm() {
-            let isValid = true;
-            let firstErrorField = null;
-            
-            criticalFields.forEach(id => {
-                const field = document.getElementById(id);
-                const errorElement = document.getElementById(`${id}-error`);
-                
-                if (field && !field.value) {
-                    field.classList.add('validation-error');
-                    if (errorElement) errorElement.style.display = 'block';
-                    isValid = false;
-                    
-                    if (!firstErrorField) {
-                        firstErrorField = field;
-                    }
-                } else if (field) {
-                    field.classList.remove('validation-error');
-                    if (errorElement) errorElement.style.display = 'none';
-                }
-            });
-            
-            if (firstErrorField) {
-                firstErrorField.focus();
-            }
-            
-            return isValid;
-        }
-
-        function clearValidationErrors() {
-            allFields.forEach(id => {
-                const field = document.getElementById(id);
-                const errorElement = document.getElementById(`${id}-error`);
-                if (field) field.classList.remove('validation-error');
-                if (errorElement) errorElement.style.display = 'none';
-            });
-        }
-
-        // ========== DIAGNOSTIC CALCULATION ==========
-        function calculateDiagnosis() {
-            clearValidationErrors();
-            
-            if (!validateForm()) {
-                showNotification('Compila tutti i campi critici per procedere', 'error');
-                return;
-            }
-
-            const inputs = {};
-            allFields.forEach(id => {
-                const field = document.getElementById(id);
-                inputs[id] = field ? field.value : '';
-            });
-
-            let diagnosticScore = 0;
-            let redFlags = [];
-            let yellowFlags = [];
-            let greenFlags = [];
-            let diagnosis = '';
-            let badgeClass = '';
-
-            // ========== OVERRIDE ASSOLUTI ==========
-            if (inputs.atypical_mitoses === 'present') {
-                diagnosis = '🚨 MELANOMA (OVERRIDE: Mitosi Atipiche)';
-                badgeClass = 'badge-critical';
-                redFlags.push('🚨 MITOSI ATIPICHE = OVERRIDE ASSOLUTO MELANOMA');
-            }
-
-            if (inputs.spreading_pattern === 'diffuse' && inputs.p16 === 'loss') {
-                diagnosis = '🚨 MELANOMA (OVERRIDE: Spreading + p16 loss)';
-                badgeClass = 'badge-critical';
-                redFlags.push('🚨 Spreading diffuso + p16 loss completa = OVERRIDE MELANOMA');
-            }
-
-            // ========== WEIGHTED SCORING ==========
-            if (!diagnosis) {
-                if (inputs.age === 'child') {
-                    greenFlags.push('Età < 20 anni (Spitz più probabile - bias epidemiologico)');
-                } else if (inputs.age === 'young' || inputs.age === 'adult') {
-                    yellowFlags.push(`Età ${inputs.age === 'young' ? '20-40' : '40-60'} anni (zona grigia)`);
-                } else if (inputs.age === 'elderly') {
-                    redFlags.push('Età > 60 anni (melanoma più probabile - bias epidemiologico)');
-                    diagnosticScore += 1;
-                }
-
-                if (inputs.asymmetry === 'marked') {
-                    diagnosticScore += diagnosticWeights.marked_asymmetry;
-                    redFlags.push(`Asimmetria marcata <span class="weight-indicator">[+${diagnosticWeights.marked_asymmetry}]</span>`);
-                } else if (inputs.asymmetry === 'symmetric') {
-                    greenFlags.push('Lesione simmetrica');
-                }
-
-                if (inputs.maturation === 'absent') {
-                    diagnosticScore += diagnosticWeights.maturation_absent;
-                    redFlags.push(`🚨 Maturazione assente/invertita (CRITICAL) <span class="weight-indicator">[+${diagnosticWeights.maturation_absent}]</span>`);
-                } else if (inputs.maturation === 'complete') {
-                    greenFlags.push('Maturazione A→B→C completa (>80%)');
-                } else if (inputs.maturation === 'incomplete') {
-                    yellowFlags.push('Maturazione incompleta (40-80%)');
-                }
-
-                if (inputs.morphology === 'marked') {
-                    diagnosticScore += diagnosticWeights.marked_pleomorphism;
-                    redFlags.push(`Pleomorfismo marcato <span class="weight-indicator">[+${diagnosticWeights.marked_pleomorphism}]</span>`);
-                } else if (inputs.morphology === 'moderate') {
-                    diagnosticScore += diagnosticWeights.moderate_pleomorphism;
-                    yellowFlags.push(`Pleomorfismo moderato <span class="weight-indicator">[+${diagnosticWeights.moderate_pleomorphism}]</span>`);
-                } else if (inputs.morphology === 'monomorphic') {
-                    greenFlags.push('Citologia monomorfa');
-                }
-
-                if (inputs.mitoses_count === 'high') {
-                    diagnosticScore += diagnosticWeights.high_mitoses;
-                    redFlags.push(`≥6 mitosi/mm² <span class="weight-indicator">[+${diagnosticWeights.high_mitoses}]</span>`);
-                } else if (inputs.mitoses_count === 'low') {
-                    greenFlags.push('< 3 mitosi/mm² (basso count)');
-                }
-
-                if (inputs.mitoses_location === 'deep') {
-                    if (inputs.mitoses_count === 'moderate' || inputs.mitoses_count === 'high') {
-                        const weight = inputs.mitoses_count === 'high' ? 
-                            diagnosticWeights.mitoses_deep_high : 
-                            diagnosticWeights.mitoses_deep_moderate;
-                        diagnosticScore += weight;
-                        redFlags.push(`🚨 Mitosi profonde + count ${inputs.mitoses_count} (SEMI-OVERRIDE) <span class="weight-indicator">[+${weight}]</span>`);
-                    }
-                } else if (inputs.mitoses_location === 'peripheral' && inputs.mitoses_count === 'moderate') {
-                    greenFlags.push('Mitosi periferiche (OK per Spitz in growth phase)');
-                }
-
-                if (inputs.infiltration === 'infiltrative') {
-                    diagnosticScore += diagnosticWeights.infiltrative;
-                    redFlags.push(`Pattern marcatamente infiltrativo <span class="weight-indicator">[+${diagnosticWeights.infiltrative}]</span>`);
-                } else if (inputs.infiltration === 'circumscribed') {
-                    greenFlags.push('Pattern di crescita circoscritto');
-                }
-
-                if (inputs.spreading_pattern === 'absent') {
-                    greenFlags.push('Spreading intraepidermico assente/focale');
-                } else if (inputs.spreading_pattern === 'diffuse') {
-                    redFlags.push('Spreading diffuso (sospetto)');
-                }
-
-                if (inputs.p16 === 'present') {
-                    greenFlags.push('p16 mantenuto');
-                } else if (inputs.p16 === 'loss') {
-                    yellowFlags.push('p16 perdita completa (attenzione)');
-                }
-
-                if (inputs.ki67_count === 'high' && inputs.ki67_location === 'deep') {
-                    diagnosticScore += diagnosticWeights.ki67_deep;
-                    redFlags.push(`🚨 Ki-67 alto (>15%) PROFONDO (SEMI-OVERRIDE) <span class="weight-indicator">[+${diagnosticWeights.ki67_deep}]</span>`);
-                } else if (inputs.ki67_count === 'high' && inputs.ki67_location === 'peripheral') {
-                    greenFlags.push('Ki-67 alto periferico (OK per growth phase Spitz)');
-                } else if (inputs.ki67_count === 'low') {
-                    greenFlags.push('Ki-67 basso (<5%)');
-                }
-
-                if (inputs.ulceration === 'present') {
-                    diagnosticScore += diagnosticWeights.ulceration;
-                    redFlags.push(`Ulcerazione presente <span class="weight-indicator">[+${diagnosticWeights.ulceration}]</span>`);
-                } else if (inputs.ulceration === 'absent') {
-                    greenFlags.push('Ulcerazione assente');
-                }
-
-                if (inputs.regression === 'extensive') {
-                    diagnosticScore += diagnosticWeights.regression_extensive;
-                    yellowFlags.push(`Regressione estesa (cautela) <span class="weight-indicator">[+${diagnosticWeights.regression_extensive}]</span>`);
-                } else if (inputs.regression === 'absent') {
-                    greenFlags.push('Regressione assente');
-                }
-
-                // ========== DIAGNOSI BASATA SU SCORE ==========
-                if (diagnosticScore >= 7) {
-                    diagnosis = '🚨 MELANOMA PROBABILE';
-                    badgeClass = 'badge-high';
-                } else if (diagnosticScore >= 4) {
-                    diagnosis = '⚠️ SPITZ ATIPICO / AST';
-                    badgeClass = 'badge-mid';
-                } else if (diagnosticScore >= 2) {
-                    diagnosis = '⚠️ BORDERLINE (Richiede Revisione)';
-                    badgeClass = 'badge-mid';
-                } else if (greenFlags.length >= 4) {
-                    diagnosis = '✅ SPITZ BENIGNO';
-                    badgeClass = 'badge-low';
-                } else {
-                    diagnosis = '⚠️ INDETERMINATO';
-                    badgeClass = 'badge-mid';
-                }
-            }
-
-            // Store for PDF export
-            currentDiagnosis = diagnosis;
-            currentScore = diagnosticScore;
-            currentFlags = { red: redFlags, yellow: yellowFlags, green: greenFlags };
-
-            // ========== AGE CONTEXT WARNING ==========
-            let ageContext = '';
-            if (inputs.age === 'child') {
-                if (diagnosis.includes('MELANOMA')) {
-                    ageContext = `
-                        <div style="background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 0.6rem; padding: 0.8rem; margin-bottom: 1rem; font-size: 0.8rem; line-height: 1.5;">
-                            <strong>⚠️ AGE CONTEXT:</strong> Paziente &lt; 20 anni. Melanoma è <strong>RARISSIMO</strong> in questa fascia d'età (incidenza <1%). 
-                            Se il pattern morfologico ha caratteristiche "Spitz-like", <strong>riconsiderare fortemente diagnosi di Spitz o Wiesner tumor</strong> prima di refertare melanoma. 
-                            NGS fortemente consigliato per escludere criteri duri (TERT promoter, CDKN2A loss). 
-                            <em>Basato su epidemiologia (Massi & Leboit 2016).</em>
-                        </div>
-                    `;
-                }
-            } else if (inputs.age === 'elderly') {
-                if (diagnosis.includes('SPITZ') && diagnosis.includes('BENIGNO')) {
-                    ageContext = `
-                        <div style="background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 0.6rem; padding: 0.8rem; margin-bottom: 1rem; font-size: 0.8rem; line-height: 1.5;">
-                            <strong>⚠️ AGE CONTEXT:</strong> Paziente &gt; 60 anni. Spitz classico è <strong>RARO</strong> in questa fascia d'età. 
-                            Se lesione è de novo su sun-damaged skin, <strong>riconsiderare melanoma</strong> anche se il pattern morfologico è "Spitz-like". 
-                            NGS fortemente consigliato: TERT promoter e CDKN2A loss sono criteri duri che prevalgono sulla morfologia. 
-                            <em>Bastian 2024: genotipo vince su morfologia.</em>
-                        </div>
-                    `;
-                }
-            }
-
-            // ========== RENDER RESULTS ==========
-            document.getElementById('emptyState').style.display = 'none';
-            document.getElementById('morphResult').classList.add('active');
-
-            document.getElementById('morphDiagnosis').innerHTML = `
-                ${diagnosis}
-                <span class="badge ${badgeClass}">
-                    ${redFlags.length} red | ${yellowFlags.length} yellow | ${greenFlags.length} green
-                </span>
-            `;
-
-            document.getElementById('scoreDisplay').innerHTML = `
-                <strong>Diagnostic Score:</strong> ${diagnosticScore} punti
-                <br>
-                <small style="color: var(--text-muted);">
-                    Soglie: ≥7 = Melanoma | 4-6 = Atipico/AST | 2-3 = Borderline | <2 + green flags = Spitz benigno
-                </small>
-            `;
-
-            document.getElementById('morphExplanations').innerHTML = `
-                ${ageContext}
-                <ul>
-                    ${greenFlags.map(f => `<li style="color: var(--ok);">✅ ${f}</li>`).join('')}
-                    ${yellowFlags.map(f => `<li style="color: var(--warn);">⚠️ ${f}</li>`).join('')}
-                    ${redFlags.map(f => `<li style="color: var(--danger);">🚨 ${f}</li>`).join('')}
-                </ul>
-            `;
-
-            document.getElementById('caseSummary').innerHTML = generateCaseSummary();
-            showNotification('Diagnosi calcolata con successo', 'success');
-            saveCase();
-        }
-
-        // ========== BASTIAN CLASSIFICATION ==========
-        function applyBastian() {
-            const driver = document.getElementById('bastian_driver').value;
-            const cna = document.getElementById('bastian_cna').value;
-
-            if (!driver || !cna) {
-                showNotification('Seleziona sia Driver Mutazionale che CNA Profile', 'error');
-                return;
-            }
-
-            let diagnosis = '';
-            let explanation = '';
-            let chipClass = 'chip-danger';
-
-            if (driver === 'tert_promoter') {
-                diagnosis = '🚨 MELANOMA SPITZOIDE (Criterio Duro: TERT promoter)';
-                explanation = `<strong>TERT promoter mutation</strong> è un <strong>criterio duro</strong>: indica melanoma indipendentemente dalla morfologia "Spitz-like".`;
-                chipClass = 'chip-danger';
-            } else if (driver === 'cdkn2a_loss') {
-                if (cna === 'complex') {
-                    diagnosis = '🚨 MELANOMA SPITZOIDE (Criterio Duro: CDKN2A loss + CNA complex)';
-                    explanation = `<strong>CDKN2A loss</strong> + CNA complessi = <strong>criterio duro</strong> per melanoma.`;
-                } else {
-                    diagnosis = '⚠️ AST HIGH-RISK (CDKN2A loss, CNA non complex)';
-                    explanation = `CDKN2A loss senza CNA complessi = profilo intermedio-alto rischio.`;
-                    chipClass = 'chip-warn';
-                }
-            } else if (['braf_v600', 'nras_q61', 'nf1_loss'].includes(driver)) {
-                diagnosis = '🚨 MELANOMA (Genotipo Definitivo)';
-                const driverName = driver === 'braf_v600' ? 'BRAF V600E/K' : 
-                                   driver === 'nras_q61' ? 'NRAS Q61' : 'NF1 loss';
-                explanation = `<strong>${driverName}</strong> è un driver mutazionale di <strong>melanoma convenzionale</strong>.`;
-                chipClass = 'chip-danger';
-            } else if (driver === 'map3k8_fusion') {
-                if (cna === 'complex') {
-                    diagnosis = '🚨 MELANOMA SPITZOIDE (MAP3K8 + CNA complex)';
-                    explanation = `<strong>MAP3K8 fusion</strong> + CNA complessi = comportamento <strong>melanoma-like</strong>.`;
-                } else {
-                    diagnosis = '⚠️ AST HIGH-RISK (MAP3K8 fusion)';
-                    explanation = `<strong>MAP3K8 fusion</strong> anche senza CNA complessi conferisce <strong>alto rischio biologico</strong>.`;
-                    chipClass = 'chip-warn';
-                }
-            } else if (driver === 'braf_fusion') {
-                if (cna === 'complex') {
-                    diagnosis = '🚨 AST INTERMEDIATE-HIGH RISK (BRAF-fusion + CNA complex)';
-                    explanation = `<strong>BRAF-fusion</strong> + CNA complessi = comportamento <strong>intermedio-alto rischio</strong>.`;
-                    chipClass = 'chip-warn';
-                } else if (cna === 'limited') {
-                    diagnosis = '⚠️ AST LOW-INTERMEDIATE RISK (BRAF-fusion + CNA limitati)';
-                    explanation = `BRAF-fusion + CNA limitati = profilo <strong>low-intermediate risk</strong>.`;
-                    chipClass = 'chip-warn';
-                } else {
-                    diagnosis = '✅ SPITZ CON BRAF-FUSION (Low-risk)';
-                    explanation = `BRAF-fusion + CNA calmo = <strong>low-risk Spitz</strong>.`;
-                    chipClass = 'chip-ok';
-                }
-            } else if (driver === 'hras_mut' && cna === 'none') {
-                diagnosis = '✅ SPITZ BENIGNO ZERO-RISK (HRAS-mutated)';
-                explanation = `<strong>HRAS-mutated</strong> + CNA calmo = <strong>Spitz classico con prognosi eccellente</strong>.`;
-                chipClass = 'chip-ok';
-            } else if (['alk_fusion', 'ros1_fusion', 'ret_fusion', 'ntrk_fusion'].includes(driver) && cna === 'none') {
-                const fusionName = driver === 'alk_fusion' ? 'ALK' : 
-                                   driver === 'ros1_fusion' ? 'ROS1' : 
-                                   driver === 'ret_fusion' ? 'RET' : 'NTRK1/3';
-                diagnosis = '✅ SPITZ BENIGNO CON FUSIONE (Low-risk)';
-                explanation = `<strong>${fusionName} fusion</strong> + CNA calmo = <strong>low-risk Spitz nevus</strong>.`;
-                chipClass = 'chip-ok';
-            } else if (cna === 'limited') {
-                diagnosis = '⚠️ AST LOW-RISK (CNA limitati)';
-                explanation = `CNA limitati + driver Spitz-like = <strong>AST low-risk</strong>.`;
-                chipClass = 'chip-warn';
-            } else {
-                diagnosis = '⚠️ PROFILO ETEROGENEO (Consultare Esperto)';
-                explanation = `Combinazione driver + CNA non standard. <strong>Consultare patologo esperto</strong>.`;
-                chipClass = 'chip-warn';
-            }
-
-            document.getElementById('bastianDiagnosis').innerHTML = diagnosis;
-            document.getElementById('bastianExplanations').innerHTML = `<p>${explanation}</p>`;
-            document.getElementById('bastianChips').innerHTML = `
-                <span class="chip ${chipClass}">Driver: ${driver.toUpperCase()}</span>
-                <span class="chip ${chipClass}">CNA: ${cna}</span>
-            `;
-
-            document.getElementById('bastianSection').style.display = 'none';
-            document.getElementById('bastianResult').style.display = 'block';
-            
-            showNotification('Stratificazione genetica applicata', 'success');
-        }
-
-        function updateBastianPreview() {
-            // Could add real-time preview logic here
+            }, 100);
         }
 
         // ========== TAB SWITCHING ==========
-        function switchTab(e, tabName) {
-            document.querySelectorAll('.tab').forEach(t => {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
             });
             
-            document.querySelectorAll('.tab-content').forEach(t => {
-                t.classList.remove('active');
-                t.setAttribute('aria-hidden', 'true');
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
             });
             
-            e.target.classList.add('active');
-            e.target.setAttribute('aria-selected', 'true');
             document.getElementById(tabName).classList.add('active');
-            document.getElementById(tabName).setAttribute('aria-hidden', 'false');
+            if (event) event.target.classList.add('active');
         }
 
-        // ========== RESET ==========
+        // ========== UTILITY FUNCTIONS ==========
+        function exportPDF() {
+            const element = document.getElementById('result');
+            const opt = {
+                margin: 1,
+                filename: `spitz-melanoma-report-${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
         function resetForm() {
-            if (confirm('Sei sicuro di voler resettare tutti i campi?')) {
-                document.querySelectorAll('select').forEach(s => s.value = '');
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('morphResult').classList.remove('active');
-                document.getElementById('bastianSection').style.display = 'block';
-                document.getElementById('bastianResult').style.display = 'none';
-                
-                document.querySelectorAll('.progress-step').forEach(step => {
-                    step.classList.remove('completed', 'current');
-                });
-                if (document.getElementById('step-age')) {
-                    document.getElementById('step-age').classList.add('current');
-                }
-                
-                clearValidationErrors();
-                updateCompletionStatus();
-                currentDiagnosis = null;
-                currentScore = 0;
-                currentFlags = { red: [], yellow: [], green: [] };
-                showNotification('Form resettato', 'info');
-            }
+            document.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+            document.getElementById('result').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ========== INIT ==========
         document.addEventListener('DOMContentLoaded', function() {
-            initProgressIndicator();
-            initAutoSave();
-            
-            criticalFields.forEach(id => {
-                const field = document.getElementById(id);
-                if (field) {
-                    field.addEventListener('change', function() {
-                        updateProgressIndicator();
-                        updateCompletionStatus();
-                        saveCase();
-                    });
-                }
-            });
-            
-            optionalFields.forEach(id => {
-                const field = document.getElementById(id);
-                if (field) {
-                    field.addEventListener('change', function() {
-                        updateCompletionStatus();
-                        saveCase();
-                    });
-                }
-            });
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        this.click();
-                    }
-                });
-            });
-            
-            updateCompletionStatus();
+            renderBibliography();
         });
     </script>
 </body>
