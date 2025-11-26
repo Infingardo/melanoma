@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.3 - Spitz vs Melanoma</title>
-    <meta name="description" content="Algoritmo diagnostico con scoring pesato - Spitz vs Melanoma + Bastian 2014 stratification + criteri solidi genetici">
+    <title>Filippo's Diagnostic Algorithm v3.6.1 - Spitz vs Melanoma</title>
+    <meta name="description" content="Algoritmo diagnostico Malignancy Score 0-100 per lesioni SPITZOIDI - Spitz vs Melanoma">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
     <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, bastian 2014, MAP3K8, TERT, diagnostic algorithm">
     
     <!-- html2pdf.js for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
     <style>
         :root {
             --bg-main: #f8f9fa;
@@ -577,37 +576,59 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.3</h1>
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.1</h1>
             <div class="subtitle">
-                Scoring pesato morfologia (Massi & LeBoit 2014) + genetica (Bastian 2014) + MAP3K8 (Newman/Houlier 2019-2020)
+                Algoritmo per lesioni SPITZOIDI - Malignancy Score 0-100 intuitivo
             </div>
         </div>
 
         <div class="disclaimer" role="note">
-            <strong>⚠️ v3.3 Updates:</strong> Bibliografia interattiva completa, correzione citazioni (Bastian 2014), terminologia "criteri solidi".<br>
-            <strong>Metodologia:</strong> Massi & LeBoit 2014 (Springer 2nd Ed) + Bastian 2014 (Annu Rev Pathol) + Newman/Houlier 2019-2020 (MAP3K8).<br>
-            <strong>DISCLAIMER PESANTE:</strong> Nessun algoritmo sostituisce l'esperienza del patologo. Diagnosi finale richiede giudizio clinico esperto e contestualizzazione del caso.
+            <strong>⚠️ v3.6 Updates:</strong> Dropdown invertiti per coerenza totale - Valori ALTI = maligno, valori BASSI = benigno.<br>
+            <strong>DISCLAIMER CLINICO:</strong> Tool è ausilio decisionale, non sostituisce esperienza del patologo. Richiede correlazione clinico-patologica.
+        </div>
+
+        <div class="alert alert-warning" style="margin-bottom: 2rem;">
+            <strong>⚠️ PREREQUISITO MORFOLOGICO - LEGGERE PRIMA DELL'USO:</strong><br><br>
+            
+            Questo algoritmo è applicabile <strong>ESCLUSIVAMENTE</strong> a lesioni melanocitiche con <strong>morfologia SPITZOIDE confermata</strong>, caratterizzate da:
+            <ul style="margin: 0.5rem 0 0.5rem 1.5rem; line-height: 1.6;">
+                <li>Cellule epitelioidi e/o fusate</li>
+                <li>Nuclei vescicolosi prominenti con nucleoli evidenti</li>
+                <li>Possibile presenza di cellule giganti multinucleate</li>
+            </ul>
+            
+            <strong style="color: #721c24;">❌ NON UTILIZZARE per:</strong>
+            <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.6;">
+                <li><strong>Nevi melanocitici comuni</strong> (giunzionali, composti, dermici banali)</li>
+                <li><strong>Blue nevi</strong> o altre varianti melanocitiche non-spitzoidi</li>
+                <li><strong>Melanomi convenzionali</strong> (superficial spreading, nodulare, lentiginoso, acrale) senza morfologia spitzoide</li>
+                <li><strong>Lesioni non melanocitiche</strong></li>
+            </ul>
+            
+            <strong style="color: #155724;">✅ WORKFLOW CORRETTO:</strong><br>
+            1. Screening morfologico iniziale → Identificazione morfologia spitzoide<br>
+            2. <strong>Solo se confermata morfologia spitzoide</strong> → Utilizzare questo tool per stratificazione rischio<br>
+            3. Interpretazione risultati in contesto clinico-patologico completo
         </div>
 
         <div class="card">
-            <div class="section-title">📊 Criteri Morfologici (Massi & LeBoit 2014)</div>
-            
+            <div class="section-title">📊 Criteri Morfologici - Punti Malignità (Massi & LeBoit 2014)</div>
             <div class="form-group">
                 <label>
                     Maturazione A→B→C
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (peso x3, max 20 punti). Maturazione A→B→C classica = Spitz nevus. Assenza maturazione = red flag melanoma.
+                            <strong>Criterio critico</strong> (0-20 punti malignità). Maturazione presente = 0 punti (benigno). Assenza = 20 punti (maligno RED FLAG).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="maturation">
-                    <option value="20">Presente e completa (20 punti)</option>
-                    <option value="16">Presente ma parziale (16 punti)</option>
+                    <option value="0">Presente e completa (0 punti - BENIGNO)</option>
+                    <option value="5">Presente ma parziale (5 punti)</option>
                     <option value="11">Dubbia/minima (11 punti)</option>
-                    <option value="5">Assente o invertita (5 punti)</option>
-                    <option value="0">Completamente assente (0 punti - RED FLAG)</option>
+                    <option value="16">Assente o invertita (16 punti)</option>
+                    <option value="20">Completamente assente (20 punti - RED FLAG)</option>
                 </select>
             </div>
 
@@ -616,17 +637,17 @@
                     Simmetria
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio alto</strong> (peso x2, max 15 punti). Spitz tipicamente simmetrico, melanoma asimmetrico.
+                            <strong>Criterio importante</strong> (0-15 punti malignità). Simmetrica = 0 punti (benigno). Asimmetrica = 15 punti (maligno).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="symmetry">
-                    <option value="15">Perfettamente simmetrica (15 punti)</option>
-                    <option value="12">Prevalentemente simmetrica (12 punti)</option>
+                    <option value="0">Perfettamente simmetrica (0 punti - BENIGNO)</option>
+                    <option value="3">Prevalentemente simmetrica (3 punti)</option>
                     <option value="8">Parzialmente asimmetrica (8 punti)</option>
-                    <option value="3">Francamente asimmetrica (3 punti)</option>
-                    <option value="0">Completamente asimmetrica (0 punti)</option>
+                    <option value="12">Francamente asimmetrica (12 punti)</option>
+                    <option value="15">Completamente asimmetrica (15 punti - MALIGNO)</option>
                 </select>
             </div>
 
@@ -635,17 +656,17 @@
                     Circoscrizione
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio alto</strong> (peso x2, max 15 punti). Spitz tipicamente ben circoscritto, melanoma infiltrativo.
+                            <strong>Criterio importante</strong> (0-15 punti malignità). Ben circoscritta = 0 punti (benigno). Infiltrativa = 15 punti (maligno).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="circumscription">
-                    <option value="15">Ben circoscritta (15 punti)</option>
-                    <option value="12">Prevalentemente circoscritta (12 punti)</option>
+                    <option value="0">Ben circoscritta (0 punti - BENIGNO)</option>
+                    <option value="3">Prevalentemente circoscritta (3 punti)</option>
                     <option value="8">Parzialmente infiltrativa (8 punti)</option>
-                    <option value="3">Infiltrazione moderata (3 punti)</option>
-                    <option value="0">Infiltrazione diffusa (0 punti)</option>
+                    <option value="12">Infiltrazione moderata (12 punti)</option>
+                    <option value="15">Infiltrazione diffusa (15 punti - MALIGNO)</option>
                 </select>
             </div>
 
@@ -654,16 +675,16 @@
                     Cellule giganti multinucleate
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Feature spitzoide</strong> (max 10 punti). Cellule giganti con nuclei multipli ordinati = tipico Spitz.
+                            <strong>Feature spitzoide</strong> (0-10 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 10 punti (sospetto).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="giant_cells">
-                    <option value="10">Presenti e tipiche (10 punti)</option>
-                    <option value="7">Presenti focalmente (7 punti)</option>
-                    <option value="4">Rare (4 punti)</option>
-                    <option value="0">Assenti (0 punti)</option>
+                    <option value="0">Presenti e tipiche (0 punti - BENIGNO)</option>
+                    <option value="3">Presenti focalmente (3 punti)</option>
+                    <option value="7">Rare (7 punti)</option>
+                    <option value="10">Assenti (10 punti)</option>
                 </select>
             </div>
 
@@ -672,17 +693,17 @@
                     Mitosi derma profondo
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (peso x2, max 15 punti). Mitosi derma profondo ≥6/mm² = red flag melanoma. Spitz ha mitosi superficiali.
+                            <strong>Criterio critico</strong> (0-15 punti malignità). Assenti = 0 punti (benigno). Multiple + atipiche = 15 punti (RED FLAG melanoma).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="mitoses">
-                    <option value="15">Assenti nel derma profondo (15 punti)</option>
-                    <option value="12">1-2/mm² derma profondo (12 punti)</option>
+                    <option value="0">Assenti nel derma profondo (0 punti - BENIGNO)</option>
+                    <option value="3">1-2/mm² derma profondo (3 punti)</option>
                     <option value="8">3-5/mm² derma profondo (8 punti)</option>
-                    <option value="3">≥6/mm² derma profondo (3 punti - CONCERNING)</option>
-                    <option value="0">Multiple + atipiche (0 punti - RED FLAG)</option>
+                    <option value="12">≥6/mm² derma profondo (12 punti - CONCERNING)</option>
+                    <option value="15">Multiple + atipiche (15 punti - RED FLAG)</option>
                 </select>
             </div>
 
@@ -691,16 +712,16 @@
                     Pattern di infiltrazione
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Pattern tissutale</strong> (max 10 punti). Spitz: nidi coesi. Melanoma: infiltrazione singles cells.
+                            <strong>Pattern tissutale</strong> (0-10 punti malignità). Nidi coesi = 0 punti (Spitz). Singles cells = 10 punti (melanoma).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="infiltration">
-                    <option value="10">Nidi coesi organizzati (10 punti)</option>
-                    <option value="7">Nidi con qualche singola cellula (7 punti)</option>
-                    <option value="4">Misto nidi e singles (4 punti)</option>
-                    <option value="0">Prevalentemente singles cells (0 punti)</option>
+                    <option value="0">Nidi coesi organizzati (0 punti - BENIGNO)</option>
+                    <option value="3">Nidi con qualche singola cellula (3 punti)</option>
+                    <option value="7">Misto nidi e singles (7 punti)</option>
+                    <option value="10">Prevalentemente singles cells (10 punti - MALIGNO)</option>
                 </select>
             </div>
 
@@ -709,16 +730,16 @@
                     Necrosi
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Feature maligna</strong> (max 5 punti). Necrosi "en masse" = red flag melanoma. Keratinocyte necrosis focale può essere in Spitz.
+                            <strong>Feature maligna</strong> (0-5 punti malignità). Assente = 0 punti (OK). Necrosi "en masse" = 5 punti (RED FLAG melanoma).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="necrosis">
-                    <option value="5">Assente (5 punti)</option>
-                    <option value="4">Keratinocyte necrosis focale (4 punti)</option>
-                    <option value="2">Necrosi piccoli foci (2 punti)</option>
-                    <option value="0">Necrosi "en masse" (0 punti - RED FLAG)</option>
+                    <option value="0">Assente (0 punti - BENIGNO)</option>
+                    <option value="1">Keratinocyte necrosis focale (1 punto)</option>
+                    <option value="3">Necrosi piccoli foci (3 punti)</option>
+                    <option value="5">Necrosi "en masse" (5 punti - RED FLAG)</option>
                 </select>
             </div>
 
@@ -727,17 +748,17 @@
                     Atipia nucleare
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Atipia citologica</strong> (max 10 punti). Spitz può avere nuclei grandi ma regolari. Atipia severa con variabilità = concern.
+                            <strong>Atipia citologica</strong> (0-10 punti malignità). Minima = 0 punti (Spitz OK). Estrema = 10 punti (melanoma).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="atypia">
-                    <option value="10">Minima/assente (10 punti)</option>
-                    <option value="8">Lieve (nuclei grandi ma regolari) (8 punti)</option>
+                    <option value="0">Minima/assente (0 punti - BENIGNO)</option>
+                    <option value="2">Lieve (nuclei grandi ma regolari) (2 punti)</option>
                     <option value="5">Moderata con variabilità (5 punti)</option>
-                    <option value="2">Severa (2 punti)</option>
-                    <option value="0">Estrema con pleomorfismo (0 punti)</option>
+                    <option value="8">Severa (8 punti)</option>
+                    <option value="10">Estrema con pleomorfismo (10 punti - MALIGNO)</option>
                 </select>
             </div>
 
@@ -746,23 +767,21 @@
                     Ulcerazione
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Feature aggiuntiva</strong> (max 5 punti). Ulcerazione può essere in Spitz traumatizzato ma è concern se estesa. Houlier 2020: ulcerazione in 32% MAP3K8-fused tumors.
+                            <strong>Feature aggiuntiva</strong> (0-5 punti malignità). Assente = 0 punti. Estesa = 5 punti (concern melanoma). Houlier 2020: ulcerazione in 32% MAP3K8-fused.
                             <a href="#" onclick="event.preventDefault(); showBibCard('houlier2020')">📚 Houlier 2020</a>
                         </span>
                     </span>
                 </label>
                 <select id="ulceration">
-                    <option value="5">Assente (5 punti)</option>
-                    <option value="3">Focale (possibile trauma) (3 punti)</option>
-                    <option value="1">Estesa (1 punto - CONCERN)</option>
-                    <option value="0">Estesa + necrosi (0 punti)</option>
+                    <option value="0">Assente (0 punti - BENIGNO)</option>
+                    <option value="2">Focale (possibile trauma) (2 punti)</option>
+                    <option value="4">Estesa (4 punti - CONCERN)</option>
+                    <option value="5">Estesa + necrosi (5 punti)</option>
                 </select>
             </div>
 
-            <button class="btn-primary" onclick="calculateScore()">🧮 Calcola Score</button>
+            <button class="btn-primary" onclick="calculateScore()">🧮 Calcola Malignancy Score</button>
         </div>
-
-        <div class="card">
             <div class="section-title">🧬 Stratificazione Genetica (Bastian 2014)</div>
             
             <div class="form-group">
@@ -818,7 +837,7 @@
             <div id="morph" class="tab-content active">
                 <div class="score-display">
                     <div class="score-value" id="totalScore">--</div>
-                    <div class="score-label">Score Morfologico Totale</div>
+                    <div class="score-label">Score Morfologico Normalizzato (0-100)</div>
                 </div>
                 
                 <div id="morphInterpretation"></div>
@@ -871,12 +890,12 @@
             📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
             💻 <a href="https://github.com/infingardo" target="_blank">GitHub: infingardo</a><br>
             <br>
-            <em>v3.3 (2024-11-25) - Bibliografia corretta, terminologia "criteri solidi"</em>
+            <em>v3.6.1 (2024-11-26) - Prerequisito morfologico esplicitato - Solo per lesioni SPITZOIDI</em>
         </div>
     </div>
 
     <script>
-        // ========== BIBLIOGRAFIA DATABASE ==========
+        // Bibliografia identica
         const bibliography = [
             {
                 id: 'bastian2014',
@@ -903,7 +922,6 @@
   pmid = {24460189}
 }`
             },
-            
             {
                 id: 'newman2019',
                 authors: 'Newman S, Fan L, Pribnow A, et al.',
@@ -927,7 +945,6 @@
   doi = {10.1038/s41591-019-0373-y}
 }`
             },
-            
             {
                 id: 'houlier2020',
                 authors: 'Houlier A, Pissaloux D, Masse I, et al.',
@@ -953,7 +970,6 @@
   pmid = {31719662}
 }`
             },
-            
             {
                 id: 'massi2014',
                 authors: 'Massi G, LeBoit PE',
@@ -976,7 +992,6 @@
   isbn = {978-3-642-37310-7}
 }`
             },
-            
             {
                 id: 'raghavan2020',
                 authors: 'Raghavan SS, Peternel S, Mully TW, et al.',
@@ -1002,7 +1017,7 @@
             }
         ];
 
-        // ========== MAIN CALCULATION ==========
+        // ========== MAIN CALCULATION (v3.6 SIMPLIFIED - NO INVERSION) ==========
         function calculateScore() {
             const scores = {
                 maturation: parseInt(document.getElementById('maturation').value),
@@ -1016,33 +1031,37 @@
                 ulceration: parseInt(document.getElementById('ulceration').value)
             };
 
-            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            // Raw malignancy (0-105) - dropdown values are already malignancy points!
+            const rawMalignancy = Object.values(scores).reduce((a, b) => a + b, 0);
             
-            // Display
-            document.getElementById('totalScore').textContent = total;
+            // Normalized malignancy score (0-100)
+            const malignancyScore = Math.round((rawMalignancy / 105) * 100);
+            
+            // Display malignancy score
+            document.getElementById('totalScore').textContent = malignancyScore;
             document.getElementById('result').style.display = 'block';
             
             // Generate interpretations
-            generateMorphInterpretation(total, scores);
-            generateScoreBreakdown(scores);
+            generateMorphInterpretation(malignancyScore, scores, rawMalignancy);
+            generateScoreBreakdown(scores, rawMalignancy, malignancyScore);
             generateBastianAnalysis();
-            generateSummary(total, scores);
+            generateSummary(malignancyScore, scores);
             
             // Scroll to result
             document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function generateMorphInterpretation(total, scores) {
+        function generateMorphInterpretation(malignancyScore, scores, rawMalignancy) {
             let interpretation = '';
             let alertClass = '';
             let diagnosis = '';
             let action = '';
 
-            // Red flags check
+            // Red flags check (NOW LOOKING FOR HIGH VALUES)
             const redFlags = [];
-            if (scores.maturation <= 5) redFlags.push('Maturazione assente/invertita');
-            if (scores.mitoses <= 3) redFlags.push('Mitosi ≥6/mm² derma profondo');
-            if (scores.necrosis === 0) redFlags.push('Necrosi "en masse"');
+            if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita');
+            if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² derma profondo');
+            if (scores.necrosis >= 5) redFlags.push('Necrosi "en masse"');
 
             if (redFlags.length > 0) {
                 alertClass = 'danger';
@@ -1053,15 +1072,15 @@
                     interpretation += `<li>${flag}</li>`;
                 });
                 interpretation += `</ul><br><strong>Azione richiesta:</strong> ${action}`;
-            } else if (total >= 71) {
+            } else if (malignancyScore >= 71) {
                 alertClass = 'danger';
                 diagnosis = 'Spitzoid Melanoma';
                 action = 'Staging completo + genomica + discussione MDT';
-            } else if (total >= 51) {
+            } else if (malignancyScore >= 51) {
                 alertClass = 'warning';
                 diagnosis = 'Atypical Spitz Tumor with concerning features';
                 action = 'Genomica raccomandata, consider sentinel node, follow-up stretto';
-            } else if (total >= 31) {
+            } else if (malignancyScore >= 31) {
                 alertClass = 'warning';
                 diagnosis = 'Atypical Spitz Tumor (AST)';
                 action = 'Excision completa + follow-up stretto';
@@ -1072,7 +1091,7 @@
             }
 
             if (redFlags.length === 0) {
-                interpretation = `<strong>Score:</strong> ${total}/100<br><strong>Diagnosi suggerita:</strong> ${diagnosis}<br><strong>Raccomandazioni:</strong> ${action}`;
+                interpretation = `<strong>Malignancy Score:</strong> ${malignancyScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/105)</span><br><strong>Diagnosi suggerita:</strong> ${diagnosis}<br><strong>Raccomandazioni:</strong> ${action}`;
             }
 
             document.getElementById('morphInterpretation').innerHTML = `
@@ -1082,7 +1101,7 @@
             `;
         }
 
-        function generateScoreBreakdown(scores) {
+        function generateScoreBreakdown(scores, rawMalignancy, malignancyScore) {
             const labels = {
                 maturation: 'Maturazione A→B→C',
                 symmetry: 'Simmetria',
@@ -1108,7 +1127,13 @@
             };
 
             let html = '<div class="section-title">Breakdown Punteggi</div>';
-            html += '<table class="breakdown-table"><thead><tr><th>Criterio</th><th>Punteggio</th><th>Max</th><th>Status</th></tr></thead><tbody>';
+            html += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: var(--accent-soft); border-radius: 0.5rem; font-size: 0.85rem;">
+                <strong>Sistema di scoring SEMPLIFICATO v3.6:</strong><br>
+                1. Somma punti malignità dai dropdown: ${rawMalignancy}/105<br>
+                2. <strong>Normalizza a 0-100: ${malignancyScore}/100 = round((${rawMalignancy}/105) × 100)</strong><br>
+                <em style="opacity: 0.8;">✅ INTUITIVO: Selezioni ALTE nei dropdown → Score ALTO → Melanoma | Selezioni BASSE → Score BASSO → Spitz</em>
+            </div>`;
+            html += '<table class="breakdown-table"><thead><tr><th>Criterio</th><th>Malignità</th><th>Max</th><th>Status</th></tr></thead><tbody>';
 
             for (const [key, value] of Object.entries(scores)) {
                 const max = maxScores[key];
@@ -1116,14 +1141,15 @@
                 let status = '';
                 let chipClass = '';
 
-                if (percentage >= 70) {
-                    status = 'OK';
+                // NOW: High percentage = malignant
+                if (percentage <= 30) {
+                    status = 'Benigno';
                     chipClass = 'chip-ok';
-                } else if (percentage >= 40) {
-                    status = 'Concern';
+                } else if (percentage <= 60) {
+                    status = 'Intermedio';
                     chipClass = 'chip-warn';
                 } else {
-                    status = 'Red Flag';
+                    status = 'Maligno';
                     chipClass = 'chip-danger';
                 }
 
@@ -1135,10 +1161,14 @@
                 </tr>`;
             }
 
+            html += `<tr style="border-top: 2px solid var(--border); font-weight: 600;">
+                <td>TOTALE</td>
+                <td colspan="2">Raw: ${rawMalignancy}/105</td>
+                <td><span class="chip chip-info">Score: ${malignancyScore}/100</span></td>
+            </tr>`;
             html += '</tbody></table>';
             document.getElementById('scoreBreakdown').innerHTML = html;
         }
-
         function generateBastianAnalysis() {
             const driverMutation = document.getElementById('bastian_driver').value;
             const cnaProfile = document.getElementById('bastian_cna').value;
@@ -1316,14 +1346,14 @@
             document.getElementById('bastianAnalysis').innerHTML = analysis;
         }
 
-        function generateSummary(total, scores) {
+        function generateSummary(normalizedScore, scores) {
             const driverMutation = document.getElementById('bastian_driver').value;
             const cnaProfile = document.getElementById('bastian_cna').value;
 
             let summary = '<div class="section-title">📋 Sommario Integrato</div>';
             
             summary += `<div class="alert alert-info">
-                <strong>Score Morfologico:</strong> ${total}/100<br>
+                <strong>Score Morfologico Normalizzato:</strong> ${normalizedScore}/100<br>
                 <strong>Driver Mutation:</strong> ${driverMutation || 'Non disponibile'}<br>
                 <strong>CNA Profile:</strong> ${cnaProfile || 'Non disponibile'}
             </div>`;
@@ -1335,16 +1365,16 @@
             if (driverMutation === 'tert' || cnaProfile === 'multiple_cna' || cnaProfile === 'chr_6_loss') {
                 finalDiagnosis = '⚠️ MELANOMA - Criteri solidi genetici presenti';
                 confidence = 'Alta (genomica supporta malignità)';
-            } else if (total >= 71) {
+            } else if (normalizedScore >= 71) {
                 finalDiagnosis = 'Spitzoid Melanoma (morfologia)';
                 confidence = driverMutation ? 'Moderata-Alta' : 'Moderata (solo morfologia)';
-            } else if (total >= 51) {
+            } else if (normalizedScore >= 51) {
                 finalDiagnosis = 'Atypical Spitz Tumor with concerning features';
                 confidence = 'Moderata (genomica raccomandata)';
             } else if (driverMutation === 'hras' && cnaProfile === 'single_gain') {
                 finalDiagnosis = 'Spitz Nevus (HRAS low-risk profile)';
                 confidence = 'Alta (morfologia + genetica concordanti)';
-            } else if (total <= 30 && !driverMutation) {
+            } else if (normalizedScore <= 30 && !driverMutation) {
                 finalDiagnosis = 'Spitz Nevus';
                 confidence = 'Moderata-Alta';
             } else {
@@ -1505,4 +1535,3 @@
         });
     </script>
 </body>
-</html>
