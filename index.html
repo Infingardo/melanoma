@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.6.1 - Spitz vs Melanoma</title>
-    <meta name="description" content="Algoritmo diagnostico Malignancy Score 0-100 per lesioni SPITZOIDI - Spitz vs Melanoma">
+    <title>Filippo's Diagnostic Algorithm v3.6.2 - Spitz vs Melanoma</title>
+    <meta name="description" content="Algoritmo diagnostico con DD nevi comuni - Solo lesioni SPITZOIDI">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
-    <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, bastian 2014, MAP3K8, TERT, diagnostic algorithm">
+    <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, differential diagnosis, bastian 2014, MAP3K8">
     
     <!-- html2pdf.js for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -576,15 +576,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.1</h1>
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.2</h1>
             <div class="subtitle">
-                Algoritmo per lesioni SPITZOIDI - Malignancy Score 0-100 intuitivo
+                Algoritmo per lesioni SPITZOIDI con DD nevi comuni - Malignancy Score 0-100
             </div>
         </div>
 
         <div class="disclaimer" role="note">
-            <strong>⚠️ v3.6 Updates:</strong> Dropdown invertiti per coerenza totale - Valori ALTI = maligno, valori BASSI = benigno.<br>
-            <strong>DISCLAIMER CLINICO:</strong> Tool è ausilio decisionale, non sostituisce esperienza del patologo. Richiede correlazione clinico-patologica.
+            <strong>⚠️ v3.6.2:</strong> Aggiunta diagnosi differenziale con nevi comuni - Chiarisce QUANDO usare il tool.<br>
+            <strong>DISCLAIMER:</strong> Tool è ausilio decisionale, non sostituisce esperienza del patologo.
         </div>
 
         <div class="alert alert-warning" style="margin-bottom: 2rem;">
@@ -601,17 +601,167 @@
             <ul style="margin: 0.5rem 0 0 1.5rem; line-height: 1.6;">
                 <li><strong>Nevi melanocitici comuni</strong> (giunzionali, composti, dermici banali)</li>
                 <li><strong>Blue nevi</strong> o altre varianti melanocitiche non-spitzoidi</li>
-                <li><strong>Melanomi convenzionali</strong> (superficial spreading, nodulare, lentiginoso, acrale) senza morfologia spitzoide</li>
-                <li><strong>Lesioni non melanocitiche</strong></li>
+                <li><strong>Melanomi convenzionali</strong> senza morfologia spitzoide</li>
             </ul>
             
-            <strong style="color: #155724;">✅ WORKFLOW CORRETTO:</strong><br>
-            1. Screening morfologico iniziale → Identificazione morfologia spitzoide<br>
-            2. <strong>Solo se confermata morfologia spitzoide</strong> → Utilizzare questo tool per stratificazione rischio<br>
-            3. Interpretazione risultati in contesto clinico-patologico completo
+            <strong style="color: #004085;">📖 Vedi sezione "Diagnosi Differenziale" qui sotto per dettagli!</strong>
+        </div>
+        <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+            <div class="section-title" style="cursor: pointer;" onclick="toggleDDSection()">
+                🔍 Diagnosi Differenziale: Lesioni Spitzoidi vs Nevi Comuni
+                <span id="ddToggle" style="float: right; font-size: 1.2rem;">▼</span>
+            </div>
+            
+            <div id="ddContent" style="display: none; margin-top: 1rem;">
+                <div style="background: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <strong style="color: #155724;">✅ QUANDO USARE QUESTO TOOL (Morfologia Spitzoide):</strong>
+                    <p style="margin: 0.5rem 0;">Lesioni con almeno 3-4 delle seguenti caratteristiche:</p>
+                </div>
+
+                <table class="breakdown-table" style="margin-bottom: 1.5rem;">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Caratteristica</th>
+                            <th style="width: 37.5%; background: #d4edda;">LESIONI SPITZOIDI<br><small>(USA QUESTO TOOL)</small></th>
+                            <th style="width: 37.5%; background: #f8d7da;">NEVI COMUNI<br><small>(NON USARE TOOL)</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Citologia</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Cellule epitelioidi e/o fusate</strong><br>
+                                <small>Citoplasma abbondante eosinofilo o chiaro</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Piccole cellule rotonde/ovali</strong><br>
+                                <small>Citoplasma scarso, melanociti convenzionali</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nuclei</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Vescicolosi, prominenti</strong><br>
+                                <small>Nucleoli evidenti, "a vetro smerigliato"</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Piccoli, regolari, condensati</strong><br>
+                                <small>Nucleoli inconspicui o assenti</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cellule giganti</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Spesso presenti</strong><br>
+                                <small>Multinucleate (2-20+ nuclei), tipiche Spitz</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Assenti</strong><br>
+                                <small>Non caratteristica dei nevi comuni</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Architettura</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Simmetrica O asimmetrica</strong><br>
+                                <small>Variabile - da Spitz benigno a melanoma</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Tipicamente simmetrica</strong><br>
+                                <small>Ben circoscritta, regolare</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Maturazione</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Variabile</strong><br>
+                                <small>Presente negli Spitz benigni, assente/invertita nei maligni</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Sempre presente</strong><br>
+                                <small>Regolare A→B→C dalla superficie al profondo</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nidi</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Grandi, espansivi</strong><br>
+                                <small>Cellule grandi → nidi voluminosi</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Piccoli, regolari</strong><br>
+                                <small>Dimensioni uniformi, ben distanziati</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kamino bodies</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Comuni (60-70%)</strong><br>
+                                <small>Globuli eosinofili alla giunzione</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Assenti</strong><br>
+                                <small>Non feature dei nevi comuni</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Età tipica</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Bambini/giovani adulti</strong><br>
+                                <small>Picco <20 anni, ma possibile a tutte le età</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Tutte le età</strong><br>
+                                <small>Acquisiti durante la vita</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clinica</strong></td>
+                            <td style="background: #d4edda;">
+                                <strong>Papula eritematosa/rosa</strong><br>
+                                <small>Spesso non pigmentata, a crescita rapida</small>
+                            </td>
+                            <td style="background: #f8d7da;">
+                                <strong>Macula/papula pigmentata</strong><br>
+                                <small>Marrone uniforme, stabile nel tempo</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem;">
+                    <strong>⚠️ GRAY ZONE - Lesioni borderline:</strong><br>
+                    Nevi comuni con <strong>atipia focale</strong> o nevi di Spitz "convenzionali" senza atipia significativa possono creare dubbi diagnostici.
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li><strong>Nevo comune con atipia focale:</strong> Valutare se atipia è reattiva (trauma, sun damage) vs intrinseca</li>
+                        <li><strong>Spitz nevus "tipico" senza atipia:</strong> Score atteso 0-20/100, diagnosi clinica/morfologica sufficiente</li>
+                        <li><strong>In caso di dubbio:</strong> Second opinion esperta, eventuale genomica (FISH, NGS)</li>
+                    </ul>
+                </div>
+
+                <div style="background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 1rem; border-radius: 0.5rem;">
+                    <strong>💡 RULE OF THUMB per decidere se usare il tool:</strong><br>
+                    <strong style="color: #155724;">"Se guardi al microscopio e pensi 'questo ha cellule grandi/strane/diverse', allora è probabilmente spitzoide"</strong><br>
+                    <strong style="color: #721c24;">"Se pensi 'nevo banale', allora NON è il caso per questo tool"</strong><br>
+                    <br>
+                    <small><em>In caso di dubbio morfologico, consultare atlanti (Massi & LeBoit 2014) o richiedere second opinion prima di applicare il tool.</em></small>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
+        <script>
+        function toggleDDSection() {
+            const content = document.getElementById('ddContent');
+            const toggle = document.getElementById('ddToggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▼';
+            }
+        }
+        </script>
             <div class="section-title">📊 Criteri Morfologici - Punti Malignità (Massi & LeBoit 2014)</div>
             <div class="form-group">
                 <label>
@@ -890,7 +1040,7 @@
             📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
             💻 <a href="https://github.com/infingardo" target="_blank">GitHub: infingardo</a><br>
             <br>
-            <em>v3.6.1 (2024-11-26) - Prerequisito morfologico esplicitato - Solo per lesioni SPITZOIDI</em>
+            <em>v3.6.2 (2024-11-26) - Aggiunta DD con nevi comuni - Solo per lesioni SPITZOIDI</em>
         </div>
     </div>
 
