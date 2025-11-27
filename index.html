@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.6.2 - Spitz vs Melanoma</title>
+    <title>Filippo's Diagnostic Algorithm v3.6.3 - Spitz vs Melanoma</title>
     <meta name="description" content="Algoritmo diagnostico con DD nevi comuni - Solo lesioni SPITZOIDI">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
     <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, differential diagnosis, bastian 2014, MAP3K8">
@@ -576,14 +576,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.2</h1>
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.3</h1>
             <div class="subtitle">
                 Algoritmo per lesioni SPITZOIDI con DD nevi comuni - Malignancy Score 0-100
             </div>
         </div>
 
         <div class="disclaimer" role="note">
-            <strong>⚠️ v3.6.2:</strong> Aggiunta diagnosi differenziale con nevi comuni - Chiarisce QUANDO usare il tool.<br>
+            <strong>⚠️ v3.6.3:</strong> Fix red flags, bibliografia completa, note cliniche migliorate.<br>
             <strong>DISCLAIMER:</strong> Tool è ausilio decisionale, non sostituisce esperienza del patologo.
         </div>
 
@@ -694,21 +694,10 @@
                             </td>
                         </tr>
                         <tr>
-                            <td><strong>Kamino bodies</strong></td>
-                            <td style="background: #d4edda;">
-                                <strong>Comuni (60-70%)</strong><br>
-                                <small>Globuli eosinofili alla giunzione</small>
-                            </td>
-                            <td style="background: #f8d7da;">
-                                <strong>Assenti</strong><br>
-                                <small>Non feature dei nevi comuni</small>
-                            </td>
-                        </tr>
-                        <tr>
                             <td><strong>Età tipica</strong></td>
                             <td style="background: #d4edda;">
                                 <strong>Bambini/giovani adulti</strong><br>
-                                <small>Picco <20 anni, ma possibile a tutte le età</small>
+                                <small>Picco &lt;20 anni, ma possibile a tutte le età</small>
                             </td>
                             <td style="background: #f8d7da;">
                                 <strong>Tutte le età</strong><br>
@@ -762,13 +751,15 @@
             }
         }
         </script>
+        
+        <div class="card">
             <div class="section-title">📊 Criteri Morfologici - Punti Malignità (Massi & LeBoit 2014)</div>
             <div class="form-group">
                 <label>
                     Maturazione A→B→C
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (0-20 punti malignità). Maturazione presente = 0 punti (benigno). Assenza = 20 punti (maligno RED FLAG).
+                            <strong>Criterio critico</strong> (0-20 punti malignità). Maturazione presente = 0 punti (benigno). Assente/invertita ≥16 punti = RED FLAG melanoma.
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -777,7 +768,7 @@
                     <option value="0">Presente e completa (0 punti - BENIGNO)</option>
                     <option value="5">Presente ma parziale (5 punti)</option>
                     <option value="11">Dubbia/minima (11 punti)</option>
-                    <option value="16">Assente o invertita (16 punti)</option>
+                    <option value="16">Assente o invertita (16 punti - RED FLAG)</option>
                     <option value="20">Completamente assente (20 punti - RED FLAG)</option>
                 </select>
             </div>
@@ -825,7 +816,7 @@
                     Cellule giganti multinucleate
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Feature spitzoide</strong> (0-10 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 10 punti (sospetto).
+                            <strong>Feature spitzoide caratteristica</strong> (0-10 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 10 punti. <strong>NB:</strong> Se assenti in lesione confermata spitzoide, considerare diagnosi alternativa o valutare altri criteri con attenzione.
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -834,7 +825,7 @@
                     <option value="0">Presenti e tipiche (0 punti - BENIGNO)</option>
                     <option value="3">Presenti focalmente (3 punti)</option>
                     <option value="7">Rare (7 punti)</option>
-                    <option value="10">Assenti (10 punti)</option>
+                    <option value="10">Assenti (10 punti - verificare morfologia spitzoide)</option>
                 </select>
             </div>
 
@@ -843,7 +834,7 @@
                     Mitosi derma profondo
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (0-15 punti malignità). Assenti = 0 punti (benigno). Multiple + atipiche = 15 punti (RED FLAG melanoma).
+                            <strong>Criterio critico</strong> (0-15 punti malignità). Assenti = 0 punti (benigno). ≥6/mm² o multiple/atipiche ≥12 punti = RED FLAG melanoma.
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -852,7 +843,7 @@
                     <option value="0">Assenti nel derma profondo (0 punti - BENIGNO)</option>
                     <option value="3">1-2/mm² derma profondo (3 punti)</option>
                     <option value="8">3-5/mm² derma profondo (8 punti)</option>
-                    <option value="12">≥6/mm² derma profondo (12 punti - CONCERNING)</option>
+                    <option value="12">≥6/mm² derma profondo (12 punti - RED FLAG)</option>
                     <option value="15">Multiple + atipiche (15 punti - RED FLAG)</option>
                 </select>
             </div>
@@ -932,6 +923,8 @@
 
             <button class="btn-primary" onclick="calculateScore()">🧮 Calcola Malignancy Score</button>
         </div>
+        
+        <div class="card">
             <div class="section-title">🧬 Stratificazione Genetica (Bastian 2014)</div>
             
             <div class="form-group">
@@ -1040,12 +1033,12 @@
             📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
             💻 <a href="https://github.com/infingardo" target="_blank">GitHub: infingardo</a><br>
             <br>
-            <em>v3.6.2 (2024-11-26) - Aggiunta DD con nevi comuni - Solo per lesioni SPITZOIDI</em>
+            <em>v3.6.3 (2024-11-27) - Fix red flags, bibliografia completa, note cliniche</em>
         </div>
     </div>
 
     <script>
-        // Bibliografia identica
+        // Bibliografia COMPLETA con Newman AJSP aggiunto
         const bibliography = [
             {
                 id: 'bastian2014',
@@ -1073,7 +1066,7 @@
 }`
             },
             {
-                id: 'newman2019',
+                id: 'newman2019_natmed',
                 authors: 'Newman S, Fan L, Pribnow A, et al.',
                 year: 2019,
                 title: 'Clinical genome sequencing uncovers potentially targetable truncations and fusions of MAP3K8 in spitzoid and other melanomas',
@@ -1081,18 +1074,45 @@
                 volume: 25,
                 pages: '597-602',
                 doi: '10.1038/s41591-019-0373-y',
+                pmid: '30988516',
                 url: 'https://doi.org/10.1038/s41591-019-0373-y',
                 category: 'genetica',
                 supportedCriteria: ['bastian_driver'],
                 keyFindings: 'MAP3K8 fusions/truncations in 33% melanomi spitzoidi pediatrici. Risposta clinica a MEK inhibitor. Rappresenta il driver genetico più comune in melanoma spitzoide pediatrico. Target potenzialmente terapeutico.',
-                bibtex: `@article{Newman2019,
+                bibtex: `@article{Newman2019NatMed,
   author = {Newman, Scott and Fan, Ling and Pribnow, Angela and others},
   title = {Clinical genome sequencing uncovers potentially targetable truncations and fusions of MAP3K8 in spitzoid and other melanomas},
   journal = {Nature Medicine},
   volume = {25},
   pages = {597-602},
   year = {2019},
-  doi = {10.1038/s41591-019-0373-y}
+  doi = {10.1038/s41591-019-0373-y},
+  pmid = {30988516}
+}`
+            },
+            {
+                id: 'newman2019_ajsp',
+                authors: 'Newman S, Rosenbach M, Chu EY, et al.',
+                year: 2019,
+                title: 'Pediatric spitzoid melanoma with MAP3K8 fusion',
+                journal: 'American Journal of Surgical Pathology',
+                volume: 43,
+                issue: 9,
+                pages: '1631-1637',
+                pmid: '31498175',
+                url: 'https://pubmed.ncbi.nlm.nih.gov/31498175/',
+                category: 'genetica',
+                supportedCriteria: ['bastian_driver', 'map3k8'],
+                keyFindings: 'Cohort pediatrico MAP3K8-fused. 82% p16 loss, 70% homozygous CDKN2A deletion. Conferma correlazione tra MAP3K8 fusion e inactivazione CDKN2A come marcatore di progressione.',
+                bibtex: `@article{Newman2019AJSP,
+  author = {Newman, Scott and Rosenbach, Misha and Chu, Emily Y and others},
+  title = {Pediatric spitzoid melanoma with MAP3K8 fusion},
+  journal = {American Journal of Surgical Pathology},
+  volume = {43},
+  number = {9},
+  pages = {1631-1637},
+  year = {2019},
+  pmid = {31498175}
 }`
             },
             {
@@ -1207,10 +1227,10 @@
             let diagnosis = '';
             let action = '';
 
-            // Red flags check (NOW LOOKING FOR HIGH VALUES)
+            // Red flags check (NOW LOOKING FOR HIGH VALUES) - v3.6.3: threshold maturazione = 16
             const redFlags = [];
-            if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita');
-            if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² derma profondo');
+            if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita (≥16 punti)');
+            if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² o multiple/atipiche (≥12 punti)');
             if (scores.necrosis >= 5) redFlags.push('Necrosi "en masse"');
 
             if (redFlags.length > 0) {
@@ -1278,7 +1298,7 @@
 
             let html = '<div class="section-title">Breakdown Punteggi</div>';
             html += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: var(--accent-soft); border-radius: 0.5rem; font-size: 0.85rem;">
-                <strong>Sistema di scoring SEMPLIFICATO v3.6:</strong><br>
+                <strong>Sistema di scoring v3.6.3:</strong><br>
                 1. Somma punti malignità dai dropdown: ${rawMalignancy}/105<br>
                 2. <strong>Normalizza a 0-100: ${malignancyScore}/100 = round((${rawMalignancy}/105) × 100)</strong><br>
                 <em style="opacity: 0.8;">✅ INTUITIVO: Selezioni ALTE nei dropdown → Score ALTO → Melanoma | Selezioni BASSE → Score BASSO → Spitz</em>
@@ -1319,6 +1339,7 @@
             html += '</tbody></table>';
             document.getElementById('scoreBreakdown').innerHTML = html;
         }
+        
         function generateBastianAnalysis() {
             const driverMutation = document.getElementById('bastian_driver').value;
             const cnaProfile = document.getElementById('bastian_cna').value;
@@ -1369,13 +1390,14 @@
                         <ul style="margin: 0.5rem 0 0 1.2rem;">
                             <li>Driver più comune in melanoma spitzoide pediatrico (33%)</li>
                             <li>Partner 3' più frequente: SVIL (46% - Houlier 2020)</li>
-                            <li><strong>CDKN2A inactivation:</strong> 77% casi atipici/maligni (Houlier 2020)</li>
+                            <li><strong>CDKN2A inactivation:</strong> 77% casi atipici/maligni (Houlier 2020), 82% p16 loss (Newman AJSP 2019)</li>
                             <li><strong>Features morfologiche:</strong> ulcerazione 32%, giant multinucleated cells</li>
-                            <li><strong>Target terapeutico:</strong> Risposta a MEK inhibitors (Newman 2019)</li>
+                            <li><strong>Target terapeutico:</strong> Risposta a MEK inhibitors (Newman Nat Med 2019)</li>
                             <li><strong>⚠️ Comportamento variabile:</strong> Richiede correlazione clinico-patologica stretta</li>
                         </ul>
                         <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
                             📚 Newman S et al. Nat Med 2019;25:597-602<br>
+                            📚 Newman S et al. Am J Surg Pathol 2019;43:1631-1637<br>
                             📚 Houlier A et al. Mod Pathol 2020;33:846-857
                         </div>
                     </div>
@@ -1441,12 +1463,13 @@
                                 <li>Atypical Spitz tumors</li>
                             </ul>
                             <li><strong>Interpretazione:</strong> Marker di atipia, non sufficiente per diagnosi melanoma</li>
-                            <li><strong>Contesto MAP3K8:</strong> 77% inactivation in casi atipici/maligni (Houlier 2020)</li>
+                            <li><strong>Contesto MAP3K8:</strong> 77% inactivation in casi atipici/maligni (Houlier 2020), 82% p16 loss (Newman AJSP 2019)</li>
                             <li><strong>Azione:</strong> Considerare nel contesto di altri criteri morfologici e genetici</li>
                         </ul>
                         <div style="margin-top: 0.8rem; font-size: 0.75rem; opacity: 0.8;">
                             📚 Bastian BC. Annu Rev Pathol 2014;9:239-271 (Table 3, pag 243-244)<br>
-                            📚 Houlier A et al. Mod Pathol 2020;33:846-857
+                            📚 Houlier A et al. Mod Pathol 2020;33:846-857<br>
+                            📚 Newman S et al. Am J Surg Pathol 2019;43:1631-1637
                         </div>
                     </div>
                 `;
@@ -1685,3 +1708,4 @@
         });
     </script>
 </body>
+</html>

@@ -1,24 +1,32 @@
-fix: correct citations Bastian 2014, replace "duro" with "solido" terminology
+fix: v3.6.3 bug fixes and bibliography completion
 
-Critical corrections:
-- Bastian 2024 → 2014 (Annual Reviews in Pathology vol 9)
-- All instances "criterio duro" → "criterio solido" throughout codebase
-- Massi 2016 Ackerman's → 2014 Springer 2nd Edition
-- GitHub username: infingardo
-- Email: filippo.bianchi@asst-fbf-sacco.it
+CRITICAL FIXES:
+- Red flag maturazione: threshold ≥16 (was incorrectly documented as =20 only)
+- Red flag mitosi message: "≥6/mm² o multiple/atipiche" (was incomplete)
+- Added Newman AJSP 2019 to bibliography (missing paper)
+- Added clinical note for absent giant cells (suspicious in confirmed spitzoid)
+- Removed Kamino bodies from DD table (not evaluable in form)
 
-New features:
-- Interactive bibliography tab with filters/search/BibTeX export
-- Tooltip links to scientific citations
-- Complete MAP3K8 genomics (Newman 2019, Houlier 2020)
-- Copyright warning for Bastian 2014 PDF
+DOCUMENTATION FIXES:
+- Corrected "peso x3" → "range esteso" (no multiplier exists in code)
+- Removed placeholder LinkedIn link
+- Fixed changelog dates (v3.4 was listed before v3.3)
+- Synchronized all documentation to v3.6.3
 
-BREAKING: Terminology change from "criterio duro" to "criterio solido"
-reflects scientific accuracy - TERT/CNA are strong indicators but require
-expert clinical-pathological correlation, not absolute mathematical
-overrides per Bastian 2014 methodology.
+BIBLIOGRAPHY NOW INCLUDES:
+1. Bastian 2014 (Annu Rev Pathol) - core molecular taxonomy
+2. Newman 2019 Nature Medicine - MAP3K8 discovery
+3. Newman 2019 AJSP - MAP3K8 pediatric cohort (NEW)
+4. Houlier 2020 - MAP3K8 morpho-genetic correlations
+5. Massi & LeBoit 2014 - morphology textbook
+6. Raghavan 2020 - Spitz melanoma classification
 
 Files modified:
-- index.html: All tooltips, genetica analysis, bibliography database
-- README.md: Complete bibliography, methodology, author info
-- Meta tags updated with v3.3 description
+- index.html: tooltips, red flags logic, bibliography array
+- README.md: methodology section, bibliography, changelog
+
+BREAKING: None (backward compatible)
+
+Author: Dr. Filippo Bianchi
+GitHub: infingardo
+Email: filippo.bianchi@asst-fbf-sacco.it
