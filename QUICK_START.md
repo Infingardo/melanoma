@@ -1,4 +1,4 @@
-# ⚡ Quick Start - Spitz vs Melanoma Tool v3.6.2
+# ⚡ Quick Start - Spitz vs Melanoma Tool v3.6.4
 
 ## 🎯 In 3 Passi
 
@@ -6,14 +6,15 @@
 ```bash
 open index.html
 ```
+Oppure online: https://infingardo.github.io/spitz-melanoma-tool/
 
 ### 2️⃣ Verifica Prerequisito
-✅ La lesione ha morfologia SPITZOIDE?
+✅ La lesione ha morfologia **SPITZOIDE**?
 - Cellule epitelioidi/fusate grandi
 - Nuclei vescicolosi con nucleoli
-- Possibili cellule giganti
+- Possibili cellule giganti multinucleate
 
-❌ **NO?** → Non usare il tool (leggi sezione DD)  
+❌ **NO?** → Non usare il tool (diagnosi diretta)  
 ✅ **SÌ?** → Vai avanti!
 
 ### 3️⃣ Compila e Calcola
@@ -38,15 +39,15 @@ open index.html
 
 ### Dropdown Intuitivi ✅
 - **Valori BASSI (0 pt)** = Benigno
-- **Valori ALTI (20 pt)** = Maligno
+- **Valori ALTI** = Maligno
 
 ### Red Flags Automatici 🚨
 Il tool identifica automaticamente:
-- Maturazione assente
-- Mitosi ≥6/mm² derma profondo  
-- Necrosi "en masse"
+- Maturazione assente/invertita (≥16 pt)
+- Mitosi ≥6/mm² e/o atipiche (≥12 pt)
+- Necrosi "en masse" (5 pt)
 
-→ Override diagnosi "Melanoma"
+→ Override diagnosi "Spitzoid Melanoma"
 
 ### Quando Hai Dubbi 🤔
 1. **Morfologia incerta?** → Clicca "🔍 Diagnosi Differenziale"
@@ -55,37 +56,17 @@ Il tool identifica automaticamente:
 
 ---
 
-## 📚 Nuova Feature v3.6.2
-
-**Diagnosi Differenziale Interattiva!**
-
-Click su "🔍 DD" nel tool per vedere:
-- Tabella comparativa Spitzoidi vs Nevi comuni
-- Gray zone borderline
-- Rule of thumb pratica
-
----
-
-## ⚠️ Ricorda
-
-- ✅ Solo per lesioni **SPITZOIDI confermate**
-- ✅ Tool è **ausilio**, non sostituto del patologo
-- ✅ Serve sempre **correlazione clinica**
-
----
-
-## 📖 Documentazione Completa
+## 📚 Documentazione
 
 - **README.md** - Guida completa
-- **FINALE_v3.6.2.md** - Dettagli tecnici
-- **START_HERE.md** - Overview rapida
+- **index.html** - Tool principale
 
 ---
 
 ## 🆘 Supporto
 
 📧 filippo.bianchi@asst-fbf-sacco.it  
-💻 [GitHub Issues](https://github.com/infingardo/spitz-melanoma-tool/issues)
+💻 [GitHub Repository](https://github.com/infingardo/spitz-melanoma-tool)
 
 ---
 

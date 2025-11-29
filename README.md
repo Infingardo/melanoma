@@ -1,8 +1,8 @@
-# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.3
+# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.4
 
 **Algoritmo diagnostico integrato per la stratificazione del rischio nelle lesioni melanocitiche spitzoidi**
 
-[![Version](https://img.shields.io/badge/version-3.6.3-blue.svg)](https://github.com/infingardo/spitz-melanoma-tool)
+[![Version](https://img.shields.io/badge/version-3.6.4-blue.svg)](https://github.com/infingardo/spitz-melanoma-tool)
 [![License](https://img.shields.io/badge/license-Educational-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-Production--Ready-success.svg)](https://github.com/infingardo/spitz-melanoma-tool)
 
@@ -116,29 +116,24 @@ Il tool include una **tabella comparativa collapsabile** che aiuta a distinguere
 ### 📊 Malignancy Score 0-100 (Intuitivo!)
 
 - **Selezioni BASSE (0 punti) = Benigno** ✅
-- **Selezioni ALTE (20 punti) = Maligno** ⚠️
+- **Selezioni ALTE = Maligno** ⚠️
 - Nessuna inversione nascosta - calcolo lineare diretto!
 
 ### 🧬 9 Criteri Morfologici Pesati (Massi & LeBoit 2014)
 
 | Criterio | Range | Note |
 |----------|-------|------|
-| **Maturazione A→B→C** | 0-20 | Criterio critico, range esteso |
+| **Maturazione A→B→C** | 0-20 | Criterio critico |
 | **Simmetria** | 0-15 | Criterio maggiore |
 | **Circoscrizione** | 0-15 | Criterio maggiore |
 | **Mitosi derma profondo** | 0-15 | Criterio critico |
-| **Cellule giganti multinucleate** | 0-10 | Feature spitzoide |
+| **Cellule giganti multinucleate** | 0-8 | Feature spitzoide |
 | **Pattern infiltrazione** | 0-10 | |
 | **Atipia nucleare** | 0-10 | |
 | **Necrosi** | 0-5 | Red flag se presente |
 | **Ulcerazione** | 0-5 | |
 
-**Totale raw:** 0-105 punti → **normalizzato a 0-100**
-
-**Razionale pesi:**
-- **Maturazione (0-20):** Range più ampio perché criterio DIRIMENTE per Spitz vs melanoma
-- **Mitosi/Simmetria/Circoscrizione (0-15):** Range ampio per criteri maggiori Gates approach
-- **Altri criteri (0-5 a 0-10):** Range standard per features supportive/modifiers
+**Totale raw:** 0-103 punti → **normalizzato a 0-100**
 
 ### 🧪 Stratificazione Genetica (Bastian 2014)
 
@@ -159,7 +154,7 @@ Il tool include una **tabella comparativa collapsabile** che aiuta a distinguere
 Il tool identifica automaticamente **red flags critici**:
 
 - **Maturazione assente/invertita** (≥16 punti)
-- **Mitosi ≥6/mm² o multiple/atipiche** (≥12 punti)
+- **Mitosi ≥6/mm² e/o atipiche** (≥12 punti)
 - **Necrosi "en masse"** (5 punti)
 
 **→ Override automatico a diagnosi "Spitzoid Melanoma"**
@@ -234,8 +229,8 @@ Click su **"🧮 Calcola Malignancy Score"**
 
 - **Gates 0-8 approach** per diagnosi differenziale
 - **Criteri con range variabile** basati su rilevanza clinica
-- Maturazione e mitosi: range esteso (0-20, 0-15) per maggiore discriminazione
-- Altri criteri: range standard (0-5 a 0-10)
+- Maturazione e mitosi: range esteso per maggiore discriminazione
+- Altri criteri: range standard
 
 ### Genetica: Bastian 2014
 
@@ -280,31 +275,33 @@ Click su **"🧮 Calcola Malignancy Score"**
 
 ## 📝 Changelog
 
-### v3.6.3 (2024-11-27) - Current
+### v3.6.4 (2024-11-28) - Current
+**🧹 Pulizia & Fix**
+- ✅ Fix wording red flag mitosi: "≥6/mm² e/o atipiche" (più chiaro)
+- ✅ Giant cells: ridotto max da 10 a 8 punti (assenza non è patognomonica)
+- ✅ Link GitHub corretto al repository specifico
+- ✅ Pulizia documentazione: rimossi file obsoleti (READM.md)
+- ✅ Aggiornate istruzioni deployment
+- ✅ Max raw score: 103 (non più 105)
+
+### v3.6.3 (2024-11-27)
 **🐛 Bug Fixes & Improvements**
 - ✅ Fix red flag maturazione: threshold ≥16 (non solo 20)
-- ✅ Fix messaggio red flag mitosi: "≥6/mm² o multiple/atipiche"
-- ✅ Aggiunto Newman AJSP 2019 alla bibliografia (paper mancante)
+- ✅ Aggiunto Newman AJSP 2019 alla bibliografia
 - ✅ Nota clinica su cellule giganti assenti
-- ✅ Rimosso Kamino bodies dalla DD (non valutabile nel form)
-- ✅ Corretto "peso x3" → "range esteso" nella documentazione
-- ✅ Rimosso link LinkedIn placeholder
+- ✅ Rimosso Kamino bodies dalla DD
 
 ### v3.6.2 (2024-11-26)
 **✨ Diagnosi Differenziale**
 - Aggiunta sezione DD collapsabile lesioni spitzoidi vs nevi comuni
-- Tabella comparativa caratteristiche morfologiche
-- Rule of thumb pratica per selezione casi
 
 ### v3.6.1 (2024-11-26)
 **📋 Prerequisito Morfologico Esplicito**
 - Warning box dettagliato prima dei criteri
-- Workflow diagnostico corretto esplicitato
 
 ### v3.6 (2024-11-26)
 **🔄 Inversione Dropdown Completa**
 - Tutti dropdown invertiti per coerenza totale
-- Valori ALTI = maligno, valori BASSI = benigno
 
 ### v3.5 (2024-11-26)
 **📊 Malignancy Score Intuitivo**
@@ -312,13 +309,12 @@ Click su **"🧮 Calcola Malignancy Score"**
 
 ### v3.4 (2024-11-25)
 **🔧 Fix Matematico Scoring**
-- Sistema normalizzato: raw 0-105 → display 0-100
+- Sistema normalizzato
 
 ### v3.3 (2024-11-25)
 **📚 Bibliografia & Genetica**
-- Bibliografia interattiva con papers core
+- Bibliografia interattiva
 - Stratificazione genetica Bastian 2014
-- Sezione MAP3K8
 
 ---
 
@@ -329,7 +325,8 @@ Direttore SC Anatomia Patologica
 ASST Fatebenefratelli-Sacco, Milano
 
 📧 Email: filippo.bianchi@asst-fbf-sacco.it  
-💻 GitHub: [@infingardo](https://github.com/infingardo)
+💻 GitHub: [@infingardo](https://github.com/infingardo)  
+🔬 Repository: [spitz-melanoma-tool](https://github.com/infingardo/spitz-melanoma-tool)
 
 ---
 

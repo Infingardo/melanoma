@@ -1,32 +1,36 @@
-fix: v3.6.3 bug fixes and bibliography completion
+fix: v3.6.4 documentation cleanup and minor improvements
 
-CRITICAL FIXES:
-- Red flag maturazione: threshold ≥16 (was incorrectly documented as =20 only)
-- Red flag mitosi message: "≥6/mm² o multiple/atipiche" (was incomplete)
-- Added Newman AJSP 2019 to bibliography (missing paper)
-- Added clinical note for absent giant cells (suspicious in confirmed spitzoid)
-- Removed Kamino bodies from DD table (not evaluable in form)
+CHANGES:
+- Red flag mitosi wording: "≥6/mm² e/o atipiche" (clearer)
+- Giant cells: reduced max from 10 to 8 points (absence not pathognomonic)
+- GitHub footer link: now points to repository, not profile
+- Max raw score: 103 (was 105)
 
-DOCUMENTATION FIXES:
-- Corrected "peso x3" → "range esteso" (no multiplier exists in code)
-- Removed placeholder LinkedIn link
-- Fixed changelog dates (v3.4 was listed before v3.3)
-- Synchronized all documentation to v3.6.3
+DOCUMENTATION CLEANUP:
+- Removed obsolete READM.md (was stuck at v3.4)
+- Updated DEPLOYMENT_INSTRUCTIONS.md to v3.6.4
+- Simplified INDEX.md to reflect actual files
+- Synchronized all version numbers
 
-BIBLIOGRAPHY NOW INCLUDES:
-1. Bastian 2014 (Annu Rev Pathol) - core molecular taxonomy
-2. Newman 2019 Nature Medicine - MAP3K8 discovery
-3. Newman 2019 AJSP - MAP3K8 pediatric cohort (NEW)
-4. Houlier 2020 - MAP3K8 morpho-genetic correlations
-5. Massi & LeBoit 2014 - morphology textbook
-6. Raghavan 2020 - Spitz melanoma classification
+FILES:
+- index.html: v3.6.4 with fixes
+- README.md: updated changelog and methodology
+- COMMIT_MESSAGE.txt: this file
+- QUICK_START.md: simplified quick reference
 
-Files modified:
-- index.html: tooltips, red flags logic, bibliography array
-- README.md: methodology section, bibliography, changelog
+REMOVED:
+- READM.md (obsolete duplicate)
+- Outdated version-specific documentation
 
 BREAKING: None (backward compatible)
 
+Raw score calculation changed: 103 max (was 105)
+- Giant cells max: 8 (was 10)
+- All other criteria unchanged
+
 Author: Dr. Filippo Bianchi
 GitHub: infingardo
+Repository: https://github.com/infingardo/spitz-melanoma-tool
 Email: filippo.bianchi@asst-fbf-sacco.it
+Version: 3.6.4
+Date: 2024-11-28

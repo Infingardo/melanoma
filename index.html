@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.6.3 - Spitz vs Melanoma</title>
+    <title>Filippo's Diagnostic Algorithm v3.6.4 - Spitz vs Melanoma</title>
     <meta name="description" content="Algoritmo diagnostico con DD nevi comuni - Solo lesioni SPITZOIDI">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
     <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, differential diagnosis, bastian 2014, MAP3K8">
@@ -576,14 +576,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.3</h1>
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.4</h1>
             <div class="subtitle">
                 Algoritmo per lesioni SPITZOIDI con DD nevi comuni - Malignancy Score 0-100
             </div>
         </div>
 
         <div class="disclaimer" role="note">
-            <strong>⚠️ v3.6.3:</strong> Fix red flags, bibliografia completa, note cliniche migliorate.<br>
+            <strong>⚠️ v3.6.4:</strong> Fix wording red flags, link repository, pulizia documentazione.<br>
             <strong>DISCLAIMER:</strong> Tool è ausilio decisionale, non sostituisce esperienza del patologo.
         </div>
 
@@ -816,16 +816,16 @@
                     Cellule giganti multinucleate
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Feature spitzoide caratteristica</strong> (0-10 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 10 punti. <strong>NB:</strong> Se assenti in lesione confermata spitzoide, considerare diagnosi alternativa o valutare altri criteri con attenzione.
+                            <strong>Feature spitzoide caratteristica</strong> (0-8 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 8 punti (atipico, ma non patognomonico - verificare altri criteri).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
                 </label>
                 <select id="giant_cells">
                     <option value="0">Presenti e tipiche (0 punti - BENIGNO)</option>
-                    <option value="3">Presenti focalmente (3 punti)</option>
-                    <option value="7">Rare (7 punti)</option>
-                    <option value="10">Assenti (10 punti - verificare morfologia spitzoide)</option>
+                    <option value="2">Presenti focalmente (2 punti)</option>
+                    <option value="5">Rare (5 punti)</option>
+                    <option value="8">Assenti (8 punti - atipico, verificare morfologia)</option>
                 </select>
             </div>
 
@@ -834,7 +834,7 @@
                     Mitosi derma profondo
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (0-15 punti malignità). Assenti = 0 punti (benigno). ≥6/mm² o multiple/atipiche ≥12 punti = RED FLAG melanoma.
+                            <strong>Criterio critico</strong> (0-15 punti malignità). Assenti = 0 punti (benigno). ≥6/mm² e/o atipiche ≥12 punti = RED FLAG melanoma.
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -844,7 +844,7 @@
                     <option value="3">1-2/mm² derma profondo (3 punti)</option>
                     <option value="8">3-5/mm² derma profondo (8 punti)</option>
                     <option value="12">≥6/mm² derma profondo (12 punti - RED FLAG)</option>
-                    <option value="15">Multiple + atipiche (15 punti - RED FLAG)</option>
+                    <option value="15">Multiple e/o atipiche (15 punti - RED FLAG)</option>
                 </select>
             </div>
 
@@ -1031,9 +1031,9 @@
             <strong>Dr. Filippo Bianchi</strong> - Direttore SC Anatomia Patologica<br>
             ASST Fatebenefratelli-Sacco, Milano<br>
             📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
-            💻 <a href="https://github.com/infingardo" target="_blank">GitHub: infingardo</a><br>
+            💻 <a href="https://github.com/infingardo/spitz-melanoma-tool" target="_blank">GitHub Repository</a><br>
             <br>
-            <em>v3.6.3 (2024-11-27) - Fix red flags, bibliografia completa, note cliniche</em>
+            <em>v3.6.4 (2024-11-28) - Fix wording, link repo, documentazione pulita</em>
         </div>
     </div>
 
@@ -1189,7 +1189,7 @@
             }
         ];
 
-        // ========== MAIN CALCULATION (v3.6 SIMPLIFIED - NO INVERSION) ==========
+        // ========== MAIN CALCULATION (v3.6.4 - Giant cells max 8, totale 103) ==========
         function calculateScore() {
             const scores = {
                 maturation: parseInt(document.getElementById('maturation').value),
@@ -1203,19 +1203,22 @@
                 ulceration: parseInt(document.getElementById('ulceration').value)
             };
 
-            // Raw malignancy (0-105) - dropdown values are already malignancy points!
+            // Raw malignancy (0-103 con giant cells max 8) 
             const rawMalignancy = Object.values(scores).reduce((a, b) => a + b, 0);
             
+            // Max totale: 20+15+15+8+15+10+5+10+5 = 103
+            const maxRaw = 103;
+            
             // Normalized malignancy score (0-100)
-            const malignancyScore = Math.round((rawMalignancy / 105) * 100);
+            const malignancyScore = Math.round((rawMalignancy / maxRaw) * 100);
             
             // Display malignancy score
             document.getElementById('totalScore').textContent = malignancyScore;
             document.getElementById('result').style.display = 'block';
             
             // Generate interpretations
-            generateMorphInterpretation(malignancyScore, scores, rawMalignancy);
-            generateScoreBreakdown(scores, rawMalignancy, malignancyScore);
+            generateMorphInterpretation(malignancyScore, scores, rawMalignancy, maxRaw);
+            generateScoreBreakdown(scores, rawMalignancy, malignancyScore, maxRaw);
             generateBastianAnalysis();
             generateSummary(malignancyScore, scores);
             
@@ -1223,16 +1226,16 @@
             document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function generateMorphInterpretation(malignancyScore, scores, rawMalignancy) {
+        function generateMorphInterpretation(malignancyScore, scores, rawMalignancy, maxRaw) {
             let interpretation = '';
             let alertClass = '';
             let diagnosis = '';
             let action = '';
 
-            // Red flags check (NOW LOOKING FOR HIGH VALUES) - v3.6.3: threshold maturazione = 16
+            // Red flags check - v3.6.4: wording migliorato
             const redFlags = [];
-            if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita (≥16 punti)');
-            if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² o multiple/atipiche (≥12 punti)');
+            if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita');
+            if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² e/o atipiche');
             if (scores.necrosis >= 5) redFlags.push('Necrosi "en masse"');
 
             if (redFlags.length > 0) {
@@ -1263,7 +1266,7 @@
             }
 
             if (redFlags.length === 0) {
-                interpretation = `<strong>Malignancy Score:</strong> ${malignancyScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/105)</span><br><strong>Diagnosi suggerita:</strong> ${diagnosis}<br><strong>Raccomandazioni:</strong> ${action}`;
+                interpretation = `<strong>Malignancy Score:</strong> ${malignancyScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/${maxRaw})</span><br><strong>Diagnosi suggerita:</strong> ${diagnosis}<br><strong>Raccomandazioni:</strong> ${action}`;
             }
 
             document.getElementById('morphInterpretation').innerHTML = `
@@ -1273,7 +1276,7 @@
             `;
         }
 
-        function generateScoreBreakdown(scores, rawMalignancy, malignancyScore) {
+        function generateScoreBreakdown(scores, rawMalignancy, malignancyScore, maxRaw) {
             const labels = {
                 maturation: 'Maturazione A→B→C',
                 symmetry: 'Simmetria',
@@ -1290,7 +1293,7 @@
                 maturation: 20,
                 symmetry: 15,
                 circumscription: 15,
-                giant_cells: 10,
+                giant_cells: 8,  // v3.6.4: ridotto da 10 a 8
                 mitoses: 15,
                 infiltration: 10,
                 necrosis: 5,
@@ -1300,9 +1303,9 @@
 
             let html = '<div class="section-title">Breakdown Punteggi</div>';
             html += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: var(--accent-soft); border-radius: 0.5rem; font-size: 0.85rem;">
-                <strong>Sistema di scoring v3.6.3:</strong><br>
-                1. Somma punti malignità dai dropdown: ${rawMalignancy}/105<br>
-                2. <strong>Normalizza a 0-100: ${malignancyScore}/100 = round((${rawMalignancy}/105) × 100)</strong><br>
+                <strong>Sistema di scoring v3.6.4:</strong><br>
+                1. Somma punti malignità dai dropdown: ${rawMalignancy}/${maxRaw}<br>
+                2. <strong>Normalizza a 0-100: ${malignancyScore}/100 = round((${rawMalignancy}/${maxRaw}) × 100)</strong><br>
                 <em style="opacity: 0.8;">✅ INTUITIVO: Selezioni ALTE nei dropdown → Score ALTO → Melanoma | Selezioni BASSE → Score BASSO → Spitz</em>
             </div>`;
             html += '<table class="breakdown-table"><thead><tr><th>Criterio</th><th>Malignità</th><th>Max</th><th>Status</th></tr></thead><tbody>';
@@ -1313,7 +1316,6 @@
                 let status = '';
                 let chipClass = '';
 
-                // NOW: High percentage = malignant
                 if (percentage <= 30) {
                     status = 'Benigno';
                     chipClass = 'chip-ok';
@@ -1335,7 +1337,7 @@
 
             html += `<tr style="border-top: 2px solid var(--border); font-weight: 600;">
                 <td>TOTALE</td>
-                <td colspan="2">Raw: ${rawMalignancy}/105</td>
+                <td colspan="2">Raw: ${rawMalignancy}/${maxRaw}</td>
                 <td><span class="chip chip-info">Score: ${malignancyScore}/100</span></td>
             </tr>`;
             html += '</tbody></table>';
