@@ -1,0 +1,21 @@
+fix: v3.6.5 fix linguistici e codice
+
+CHANGES:
+- "Keratinocyte necrosis focale" → "Necrosi cheratinocitaria focale"
+- "Tool è ausilio" → "Il tool è un ausilio" (disclaimer + sommario)
+- showBibCard() refactored: usa switchTab() direttamente (più robusto)
+- Versione aggiornata a 3.6.5
+
+TO DELETE FROM REPO:
+- DEPLOYMENT_INSTRUCTIONS.md (obsoleto, riferisce a v3.3)
+
+COMMIT COMMANDS:
+git rm DEPLOYMENT_INSTRUCTIONS.md
+git add index.html
+git commit -m "fix: v3.6.5 fix linguistici e codice"
+git push origin main
+
+---
+Author: Dr. Filippo Bianchi
+Version: 3.6.5
+Date: 2024-12-06
