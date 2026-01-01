@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.6.4 - Spitz vs Melanoma</title>
+    <title>Filippo's Diagnostic Algorithm v3.6.6 - Spitz vs Melanoma</title>
     <meta name="description" content="Algoritmo diagnostico con DD nevi comuni - Solo lesioni SPITZOIDI">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
     <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, differential diagnosis, bastian 2014, MAP3K8">
@@ -576,15 +576,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.4</h1>
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.6</h1>
             <div class="subtitle">
                 Algoritmo per lesioni SPITZOIDI con DD nevi comuni - Malignancy Score 0-100
             </div>
         </div>
 
         <div class="disclaimer" role="note">
-            <strong>⚠️ v3.6.4:</strong> Fix wording red flags, link repository, pulizia documentazione.<br>
-            <strong>DISCLAIMER:</strong> Tool è ausilio decisionale, non sostituisce esperienza del patologo.
+            <strong>⚠️ v3.6.6:</strong> Caveat medico-legali, SNB limitazioni, warning overconfidence.<br>
+            <strong>DISCLAIMER:</strong> Il tool è un ausilio decisionale, non sostituisce l'esperienza del patologo.
         </div>
 
         <div class="alert alert-warning" style="margin-bottom: 2rem;">
@@ -816,7 +816,7 @@
                     Cellule giganti multinucleate
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Feature spitzoide caratteristica</strong> (0-8 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 8 punti (atipico, ma non patognomonico - verificare altri criteri).
+                            <strong>Feature spitzoide caratteristica</strong> (0-8 punti malignità). Presenti e tipiche = 0 punti (benigno Spitz). Assenti = 8 punti (non discriminante da solo - verificare altri criteri).
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -825,7 +825,7 @@
                     <option value="0">Presenti e tipiche (0 punti - BENIGNO)</option>
                     <option value="2">Presenti focalmente (2 punti)</option>
                     <option value="5">Rare (5 punti)</option>
-                    <option value="8">Assenti (8 punti - atipico, verificare morfologia)</option>
+                    <option value="8">Assenti (8 punti - non discriminante da solo)</option>
                 </select>
             </div>
 
@@ -878,7 +878,7 @@
                 </label>
                 <select id="necrosis">
                     <option value="0">Assente (0 punti - BENIGNO)</option>
-                    <option value="1">Keratinocyte necrosis focale (1 punto)</option>
+                    <option value="1">Necrosi cheratinocitaria focale (1 punto)</option>
                     <option value="3">Necrosi piccoli foci (3 punti)</option>
                     <option value="5">Necrosi "en masse" (5 punti - RED FLAG)</option>
                 </select>
@@ -1033,7 +1033,7 @@
             📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
             💻 <a href="https://github.com/infingardo/spitz-melanoma-tool" target="_blank">GitHub Repository</a><br>
             <br>
-            <em>v3.6.4 (2024-11-28) - Fix wording, link repo, documentazione pulita</em>
+            <em>v3.6.6 (2024-12-06) - Caveat medico-legali, SNB limitazioni, warning overconfidence</em>
         </div>
     </div>
 
@@ -1189,7 +1189,7 @@
             }
         ];
 
-        // ========== MAIN CALCULATION (v3.6.4 - Giant cells max 8, totale 103) ==========
+        // ========== MAIN CALCULATION (v3.6.5 - Giant cells max 8, totale 103) ==========
         function calculateScore() {
             const scores = {
                 maturation: parseInt(document.getElementById('maturation').value),
@@ -1241,7 +1241,7 @@
             if (redFlags.length > 0) {
                 alertClass = 'danger';
                 diagnosis = '⚠️ SPITZOID MELANOMA - RED FLAGS PRESENTI';
-                action = 'URGENTE: Staging completo, genomica raccomandata, discussione MDT, consider sentinel node biopsy';
+                action = 'URGENTE: Staging completo, genomica raccomandata, discussione MDT. SNB da valutare in MDT (valore prognostico limitato nelle lesioni spitzoidi)';
                 interpretation = `<strong>RED FLAGS IDENTIFICATI:</strong><ul style="margin: 0.5rem 0 0 1.2rem;">`;
                 redFlags.forEach(flag => {
                     interpretation += `<li>${flag}</li>`;
@@ -1254,7 +1254,7 @@
             } else if (malignancyScore >= 51) {
                 alertClass = 'warning';
                 diagnosis = 'Atypical Spitz Tumor with concerning features';
-                action = 'Genomica raccomandata, consider sentinel node, follow-up stretto';
+                action = 'Genomica raccomandata, SNB da discutere in MDT (valore prognostico limitato), follow-up stretto';
             } else if (malignancyScore >= 31) {
                 alertClass = 'warning';
                 diagnosis = 'Atypical Spitz Tumor (AST)';
@@ -1303,7 +1303,7 @@
 
             let html = '<div class="section-title">Breakdown Punteggi</div>';
             html += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: var(--accent-soft); border-radius: 0.5rem; font-size: 0.85rem;">
-                <strong>Sistema di scoring v3.6.4:</strong><br>
+                <strong>Sistema di scoring v3.6.6:</strong><br>
                 1. Somma punti malignità dai dropdown: ${rawMalignancy}/${maxRaw}<br>
                 2. <strong>Normalizza a 0-100: ${malignancyScore}/100 = round((${rawMalignancy}/${maxRaw}) × 100)</strong><br>
                 <em style="opacity: 0.8;">✅ INTUITIVO: Selezioni ALTE nei dropdown → Score ALTO → Melanoma | Selezioni BASSE → Score BASSO → Spitz</em>
@@ -1538,16 +1538,20 @@
             // Integrazione morfologia + genetica
             let finalDiagnosis = '';
             let confidence = '';
+            let refertableSentence = '';
 
             if (driverMutation === 'tert' || cnaProfile === 'multiple_cna' || cnaProfile === 'chr_6_loss') {
                 finalDiagnosis = '⚠️ MELANOMA - Criteri solidi genetici presenti';
                 confidence = 'Alta (genomica supporta malignità)';
+                refertableSentence = 'Melanoma spitzoide con alterazioni genetiche associate a comportamento biologico aggressivo.';
             } else if (normalizedScore >= 71) {
                 finalDiagnosis = 'Spitzoid Melanoma (morfologia)';
                 confidence = driverMutation ? 'Moderata-Alta' : 'Moderata (solo morfologia)';
+                refertableSentence = 'Lesione melanocitica spitzoide con caratteristiche morfologiche fortemente suggestive di melanoma.';
             } else if (normalizedScore >= 51) {
                 finalDiagnosis = 'Atypical Spitz Tumor with concerning features';
                 confidence = 'Moderata (genomica raccomandata)';
+                refertableSentence = 'Lesione melanocitica spitzoide con caratteristiche morfologiche e/o genetiche associate a comportamento biologico potenzialmente aggressivo.';
             } else if (driverMutation === 'hras' && cnaProfile === 'single_gain') {
                 finalDiagnosis = 'Spitz Nevus (HRAS low-risk profile)';
                 confidence = 'Alta (morfologia + genetica concordanti)';
@@ -1557,14 +1561,46 @@
             } else {
                 finalDiagnosis = 'Atypical Spitz Tumor';
                 confidence = 'Moderata';
+                refertableSentence = 'Tumore di Spitz atipico; si raccomanda correlazione clinica e considerare approfondimento genetico.';
             }
 
             summary += `<div class="alert alert-warning">
                 <strong>Diagnosi Finale Integrata:</strong> ${finalDiagnosis}<br>
-                <strong>Livello di Confidenza:</strong> ${confidence}<br><br>
+                <strong>Livello di Confidenza:</strong> ${confidence}<br>
+                ${refertableSentence ? `<br><strong>📝 Frase refertabile suggerita:</strong><br><em>"${refertableSentence}"</em><br>` : ''}
+                <br>
                 <strong>⚠️ REMINDER:</strong> Diagnosi finale richiede correlazione clinica, revisione morfologica esperta, 
-                e contestualizzazione del caso specifico. Tool è ausilio decisionale, non sostituisce giudizio del patologo.
+                e contestualizzazione del caso specifico. Il tool è un ausilio decisionale, non sostituisce il giudizio del patologo.
             </div>`;
+
+            // Warning overconfidence per score bassi
+            if (normalizedScore <= 30) {
+                summary += `<div class="alert alert-info" style="border-color: #17a2b8;">
+                    <strong>⚠️ ATTENZIONE - Score basso:</strong><br>
+                    Uno score basso (≤30) <strong>non esclude</strong> la necessità di rivalutazione in caso di:
+                    <ul style="margin: 0.5rem 0 0 1.2rem;">
+                        <li><strong>Discordanza clinica:</strong> lesione clinicamente atipica o in crescita</li>
+                        <li><strong>Campionamento limitato:</strong> biopsia parziale, shave superficiale</li>
+                        <li><strong>Età/sede atipiche:</strong> adulto >40 anni, sedi non classiche</li>
+                        <li><strong>Recidiva locale:</strong> dopo precedente escissione</li>
+                    </ul>
+                    <em>In caso di dubbio: second opinion esperta e/o approfondimento genetico.</em>
+                </div>`;
+            }
+
+            // Nota SNB per score alti
+            if (normalizedScore >= 51 || driverMutation === 'map3k8') {
+                summary += `<div class="alert alert-info" style="border-color: #6c757d; background: #f8f9fa;">
+                    <strong>📋 Nota su Sentinel Node Biopsy:</strong><br>
+                    La SNB nelle lesioni spitzoidi ha <strong>valore prognostico limitato</strong>:
+                    <ul style="margin: 0.5rem 0 0 1.2rem;">
+                        <li>Positività linfonodale frequente anche in AST con decorso benigno</li>
+                        <li>In casi pediatrici/MAP3K8: può dare falsi segnali prognostici</li>
+                        <li><strong>Decisione da discutere sempre in MDT</strong>, bilanciando rischi/benefici</li>
+                    </ul>
+                    <em style="font-size: 0.8rem;">Ref: Ludgate et al. J Clin Oncol 2009; Lallas et al. JAAD 2014</em>
+                </div>`;
+            }
 
             document.getElementById('summaryContent').innerHTML = summary;
         }
@@ -1657,10 +1693,18 @@
             URL.revokeObjectURL(url);
         }
         
+        // v3.6.5: showBibCard refactored - usa switchTab() direttamente
         function showBibCard(id) {
-            // Switch to bibliography tab
-            const bibTab = Array.from(document.querySelectorAll('.tab')).find(t => t.onclick.toString().includes('bibliography'));
-            if (bibTab) bibTab.click();
+            // Switch to bibliography tab using switchTab directly
+            switchTab(null, 'bibliography');
+            
+            // Activate the correct tab button
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.trim() === 'Bibliografia') {
+                    tab.classList.add('active');
+                }
+            });
             
             setTimeout(() => {
                 const card = document.querySelector(`.bib-card[data-id="${id}"]`);
@@ -1682,7 +1726,7 @@
             });
             
             document.getElementById(tabName).classList.add('active');
-            if (event) event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
         }
 
         // ========== UTILITY FUNCTIONS ==========
