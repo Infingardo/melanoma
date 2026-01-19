@@ -1,0 +1,31 @@
+feat: v3.6.9 framework filosofico Urso/Ackerman
+
+CHANGES:
+- Bibliografia: aggiunto Urso 2019 (AJDP) e Urso 2020 (Dermatopatologia Forum)
+- Framework driver/promoter mutations integrato nella documentazione
+- Nota Ackerman nel summary per score 31-70: "il nevo, il melanoma, e il non lo so"
+
+CONCEPTUAL FRAMEWORK:
+Urso (2019, 2020) teorizza che:
+- Mutazioni DRIVER: precoci, condivise nevo↔melanoma, mutuamente esclusive → definiscono fenotipo
+- Mutazioni PROMOTER: tardive, cumulative, solo nei maligni → conferiscono malignità
+- "Nevo, neoplasia borderline e melanoma sono tre successivi stati genetici dello stesso processo"
+
+CLINICAL IMPLICATION:
+Il territorio intermedio (score 31-70) non è un fallimento diagnostico.
+È la risposta corretta per lesioni nel continuum biologico.
+Come diceva Ackerman: "il nevo, il melanoma, e il non lo so"
+
+NEW BIBLIOGRAPHY:
+- Urso C. Am J Dermatopathol 2019;41:623-629. PMID: 30585798
+- Urso C. Dermatopatologia Forum 2020. Centro Studi Firenze.
+
+COMMIT COMMANDS:
+git add index.html README.md
+git commit -m "feat: v3.6.9 framework filosofico Urso/Ackerman"
+git push origin main
+
+---
+Author: Dr. Filippo Bianchi
+Version: 3.6.9
+Date: 2025-01-19

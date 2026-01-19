@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.6.6 - Spitz vs Melanoma</title>
+    <title>Filippo's Diagnostic Algorithm v3.6.9 - Spitz vs Melanoma</title>
     <meta name="description" content="Algoritmo diagnostico con DD nevi comuni - Solo lesioni SPITZOIDI">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
     <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, differential diagnosis, bastian 2014, MAP3K8">
@@ -130,7 +130,7 @@
             border-radius: 0.5rem;
             font-size: 0.75rem;
             line-height: 1.4;
-            width: 300px;
+            width: 320px;
             top: 100%;
             left: 0;
             margin-top: 0.5rem;
@@ -149,7 +149,7 @@
             opacity: 1;
         }
 
-        select, input {
+        select, input[type="text"] {
             width: 100%;
             padding: 0.7rem;
             border: 1px solid var(--border);
@@ -163,6 +163,62 @@
         select:focus, input:focus {
             outline: none;
             border-color: var(--accent);
+        }
+
+        /* Checkbox styling */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border: 2px solid var(--warning);
+            border-radius: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.1rem;
+            cursor: pointer;
+            accent-color: var(--warning);
+        }
+
+        .checkbox-group label {
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .checkbox-group .checkbox-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+            font-weight: normal;
+        }
+
+        .partial-biopsy-warning {
+            display: none;
+            background: #f8d7da;
+            border-left: 4px solid var(--danger);
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+        }
+
+        .partial-biopsy-warning.visible {
+            display: block;
+        }
+
+        .criteria-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .criteria-disabled select {
+            background: #e9ecef;
         }
 
         .btn-primary {
@@ -536,6 +592,20 @@
             border-top: 1px solid var(--border);
         }
 
+        /* Expert role box */
+        .expert-role-box {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 1.2rem;
+            border-radius: 0.7rem;
+            margin: 1.5rem 0;
+            border-left: 5px solid var(--accent);
+        }
+
+        .expert-role-box strong {
+            color: #81d4fa;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.5rem;
@@ -576,15 +646,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.6</h1>
+            <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.7</h1>
             <div class="subtitle">
                 Algoritmo per lesioni SPITZOIDI con DD nevi comuni - Malignancy Score 0-100
             </div>
         </div>
 
         <div class="disclaimer" role="note">
-            <strong>⚠️ v3.6.6:</strong> Caveat medico-legali, SNB limitazioni, warning overconfidence.<br>
-            <strong>DISCLAIMER:</strong> Il tool è un ausilio decisionale, non sostituisce l'esperienza del patologo.
+            <strong>⚠️ v3.6.9:</strong> Bibliografia Urso, nota Ackerman sul "non lo so".<br>
+            <strong>PRINCIPIO GUIDA:</strong> Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. 
+            Un valore elevato rafforza l'ipotesi di malignità nel contesto clinico-patologico appropriato; <strong>non la determina in isolamento</strong>.
         </div>
 
         <div class="alert alert-warning" style="margin-bottom: 2rem;">
@@ -754,12 +825,45 @@
         
         <div class="card">
             <div class="section-title">📊 Criteri Morfologici - Punti Malignità (Massi & LeBoit 2014)</div>
+            
+            <!-- v3.6.7: FLAG BIOPSIA PARZIALE -->
+            <div class="checkbox-group">
+                <input type="checkbox" id="partialBiopsy" onchange="togglePartialBiopsy()">
+                <div>
+                    <label for="partialBiopsy">
+                        🔬 <strong>Biopsia parziale</strong> (shave, punch, incisionale)
+                    </label>
+                    <div class="checkbox-description">
+                        Se selezionato: <strong>Simmetria</strong> e <strong>Circoscrizione</strong> verranno escluse dal calcolo 
+                        (non valutabili su campione parziale). Il max score sarà ricalcolato di conseguenza.
+                    </div>
+                    <div id="partialBiopsyWarning" class="partial-biopsy-warning">
+                        ⚠️ <strong>Attenzione:</strong> Su biopsia parziale, simmetria e circoscrizione non sono attendibili. 
+                        Il calcolo è basato su 7/9 criteri. Escissione completa raccomandata per valutazione definitiva.
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>
                     Maturazione A→B→C
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (0-20 punti malignità). Maturazione presente = 0 punti (benigno). Assente/invertita ≥16 punti = RED FLAG melanoma.
+                            <strong>🎯 CRITERIO PIÙ IMPORTANTE</strong> (0-20 punti malignità).<br><br>
+                            <strong>Definizione operativa (non solo profondità!):</strong><br>
+                            Maturazione = riduzione progressiva di:<br>
+                            • <strong>Dimensioni cellulari</strong> (da grandi a piccole)<br>
+                            • <strong>Volume citoplasmatico</strong> (da abbondante a scarso)<br>
+                            • <strong>Attività mitotica</strong> (da presente a assente in profondità)<br><br>
+                            <strong>Cosa significa A→B→C:</strong><br>
+                            • <strong>Tipo A</strong> (giunzionale): cellule grandi, epitelioidi, nidi prominenti<br>
+                            • <strong>Tipo B</strong> (transizione): cellule medio-piccole, meno nidificate<br>
+                            • <strong>Tipo C</strong> (derma profondo): cellule piccole, sparse, neurotropiche<br><br>
+                            <strong>Come valutare:</strong><br>
+                            ✅ <em>Presente:</em> tutte e tre le componenti diminuiscono in profondità<br>
+                            ❌ <em>Assente:</em> cellule grandi/atipiche/mitotiche fino alla base<br>
+                            ⚠️ <em>Invertita:</em> cellule PIÙ atipiche in profondità (red flag!)<br><br>
+                            <strong>Perché è critico:</strong> Singolo criterio con maggior potere discriminante tra Spitz benigno e melanoma.
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -773,12 +877,13 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="symmetryGroup">
                 <label>
                     Simmetria
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
                             <strong>Criterio importante</strong> (0-15 punti malignità). Simmetrica = 0 punti (benigno). Asimmetrica = 15 punti (maligno).
+                            <br><br><em>⚠️ Non valutabile su biopsia parziale (shave/punch).</em>
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -792,12 +897,13 @@
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="circumscriptionGroup">
                 <label>
                     Circoscrizione
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
                             <strong>Criterio importante</strong> (0-15 punti malignità). Ben circoscritta = 0 punti (benigno). Infiltrativa = 15 punti (maligno).
+                            <br><br><em>⚠️ Non valutabile su biopsia parziale (shave/punch).</em>
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -834,7 +940,11 @@
                     Mitosi derma profondo
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Criterio critico</strong> (0-15 punti malignità). Assenti = 0 punti (benigno). ≥6/mm² e/o atipiche ≥12 punti = RED FLAG melanoma.
+                            <strong>Criterio critico</strong> (0-15 punti malignità).<br><br>
+                            <strong>⚠️ Metodo di conta: HOT SPOT (WHO-style)</strong><br>
+                            Contare nell'area di 1 mm² con maggior densità mitotica nel derma profondo, NON fare la media su più campi.<br><br>
+                            Assenti = 0 punti (benigno). ≥6/mm² e/o atipiche ≥12 punti = RED FLAG melanoma.<br><br>
+                            <em>Mitosi atipiche (tripolari, multipolari, asimmetriche) pesano più del numero assoluto.</em>
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -889,7 +999,11 @@
                     Atipia nucleare
                     <span class="tooltip-trigger">ⓘ
                         <span class="tooltip">
-                            <strong>Atipia citologica</strong> (0-10 punti malignità). Minima = 0 punti (Spitz OK). Estrema = 10 punti (melanoma).
+                            <strong>Atipia citologica</strong> (0-10 punti malignità).<br><br>
+                            Minima = 0 punti (Spitz OK). Estrema = 10 punti (melanoma).<br><br>
+                            <strong>⚠️ ATTENZIONE:</strong> Atipia senza perdita di maturazione ≠ melanoma.<br>
+                            Molti Spitz benigni hanno nuclei grandi e "strani" — è la perdita di maturazione che conta, non l'atipia isolata.<br><br>
+                            <em>Non farsi sedurre dall'atipia: valutare sempre nel contesto degli altri criteri.</em>
                             <a href="#" onclick="event.preventDefault(); showBibCard('massi2014')">📚 Massi 2014</a>
                         </span>
                     </span>
@@ -1033,7 +1147,7 @@
             📧 <a href="mailto:filippo.bianchi@asst-fbf-sacco.it">filippo.bianchi@asst-fbf-sacco.it</a> | 
             💻 <a href="https://github.com/infingardo/spitz-melanoma-tool" target="_blank">GitHub Repository</a><br>
             <br>
-            <em>v3.6.6 (2024-12-06) - Caveat medico-legali, SNB limitazioni, warning overconfidence</em>
+            <em>v3.6.9 (2025-01-19) - Bibliografia Urso (driver/promoter), nota Ackerman ("il non lo so")</em>
         </div>
     </div>
 
@@ -1186,15 +1300,81 @@
   doi = {10.1038/s41379-019-0445-z},
   pmid = {31857696}
 }`
+            },
+            {
+                id: 'urso2019',
+                authors: 'Urso C',
+                year: 2019,
+                title: 'Melanocytic skin neoplasms: what lesson from genomic aberrations?',
+                journal: 'American Journal of Dermatopathology',
+                volume: 41,
+                pages: '623-629',
+                pmid: '30585798',
+                url: 'https://pubmed.ncbi.nlm.nih.gov/30585798/',
+                category: 'review',
+                supportedCriteria: ['spitz_general', 'continuum'],
+                keyFindings: 'Framework concettuale driver/promoter mutations. Mutazioni driver: precoci, condivise nevo↔melanoma, mutuamente esclusive, definiscono il fenotipo. Mutazioni promoter: tardive, cumulative, solo nei maligni, conferiscono malignità. "Nevo, neoplasia borderline e melanoma non sono tre neoplasie diverse, ma tre successivi stati genetici dello stesso processo neoplastico."',
+                bibtex: `@article{Urso2019,
+  author = {Urso, Carmelo},
+  title = {Melanocytic skin neoplasms: what lesson from genomic aberrations?},
+  journal = {American Journal of Dermatopathology},
+  volume = {41},
+  pages = {623-629},
+  year = {2019},
+  pmid = {30585798}
+}`
+            },
+            {
+                id: 'urso2020',
+                authors: 'Urso C',
+                year: 2020,
+                title: 'La rivoluzione della genetica nelle lesioni melanocitiche',
+                journal: 'Dermatopatologia Forum',
+                volume: null,
+                pages: '1-3',
+                url: null,
+                category: 'review',
+                supportedCriteria: ['spitz_general', 'continuum', 'philosophy'],
+                keyFindings: 'Revisione del framework driver/promoter applicato alla diagnosi. La relazione forma-comportamento è costante perché prodotta dall\'irreversibile modifica del patrimonio genetico. La proporzionalità atipia-malignità può essere parziale: mutazioni promoter possono accumularsi più velocemente di quelle che modificano la morfologia (melanomi nevoidi) o viceversa (nevi atipici). Spiega perché alcune diagnosi sono "difficili, difficilissime o impossibili".',
+                bibtex: `@article{Urso2020,
+  author = {Urso, Carmelo},
+  title = {La rivoluzione della genetica nelle lesioni melanocitiche},
+  journal = {Dermatopatologia Forum},
+  year = {2020},
+  note = {Centro Studi Dermatopatologia di Firenze}
+}`
             }
         ];
 
-        // ========== MAIN CALCULATION (v3.6.5 - Giant cells max 8, totale 103) ==========
+        // v3.6.7: Toggle biopsia parziale
+        function togglePartialBiopsy() {
+            const isPartial = document.getElementById('partialBiopsy').checked;
+            const symmetryGroup = document.getElementById('symmetryGroup');
+            const circumscriptionGroup = document.getElementById('circumscriptionGroup');
+            const warning = document.getElementById('partialBiopsyWarning');
+            
+            if (isPartial) {
+                symmetryGroup.classList.add('criteria-disabled');
+                circumscriptionGroup.classList.add('criteria-disabled');
+                warning.classList.add('visible');
+                // Reset valori a 0 quando disabilitati
+                document.getElementById('symmetry').value = '0';
+                document.getElementById('circumscription').value = '0';
+            } else {
+                symmetryGroup.classList.remove('criteria-disabled');
+                circumscriptionGroup.classList.remove('criteria-disabled');
+                warning.classList.remove('visible');
+            }
+        }
+
+        // ========== MAIN CALCULATION (v3.6.7 - Con supporto biopsia parziale) ==========
         function calculateScore() {
+            const isPartialBiopsy = document.getElementById('partialBiopsy').checked;
+            
             const scores = {
                 maturation: parseInt(document.getElementById('maturation').value),
-                symmetry: parseInt(document.getElementById('symmetry').value),
-                circumscription: parseInt(document.getElementById('circumscription').value),
+                symmetry: isPartialBiopsy ? 0 : parseInt(document.getElementById('symmetry').value),
+                circumscription: isPartialBiopsy ? 0 : parseInt(document.getElementById('circumscription').value),
                 giant_cells: parseInt(document.getElementById('giant_cells').value),
                 mitoses: parseInt(document.getElementById('mitoses').value),
                 infiltration: parseInt(document.getElementById('infiltration').value),
@@ -1203,11 +1383,13 @@
                 ulceration: parseInt(document.getElementById('ulceration').value)
             };
 
-            // Raw malignancy (0-103 con giant cells max 8) 
+            // Raw malignancy - calcolo dinamico in base a biopsia parziale
             const rawMalignancy = Object.values(scores).reduce((a, b) => a + b, 0);
             
-            // Max totale: 20+15+15+8+15+10+5+10+5 = 103
-            const maxRaw = 103;
+            // Max totale: dipende da biopsia parziale
+            // Full: 20+15+15+8+15+10+5+10+5 = 103
+            // Partial: 20+0+0+8+15+10+5+10+5 = 73 (esclusi simmetria e circoscrizione)
+            const maxRaw = isPartialBiopsy ? 73 : 103;
             
             // Normalized malignancy score (0-100)
             const malignancyScore = Math.round((rawMalignancy / maxRaw) * 100);
@@ -1217,22 +1399,22 @@
             document.getElementById('result').style.display = 'block';
             
             // Generate interpretations
-            generateMorphInterpretation(malignancyScore, scores, rawMalignancy, maxRaw);
-            generateScoreBreakdown(scores, rawMalignancy, malignancyScore, maxRaw);
+            generateMorphInterpretation(malignancyScore, scores, rawMalignancy, maxRaw, isPartialBiopsy);
+            generateScoreBreakdown(scores, rawMalignancy, malignancyScore, maxRaw, isPartialBiopsy);
             generateBastianAnalysis();
-            generateSummary(malignancyScore, scores);
+            generateSummary(malignancyScore, scores, isPartialBiopsy);
             
             // Scroll to result
             document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function generateMorphInterpretation(malignancyScore, scores, rawMalignancy, maxRaw) {
+        function generateMorphInterpretation(malignancyScore, scores, rawMalignancy, maxRaw, isPartialBiopsy) {
             let interpretation = '';
             let alertClass = '';
             let diagnosis = '';
             let action = '';
 
-            // Red flags check - v3.6.4: wording migliorato
+            // Red flags check
             const redFlags = [];
             if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita');
             if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² e/o atipiche');
@@ -1269,6 +1451,14 @@
                 interpretation = `<strong>Malignancy Score:</strong> ${malignancyScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/${maxRaw})</span><br><strong>Diagnosi suggerita:</strong> ${diagnosis}<br><strong>Raccomandazioni:</strong> ${action}`;
             }
 
+            // Avviso biopsia parziale
+            if (isPartialBiopsy) {
+                interpretation += `<br><br><div style="background: #fff3cd; padding: 0.6rem; border-radius: 0.4rem; font-size: 0.85rem; border-left: 3px solid #ffc107;">
+                    <strong>⚠️ Biopsia parziale:</strong> Score calcolato su 7/9 criteri (esclusi simmetria/circoscrizione). 
+                    <strong>Escissione completa raccomandata</strong> per valutazione definitiva.
+                </div>`;
+            }
+
             document.getElementById('morphInterpretation').innerHTML = `
                 <div class="interpretation ${alertClass}">
                     ${interpretation}
@@ -1276,7 +1466,7 @@
             `;
         }
 
-        function generateScoreBreakdown(scores, rawMalignancy, malignancyScore, maxRaw) {
+        function generateScoreBreakdown(scores, rawMalignancy, malignancyScore, maxRaw, isPartialBiopsy) {
             const labels = {
                 maturation: 'Maturazione A→B→C',
                 symmetry: 'Simmetria',
@@ -1291,9 +1481,9 @@
 
             const maxScores = {
                 maturation: 20,
-                symmetry: 15,
-                circumscription: 15,
-                giant_cells: 8,  // v3.6.4: ridotto da 10 a 8
+                symmetry: isPartialBiopsy ? 0 : 15,
+                circumscription: isPartialBiopsy ? 0 : 15,
+                giant_cells: 8,
                 mitoses: 15,
                 infiltration: 10,
                 necrosis: 5,
@@ -1303,8 +1493,8 @@
 
             let html = '<div class="section-title">Breakdown Punteggi</div>';
             html += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: var(--accent-soft); border-radius: 0.5rem; font-size: 0.85rem;">
-                <strong>Sistema di scoring v3.6.6:</strong><br>
-                1. Somma punti malignità dai dropdown: ${rawMalignancy}/${maxRaw}<br>
+                <strong>Sistema di scoring v3.6.7:</strong><br>
+                1. Somma punti malignità dai dropdown: ${rawMalignancy}/${maxRaw}${isPartialBiopsy ? ' <em>(biopsia parziale: 7 criteri)</em>' : ''}<br>
                 2. <strong>Normalizza a 0-100: ${malignancyScore}/100 = round((${rawMalignancy}/${maxRaw}) × 100)</strong><br>
                 <em style="opacity: 0.8;">✅ INTUITIVO: Selezioni ALTE nei dropdown → Score ALTO → Melanoma | Selezioni BASSE → Score BASSO → Spitz</em>
             </div>`;
@@ -1312,7 +1502,18 @@
 
             for (const [key, value] of Object.entries(scores)) {
                 const max = maxScores[key];
-                const percentage = (value / max) * 100;
+                
+                // Skip se criterio disabilitato
+                if (isPartialBiopsy && (key === 'symmetry' || key === 'circumscription')) {
+                    html += `<tr style="opacity: 0.5;">
+                        <td>${labels[key]}</td>
+                        <td colspan="2"><em>Non valutabile (biopsia parziale)</em></td>
+                        <td><span class="chip" style="background: #e9ecef; color: #6c757d;">N/A</span></td>
+                    </tr>`;
+                    continue;
+                }
+                
+                const percentage = max > 0 ? (value / max) * 100 : 0;
                 let status = '';
                 let chipClass = '';
 
@@ -1523,14 +1724,14 @@
             document.getElementById('bastianAnalysis').innerHTML = analysis;
         }
 
-        function generateSummary(normalizedScore, scores) {
+        function generateSummary(normalizedScore, scores, isPartialBiopsy) {
             const driverMutation = document.getElementById('bastian_driver').value;
             const cnaProfile = document.getElementById('bastian_cna').value;
 
             let summary = '<div class="section-title">📋 Sommario Integrato</div>';
             
             summary += `<div class="alert alert-info">
-                <strong>Score Morfologico Normalizzato:</strong> ${normalizedScore}/100<br>
+                <strong>Score Morfologico Normalizzato:</strong> ${normalizedScore}/100${isPartialBiopsy ? ' <em>(7 criteri - biopsia parziale)</em>' : ''}<br>
                 <strong>Driver Mutation:</strong> ${driverMutation || 'Non disponibile'}<br>
                 <strong>CNA Profile:</strong> ${cnaProfile || 'Non disponibile'}
             </div>`;
@@ -1568,9 +1769,35 @@
                 <strong>Diagnosi Finale Integrata:</strong> ${finalDiagnosis}<br>
                 <strong>Livello di Confidenza:</strong> ${confidence}<br>
                 ${refertableSentence ? `<br><strong>📝 Frase refertabile suggerita:</strong><br><em>"${refertableSentence}"</em><br>` : ''}
-                <br>
-                <strong>⚠️ REMINDER:</strong> Diagnosi finale richiede correlazione clinica, revisione morfologica esperta, 
-                e contestualizzazione del caso specifico. Il tool è un ausilio decisionale, non sostituisce il giudizio del patologo.
+            </div>`;
+
+            // v3.6.8: Warning specifico MAP3K8 + multiple CNAs
+            if (driverMutation === 'map3k8' && cnaProfile === 'multiple_cna') {
+                summary += `<div class="alert alert-danger">
+                    <strong>⚠️ MAP3K8 + Multiple CNAs: Combinazione ad alto rischio</strong><br>
+                    Questa combinazione è qualitativamente diversa da MAP3K8 isolato:
+                    <ul style="margin: 0.5rem 0 0 1.2rem;">
+                        <li><strong>MAP3K8 isolato:</strong> comportamento variabile, molti casi indolenti</li>
+                        <li><strong>MAP3K8 + instabilità genomica:</strong> comportamento biologico più aggressivo atteso</li>
+                    </ul>
+                    <em>Gestione come melanoma fino a prova contraria. Genomica estesa raccomandata.</em>
+                </div>`;
+            }
+
+            // v3.6.8: BOX ASSERTIVO SUL RUOLO DEL PATOLOGO
+            summary += `<div class="expert-role-box">
+                <strong>🎯 IL RUOLO DEL PATOLOGO</strong><br><br>
+                Questo score <strong>NON sostituisce</strong> il giudizio esperto, ma <strong>lo rende esplicito e difendibile</strong>.<br><br>
+                <em style="color: #81d4fa;">"Lo score supporta e documenta il ragionamento diagnostico. Un valore elevato rafforza l'ipotesi 
+                di malignità nel contesto clinico-patologico appropriato; non la determina in isolamento."</em><br><br>
+                Il tool trasforma l'impressione diagnostica in un processo documentabile, tracciabile e comunicabile. 
+                La responsabilità della diagnosi finale rimane del patologo, che integra lo score con:<br>
+                <ul style="margin: 0.8rem 0 0 1.2rem;">
+                    <li>Correlazione clinica (età, sede, storia)</li>
+                    <li>Impressione morfologica complessiva ("gestalt")</li>
+                    <li>Dati ausiliari (immunoistochimica, genetica)</li>
+                    <li>Second opinion quando indicata</li>
+                </ul>
             </div>`;
 
             // Warning overconfidence per score bassi
@@ -1588,6 +1815,18 @@
                 </div>`;
             }
 
+            // Nota filosofica per score intermedi (territorio del "non lo so")
+            if (normalizedScore > 30 && normalizedScore < 71) {
+                summary += `<div class="alert alert-info" style="border-color: #6c757d; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                    <strong>📚 Nota sul territorio intermedio</strong><br><br>
+                    Come diceva <strong>Bernard Ackerman</strong>: <em>"Esistono solo 3 tipi di lesioni pigmentate: il nevo, il melanoma, e il non lo so."</em><br><br>
+                    Uno score intermedio (31-70) non è un fallimento diagnostico — è la <strong>risposta corretta</strong> per lesioni che si trovano 
+                    nel continuum biologico tra nevo e melanoma. Come teorizzato da <strong>Urso (2019)</strong>: nevo, neoplasia borderline e melanoma 
+                    sono tre successivi stati genetici dello stesso processo neoplastico, differenziati dal numero di mutazioni promoter accumulate.<br><br>
+                    <strong>Azione pratica:</strong> Genomica raccomandata per stratificare meglio il rischio.
+                </div>`;
+            }
+
             // Nota SNB per score alti
             if (normalizedScore >= 51 || driverMutation === 'map3k8') {
                 summary += `<div class="alert alert-info" style="border-color: #6c757d; background: #f8f9fa;">
@@ -1599,6 +1838,19 @@
                         <li><strong>Decisione da discutere sempre in MDT</strong>, bilanciando rischi/benefici</li>
                     </ul>
                     <em style="font-size: 0.8rem;">Ref: Ludgate et al. J Clin Oncol 2009; Lallas et al. JAAD 2014</em>
+                </div>`;
+            }
+
+            // Nota biopsia parziale
+            if (isPartialBiopsy) {
+                summary += `<div class="alert alert-warning" style="border-color: #fd7e14;">
+                    <strong>🔬 Biopsia Parziale:</strong><br>
+                    Il calcolo esclude simmetria e circoscrizione. <strong>Escissione completa fortemente raccomandata</strong> per:
+                    <ul style="margin: 0.5rem 0 0 1.2rem;">
+                        <li>Valutazione completa dei margini</li>
+                        <li>Assessment definitivo simmetria/circoscrizione</li>
+                        <li>Eventuale ricalcolo score su specimen completo</li>
+                    </ul>
                 </div>`;
             }
 
@@ -1693,12 +1945,9 @@
             URL.revokeObjectURL(url);
         }
         
-        // v3.6.5: showBibCard refactored - usa switchTab() direttamente
         function showBibCard(id) {
-            // Switch to bibliography tab using switchTab directly
             switchTab(null, 'bibliography');
             
-            // Activate the correct tab button
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
                 if (tab.textContent.trim() === 'Bibliografia') {
@@ -1746,6 +1995,8 @@
             document.querySelectorAll('select').forEach(select => {
                 select.selectedIndex = 0;
             });
+            document.getElementById('partialBiopsy').checked = false;
+            togglePartialBiopsy();
             document.getElementById('result').style.display = 'none';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
