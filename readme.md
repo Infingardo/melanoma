@@ -1,8 +1,8 @@
-# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.6.9
+# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.9.2
 
 **Algoritmo diagnostico integrato per la stratificazione del rischio nelle lesioni melanocitiche spitzoidi**
 
-[![Version](https://img.shields.io/badge/version-3.6.9-blue.svg)](https://github.com/infingardo/spitz-melanoma-tool)
+[![Version](https://img.shields.io/badge/version-3.9.2-blue.svg)](https://github.com/infingardo/spitz-melanoma-tool)
 [![License](https://img.shields.io/badge/license-Educational-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-Production--Ready-success.svg)](https://github.com/infingardo/spitz-melanoma-tool)
 
@@ -17,9 +17,8 @@
 - [Diagnosi Differenziale](#-diagnosi-differenziale)
 - [Caratteristiche](#-caratteristiche)
 - [Metodologia Scientifica](#-metodologia-scientifica)
-- [Novità v3.6.8](#-novità-v368)
-- [Bibliografia](#-bibliografia)
 - [Changelog](#-changelog)
+- [Bibliografia](#-bibliografia)
 - [Autore](#-autore)
 - [Disclaimer](#-disclaimer)
 
@@ -33,45 +32,39 @@ Tool diagnostico web-based per la **stratificazione del rischio** nelle lesioni 
 - ✅ Rende esplicito e documentabile il ragionamento diagnostico
 - ✅ Standardizza la valutazione morfologica su 9 criteri pesati
 - ✅ Integra dati genetici quando disponibili
-- ✅ Genera un report difendibile
+- ✅ Genera un report difendibile con export PDF completo
 
 ### Cosa NON FA questo tool
 - ❌ Non sostituisce il giudizio del patologo esperto
 - ❌ Non determina la diagnosi in isolamento
 - ❌ Non si applica a lesioni non-spitzoidi
+- ❌ Le soglie numeriche non derivano da validazione prospettica su casistica esterna
 
 ---
 
 ## ⚖️ Principio Guida
 
-> **"Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. Un valore elevato rafforza l'ipotesi di malignità nel contesto clinico-patologico appropriato; non la determina in isolamento."**
-
-Questa frase compare in tre punti del tool: disclaimer iniziale, summary, footer. Non è retorica — è il principio medico-legale su cui si fonda l'intero progetto.
+> **"Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. Le soglie numeriche sono operative e interne al tool; non derivano da validazione prospettica su casistica esterna."**
 
 ---
 
 ## ⚡ Quick Start
 
 ```bash
-# Download
 git clone https://github.com/infingardo/spitz-melanoma-tool.git
 cd spitz-melanoma-tool
-
-# Apri nel browser
 open index.html
 ```
 
-**Oppure online:** [https://infingardo.github.io/spitz-melanoma-tool/](https://infingardo.github.io/spitz-melanoma-tool/)
+**Online:** [https://infingardo.github.io/spitz-melanoma-tool/](https://infingardo.github.io/spitz-melanoma-tool/)
 
-**Nessuna installazione richiesta** — funziona offline!
+Funziona offline. Nessuna installazione richiesta.
 
 ---
 
 ## ⚠️ Prerequisiti
 
-### 🔴 LEGGERE PRIMA DELL'USO
-
-Questo tool è applicabile **ESCLUSIVAMENTE** a lesioni con **morfologia SPITZOIDE confermata**:
+Applicabile **ESCLUSIVAMENTE** a lesioni con **morfologia SPITZOIDE confermata**:
 
 ✅ **Caratteristiche spitzoidi:**
 - Cellule epitelioidi e/o fusate
@@ -87,228 +80,233 @@ Questo tool è applicabile **ESCLUSIVAMENTE** a lesioni con **morfologia SPITZOI
 
 ## 🔍 Diagnosi Differenziale
 
-Il tool include una **sezione DD interattiva** che aiuta a distinguere lesioni spitzoidi da nevi comuni:
+Il tool include una sezione DD interattiva (collassabile) con tabella comparativa lesioni spitzoidi vs nevi comuni su 8 caratteristiche morfologiche e cliniche.
 
-| Caratteristica | LESIONI SPITZOIDI ✅ | NEVI COMUNI ❌ |
-|----------------|---------------------|----------------|
-| **Citologia** | Cellule epitelioidi/fusate grandi | Piccole cellule rotonde/ovali |
-| **Nuclei** | Vescicolosi con nucleoli prominenti | Piccoli, regolari, condensati |
-| **Cellule giganti** | Spesso presenti | Assenti |
-| **Maturazione** | Variabile | Sempre presente A→B→C |
-
-### 💡 Rule of Thumb
-
-> *"Se vedi cellule grandi/strane → probabilmente spitzoide → USA IL TOOL"*
->
-> *"Se pensi 'nevo banale' → NON usare il tool"*
+**Rule of thumb:** *"Se vedi cellule grandi/strane → spitzoide → usa il tool. Se pensi 'nevo banale' → non usare il tool."*
 
 ---
 
 ## ✨ Caratteristiche
 
-### 📊 Malignancy Score 0-100
+### 📊 Heuristic Risk Index (HRI) 0-100
 
-Sistema intuitivo:
-- **Selezioni BASSE** nei dropdown → Score BASSO → Benigno
-- **Selezioni ALTE** nei dropdown → Score ALTO → Maligno
+Score normalizzato da 0 a 100. Etichetta deliberatamente euristica: le soglie (30/50/70) sono operative e non derivano da validazione prospettica.
 
-### 🔬 Flag Biopsia Parziale (v3.6.7+)
+| HRI | Classe di rischio |
+|-----|-------------------|
+| 0–30 | Benigno / Spitz Nevus |
+| 31–50 | AST — Atypical Spitz Tumor |
+| 51–70 | AST with concerning features |
+| ≥71 | Spitzoid Melanoma (morfologia) |
 
-Per shave, punch, o biopsie incisionali:
-- Esclude automaticamente **Simmetria** e **Circoscrizione** dal calcolo
-- Ricalcola il max score (73 invece di 103)
-- Mostra warning dedicato nel report
-
-### 🧬 9 Criteri Morfologici (Massi & LeBoit 2014)
+### 🔬 9 Criteri Morfologici (Massi & LeBoit 2014)
 
 | Criterio | Range | Note |
 |----------|-------|------|
-| **Maturazione A→B→C** | 0-20 | 🎯 Criterio più importante |
-| **Simmetria** | 0-15 | N/A su biopsia parziale |
-| **Circoscrizione** | 0-15 | N/A su biopsia parziale |
-| **Cellule giganti** | 0-8 | Assenza non patognomonica |
-| **Mitosi derma profondo** | 0-15 | Hot spot count (WHO-style) |
-| **Pattern infiltrazione** | 0-10 | |
-| **Necrosi** | 0-5 | |
-| **Atipia nucleare** | 0-10 | ⚠️ Non sopravvalutare |
-| **Ulcerazione** | 0-5 | |
+| **Maturazione A→B→C** | 0–20 | 🎯 Criterio più importante |
+| **Simmetria** | 0–15 | Obbligatorio su escissione completa; N/A su biopsia parziale |
+| **Circoscrizione** | 0–15 | Obbligatorio su escissione completa; N/A su biopsia parziale |
+| **Cellule giganti** | 0–8 | Assenza non patognomonica |
+| **Mitosi derma profondo** | 0–15 | Hot spot count (WHO-style) |
+| **Pattern infiltrazione** | 0–10 | |
+| **Necrosi** | 0–5 | |
+| **Atipia nucleare** | 0–10 | ⚠️ Non sopravvalutare isolata |
+| **Ulcerazione** | 0–5 | |
 
-**Totale:** 0-103 punti → normalizzato a 0-100
+**Max totale:** 103 punti (escissione) / 73 punti (biopsia parziale) → normalizzato 0–100.
 
-### 🧪 Stratificazione Genetica (Bastian 2014)
-
-- **HRAS mutation** → Low-risk
-- **Kinase fusions** (ALK, ROS1, RET, NTRK1, BRAF) → Low-to-intermediate
-- **MAP3K8** → Variabile; ⚠️ se + multiple CNAs → alto rischio
-- **TERT promoter** → Criterio solido malignità (non override assoluto)
-- **CDKN2A loss isolato** → NON diagnostico da solo
+**Validazione obbligatoria:** tutti i criteri morfologici richiesti devono essere esplicitamente selezionati (placeholder `— Seleziona —`). Simmetria e circoscrizione obbligatorie solo su escissione completa.
 
 ### 🚨 Red Flags Automatici
 
-Override automatico a "Spitzoid Melanoma" se:
+Override immediato a "RED FLAGS — Spitzoid Melanoma" se:
 - Maturazione assente/invertita (≥16 punti)
 - Mitosi ≥6/mm² e/o atipiche (≥12 punti)
 - Necrosi "en masse" (5 punti)
+
+### 🧬 Stratificazione Genetica (Bastian 2014)
+
+| Driver | Profilo | Comportamento |
+|--------|---------|---------------|
+| HRAS mutation | Spitz-associated | Low-risk |
+| Kinase fusion (ALK/ROS1/RET/NTRK1/BRAF) | Spitz-lineage | Low-to-intermediate |
+| MAP3K8 fusion/truncation | Spitz-lineage, polo atipico/aggressivo | Variabile — interpretare con morfologia + CDKN2A/p16 + TERT + CNA burden |
+| BRAF V600E + BAP1 loss | AST subset | Intermedio |
+| TERT promoter | High-risk evidence | Non override assoluto — strong molecular evidence of high-risk |
+| GNAQ/GNA11 Q209 | Non-Spitz lineage | Blue nevus / uveal melanoma lineage → tool non ottimizzato |
+| CDKN2A loss isolato | Evento secondario | Non diagnostico da solo |
+
+**CNA Profile:**
+- Isolated 11p gain = Spitz-associated low-risk (HRAS rafforza ma non è obbligatorio)
+- Multiple CNAs = instabilità genomica red flag
+- Chr 6 loss = marker malignità
+
+### 🔗 Lineage Gate GNAQ/GNA11
+
+Se il driver è GNAQ/GNA11, il summary finale esce dal recinto Spitz e segnala esplicitamente "non-Spitz lineage signal" con nota che il tool non è ottimizzato per questa categoria.
+
+### 📋 Logica del Summary Integrato
+
+Il summary combina HRI + driver + CNA in una scala di priorità:
+
+1. GNAQ/GNA11 → override non-Spitz (qualunque HRI)
+2. Strong molecular evidence (TERT / multiple CNA / chr6 loss) → classe alta con check discordanza morfologia/genetica
+3. HRI ≥71 → Spitzoid Melanoma
+4. HRI 51–70 → AST with concerning features
+5. `single_11p_gain` + HRI ≤30 → Spitz-associated low-risk (con/senza HRAS)
+6. `hras` + HRI ≤30 → Spitz-associated low-risk (HRAS-mutated)
+7. `kinase_fusion` + HRI ≤30 → Spitz-lineage lesion with low-risk molecular profile
+8. HRI ≤30 senza driver → Spitz Nevus
+9. Default → AST
+
+### 📖 Framework Urso/Ackerman (score intermedi)
+
+Per HRI 31–70 senza genetica "forte" e senza GNAQ/GNA11, il summary cita il framework Urso (Am J Dermatopathol 2019) e la frase di Ackerman:
+
+> *"Esistono solo 3 tipi di lesioni pigmentate: il nevo, il melanoma, e il non lo so."*
+
+Il territorio intermedio non è un fallimento diagnostico — è la risposta corretta per lesioni nel continuum biologico.
+
+### 🦺 SNB — Sentinel Node Biopsy
+
+Il tool usa deliberatamente il wording "valutazione multidisciplinare dell'indicazione a SNB, dato il ruolo ancora controverso nelle AST" in linea con:
+
+> Mazza M et al. Sentinel Lymph Node Biopsy in Atypical Spitz Tumors: A Systematic Review. *J Clin Med* 2024;13(11):3232. PMID 38892943.
+
+La positività del linfonodo sentinella nelle AST non ha significato prognostico lineare e gli outcome restano significativamente migliori rispetto al melanoma convenzionale.
+
+### 💾 Funzionalità tecniche
+
+- **SessionStorage**: i dati del form vengono salvati nella sessione e ripristinati al reload
+- **Export PDF completo**: tutte le tab vengono rese temporaneamente visibili prima della cattura, con ripristino garantito da `.finally()` anche in caso di errore
+- **Reset**: riporta il form allo stato iniziale e ripristina la tab Morfologia come default
+- **Export BibTeX**: esporta tutta la bibliografia in formato .bib
+- **Filtri bibliografia combinati**: ricerca testuale + filtro per categoria (Morfologia/Genetica/Review) funzionano in AND
+- **Tooltip mobile**: click-to-show con chiusura automatica
 
 ---
 
 ## 🔬 Metodologia Scientifica
 
-### Definizione Operativa della Maturazione (v3.6.8)
+### Maturazione A→B→C
 
-La maturazione **non è solo "cellule più piccole in profondità"**. Richiede la riduzione progressiva di tre componenti:
-
-1. **Dimensioni cellulari** (da grandi a piccole)
-2. **Volume citoplasmatico** (da abbondante a scarso)
-3. **Attività mitotica** (da presente a assente in profondità)
+Non è solo "cellule più piccole in profondità". Richiede riduzione progressiva di tre componenti:
+1. Dimensioni cellulari
+2. Volume citoplasmatico
+3. Attività mitotica in profondità
 
 ### Conta Mitosi: Hot Spot (WHO-style)
 
-> Contare nell'area di **1 mm² con maggior densità mitotica** nel derma profondo.
-> **NON fare la media** su più campi.
+Contare nell'area di **1 mm² con maggior densità mitotica** nel derma profondo. NON fare la media su più campi.
 
-### Warning Atipia (v3.6.8)
+### Atipia Nucleare
 
-> **⚠️ Atipia senza perdita di maturazione ≠ melanoma**
->
-> Molti Spitz benigni hanno nuclei grandi e "strani" — è la perdita di maturazione che conta, non l'atipia isolata.
+⚠️ Molti Spitz benigni hanno nuclei grandi e "strani". **Atipia senza perdita di maturazione ≠ melanoma.**
 
----
+### Biopsia Parziale
 
-## 🆕 Novità v3.6.8 / v3.6.9
-
-### v3.6.9 - Framework Filosofico
-- **Bibliografia Urso** (2019, 2020): framework driver/promoter mutations
-- **Nota Ackerman** nel summary per score intermedi: "il nevo, il melanoma, e il non lo so"
-- Il territorio intermedio (score 31-70) non è un fallimento diagnostico — è la risposta corretta
-
-### v3.6.8 - Tooltip Operativi
-- **Maturazione:** definizione tripartita (dimensionale + citoplasmatica + mitotica)
-- **Mitosi:** esplicito "hot spot count (WHO-style)"
-- **Atipia:** warning educativo per evitare sovradiagnosi
-
-### MAP3K8 + Multiple CNAs
-Warning specifico nel summary: combinazione qualitativamente diversa da MAP3K8 isolato, comportamento biologico più aggressivo atteso.
-
-### Frase Medico-Legale Rafforzata
-Presente in 3 punti: disclaimer, summary box, footer.
-
----
-
-## 📚 Bibliografia
-
-### Core References
-
-1. **Bastian BC** (2014). The Molecular Pathology of Melanoma: An Integrated Taxonomy of Melanocytic Neoplasia. *Annual Review of Pathology* 9:239-271. [DOI](https://doi.org/10.1146/annurev-pathol-012513-104658) | PMID: 24460189
-
-2. **Massi G, LeBoit PE** (2014). *Histological Diagnosis of Nevi and Melanoma* (2nd Edition). Springer. ISBN: 978-3-642-37310-7
-
-3. **Newman S et al.** (2019). Clinical genome sequencing uncovers potentially targetable truncations and fusions of MAP3K8. *Nature Medicine* 25:597-602. [DOI](https://doi.org/10.1038/s41591-019-0373-y) | PMID: 30988516
-
-4. **Newman S et al.** (2019). Pediatric spitzoid melanoma with MAP3K8 fusion. *Am J Surg Pathol* 43(9):1631-1637. PMID: 31498175
-
-5. **Houlier A et al.** (2020). Melanocytic tumors with MAP3K8 fusions. *Modern Pathology* 33:846-857. [DOI](https://doi.org/10.1038/s41379-019-0384-8) | PMID: 31719662
-
-6. **Raghavan SS et al.** (2020). Spitz melanoma is a distinct subset of spitzoid melanoma. *Modern Pathology* 33:1122-1134. [DOI](https://doi.org/10.1038/s41379-019-0445-z) | PMID: 31857696
-
-7. **Urso C** (2019). Melanocytic skin neoplasms: what lesson from genomic aberrations? *Am J Dermatopathol* 41:623-629. PMID: 30585798
-
-8. **Urso C** (2020). La rivoluzione della genetica nelle lesioni melanocitiche. *Dermatopatologia Forum*. Centro Studi Dermatopatologia di Firenze.
-
-### Framework Concettuale
-
-> *"Nevo, neoplasia borderline e melanoma non sono tre neoplasie diverse, ma tre successivi stati genetici dello stesso processo neoplastico."* — **Urso 2019**
-
-> *"Esistono solo 3 tipi di lesioni pigmentate: il nevo, il melanoma, e il non lo so."* — **Bernard Ackerman**
+Su shave, punch o incisionale: simmetria e circoscrizione non sono valutabili, vengono escluse dal calcolo e il max score scende da 103 a 73.
 
 ---
 
 ## 📝 Changelog
 
-### v3.6.9 (2025-01-19) - Current
-- ✅ Bibliografia: Urso 2019 + Urso 2020 (framework driver/promoter)
-- ✅ Nota Ackerman nel summary per score 31-70: "il non lo so"
-- ✅ Giustificazione filosofica del territorio intermedio
+### v3.9.2 (2025-03-08) — Current
+- ✅ Summary: rami espliciti per HRAS-only e kinase_fusion con HRI basso (non più accorpati nel generico AST)
+- ✅ Framework Urso/Ackerman escluso per GNAQ/GNA11 (no contraddizione semantica)
+- ✅ Fix wording 11p gain: rimossa frase interna contraddittoria su "co-presenza/isolato"
+- ✅ Tooltip CNA allineato al testo principale (non più "Single gain 11p = HRAS low-risk")
+
+### v3.9.1 (2025-03-08)
+- ✅ SNB review corretta: Mazza M et al. J Clin Med 2024, PMID 38892943 (sostituisce Ribero/JEADV errata)
+- ✅ PMID Raghavan 2020: 31857696 → 31900433
+- ✅ 11p gain: HRAS rafforza ma non è obbligatorio (logica ammorbidita)
+- ✅ GNAQ/GNA11 lineage gate nel summary (non-Spitz lineage override)
+- ✅ exportPDF: `.catch().finally()` — ripristino tab garantito anche su errore
+
+### v3.9.0 (2025-03-08)
+- ✅ Simmetria e circoscrizione obbligatorie su escissione completa (placeholder + requiredIds condizionale)
+- ✅ `single_gain` → `single_11p_gain` con label e interpretazione più precisa
+- ✅ exportPDF mostra tutte le tab-content prima della cattura
+- ✅ resetForm ripristina tab Morfologia come default
+- ✅ Card bibliografica SNB review 2024 aggiunta
+
+### v3.8.0 (2025-03-08)
+- ✅ Fix validazione: rimosso check `allDefault`, sostituito con placeholder `value=""` su criteri obbligatori
+- ✅ Filtri bibliografia: `applyBibFilters()` combina categoria + ricerca in AND
+- ✅ TERT depotenziato: non fa più override automatico a "MELANOMA"; produce "strong molecular evidence of high-risk"
+- ✅ SNB: "consider sentinel node biopsy" → "valutazione multidisciplinare dell'indicazione a SNB (ruolo controverso nelle AST)"
+- ✅ MAP3K8: aggiunta nota "interpret only with morphology, CDKN2A/p16, TERT, and CNA burden"
+- ✅ "Malignancy Score" → "Heuristic Risk Index"; "Diagnosi suggerita" → "Classe di rischio integrata"
+- ✅ Caveat esplicito sotto il numero: "Le soglie sono operative e non validate prospetticamente"
+- ✅ `showBibCard()` refactored: usa `data-tab` invece di `onclick.toString()`, mostra `#result` se nascosto
+- ✅ PMID Bastian 2014: 24460189 → 24460190
+- ✅ PMID Newman Nat Med 2019: 30988516 → 30833747
+- ✅ Titolo Newman AJSP 2019 corretto: "Pathologic Characteristics of Spitz Melanoma With MAP3K8 Fusion or Truncation in a Pediatric Cohort"
+- ✅ Cloudflare email decode rimosso
+
+### v3.7.0 (2025-02-19)
+- SessionStorage, tooltip mobile click-to-show, note libere in PDF, accessibilità colori, validazione input
+
+### v3.6.9 (2025-01-19)
+- Framework filosofico Urso/Ackerman, bibliografia Urso 2019 + 2020
 
 ### v3.6.8 (2025-01-19)
-- ✅ Tooltip maturazione: definizione operativa tripartita
-- ✅ Tooltip mitosi: hot spot count (WHO-style)
-- ✅ Tooltip atipia: warning educativo
-- ✅ MAP3K8 + multiple CNAs: warning specifico
-- ✅ Frase medico-legale in 3 punti
+- Tooltip maturazione (definizione tripartita), tooltip mitosi (hot spot WHO-style), tooltip atipia (warning educativo)
+- MAP3K8 + multiple CNAs: warning specifico
 
 ### v3.6.7 (2025-01-19)
-- ✅ Flag biopsia parziale (esclude simmetria/circoscrizione)
-- ✅ Tooltip maturazione didattico (A→B→C)
-- ✅ Box "Ruolo del patologo" nel summary
+- Flag biopsia parziale (esclude simmetria/circoscrizione), box "Ruolo del patologo"
 
-### v3.6.6 (2024-12-06)
-- Caveat medico-legali
-- SNB limitazioni
-- Warning overconfidence
+---
 
-### v3.6.5 (2024-12-06)
-- Fix linguistici
-- showBibCard() refactored
+## 📚 Bibliografia
 
-### v3.6.4 (2024-11-28)
-- Giant cells: max 8 punti (era 10)
-- Wording red flag mitosi
-- Pulizia documentazione
+1. **Bastian BC** (2014). The Molecular Pathology of Melanoma. *Annu Rev Pathol* 9:239-271. PMID: **24460190**
 
-[Changelog completo nel repository]
+2. **Massi G, LeBoit PE** (2014). *Histological Diagnosis of Nevi and Melanoma* (2nd ed.). Springer. ISBN: 978-3-642-37310-7
+
+3. **Newman S et al.** (2019). MAP3K8 in spitzoid and other melanomas. *Nature Medicine* 25:597-602. PMID: **30833747**
+
+4. **Newman S et al.** (2019). Pathologic Characteristics of Spitz Melanoma With MAP3K8 Fusion or Truncation in a Pediatric Cohort. *Am J Surg Pathol* 43(9):1631-1637. PMID: 31498175
+
+5. **Houlier A et al.** (2020). Melanocytic tumors with MAP3K8 fusions. *Modern Pathology* 33:846-857. PMID: 31719662
+
+6. **Raghavan SS et al.** (2020). Spitz melanoma is a distinct subset of spitzoid melanoma. *Modern Pathology* 33:1122-1134. PMID: **31900433**
+
+7. **Urso C** (2019). Melanocytic skin neoplasms: what lesson from genomic aberrations? *Am J Dermatopathol* 41:623-629. PMID: 30585798
+
+8. **Urso C** (2020). La rivoluzione della genetica nelle lesioni melanocitiche. *Dermatopatologia Forum*.
+
+9. **Mazza M et al.** (2024). Sentinel Lymph Node Biopsy in Atypical Spitz Tumors: A Systematic Review. *J Clin Med* 13(11):3232. PMID: **38892943**
+
+### Note bibliografiche
+I PMID in **grassetto** hanno subito correzioni rispetto a versioni precedenti del tool. Verificare sempre su PubMed prima di citare.
 
 ---
 
 ## 👨‍⚕️ Autore
 
-**Dr. Filippo Bianchi**  
-Direttore SC Anatomia Patologica  
+**Dr. Filippo Bianchi**
+Direttore SC Anatomia Patologica
 ASST Fatebenefratelli-Sacco, Milano
 
-📧 Email: filippo.bianchi@asst-fbf-sacco.it  
-💻 GitHub: [@infingardo](https://github.com/infingardo)  
-🔬 Repository: [spitz-melanoma-tool](https://github.com/infingardo/spitz-melanoma-tool)
+📧 filippo.bianchi@asst-fbf-sacco.it
+💻 GitHub: [@infingardo](https://github.com/infingardo)
 
 ---
 
 ## ⚖️ Disclaimer
 
-### ⚠️ IMPORTANTE
+Tool di supporto al ragionamento diagnostico per patologi esperti. **Non sostituisce** la correlazione clinico-patologica, la revisione morfologica, né il giudizio del patologo. Le soglie numeriche non derivano da validazione prospettica su casistica esterna.
 
-Questo tool è un **ausilio decisionale** per patologi esperti e **NON sostituisce**:
-
-- ❌ Esperienza clinica del patologo
-- ❌ Correlazione clinico-patologica
-- ❌ Revisione morfologica esperta
-- ❌ Second opinion in casi difficili
-
-### Validazione
-
-- Tool basato su letteratura peer-reviewed
-- **Raccomandazione:** validazione su casistica locale prima dell'uso clinico
-- Non approvato come dispositivo medico
-- Solo per uso educativo e ricerca
-
-### Principio Medico-Legale
-
-> *"Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. Un valore elevato rafforza l'ipotesi di malignità nel contesto clinico-patologico appropriato; non la determina in isolamento."*
-
----
-
-## 📄 Licenza
-
-**Educational Use Only**
-
-Copyright (c) 2024-2025 Dr. Filippo Bianchi
+Non approvato come dispositivo medico. Solo per uso educativo e ricerca.
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for the dermatopathology community**
-
-*Con il supporto di Claude (Anthropic) e GPT (OpenAI) — perché anche le AI collaborano*
+*Con il supporto di Claude (Anthropic) — peer review inclusa*
 
 **⭐ Se trovi utile questo tool, considera di lasciare una star su GitHub! ⭐**
 
