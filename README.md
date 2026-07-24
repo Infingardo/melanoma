@@ -1,4 +1,4 @@
-# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.9.2
+# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.10.0
 
 **Algoritmo diagnostico integrato per la stratificazione del rischio nelle lesioni melanocitiche spitzoidi**
 
