@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filippo's Diagnostic Algorithm v3.10.0 - Spitz vs Melanoma</title>
+    <title>Filippo's Diagnostic Algorithm v3.11.0 - Spitz vs Melanoma</title>
     <meta name="description" content="Algoritmo diagnostico con DD nevi comuni - Solo lesioni SPITZOIDI">
     <meta name="author" content="Dr. Filippo Bianchi - SC Anatomia Patologica Fatebenefratelli Milano">
     <meta name="keywords" content="spitz nevus, melanoma, dermatopathology, differential diagnosis, bastian 2014, MAP3K8">
     
     <!-- html2pdf.js for PDF export -->
     <script src="./vendor/html2pdf.bundle.min.js"></script>
+    <!-- Motore: unica fonte della classe di rischio. I renderer consumano computeRisk(). -->
+    <script src="engine.js?v=3.11.0"></script>
     <style>
         :root {
             --bg-main: #f8f9fa;
@@ -374,7 +376,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.10.0</h1>
+        <h1>🔬 Spitz vs Melanoma Diagnostic Algorithm v3.11.0</h1>
         <div class="subtitle">
             Algoritmo per lesioni SPITZOIDI con DD nevi comuni — Heuristic Risk Index 0-100
             <span class="session-badge" id="sessionBadge" style="display:none;">💾 Dati salvati</span>
@@ -382,7 +384,7 @@
     </div>
 
     <div class="disclaimer" role="note">
-        <strong>⚠️ v3.10.0 — campo referto diagnostico editabile con template auto-generato.</strong><br>
+        <strong>⚠️ v3.11.0 — classe di rischio calcolata una volta sola e condivisa da riquadro, sommario e referto.</strong><br>
         <strong>PRINCIPIO MEDICO-LEGALE:</strong> Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. Le soglie numeriche sono operative e interne al tool; non derivano da validazione prospettica su casistica esterna.
     </div>
 
@@ -844,7 +846,8 @@
         ASST Fatebenefratelli-Sacco, Milano<br>
         📧 filippo.bianchi@asst-fbf-sacco.it |
         💻 <a href="https://github.com/infingardo/spitz-melanoma-tool" target="_blank">GitHub Repository</a><br><br>
-        <em>v3.10.0 (2025-03-08) — campo referto diagnostico editabile con template auto-generato, SNB in bibliografia</em><br>
+        <em>v3.11.0 — <code>computeRisk()</code> unica fonte della classe di rischio: il referto la riceve invece di rileggerla dal DOM (usciva sempre «Non calcolata»), le red flag morfologiche raggiungono la classe integrata, il riquadro morfologico dichiara di essere tale e cede il verde quando la genetica dissente</em><br>
+        <em style="opacity:.75">v3.10.0 (2025-03-08) — campo referto diagnostico editabile con template auto-generato, SNB in bibliografia</em><br>
         <em style="font-size: 0.8em; opacity: 0.7;">Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. Le soglie sono operative e non validate prospetticamente.</em>
     </div>
 </div>
@@ -1072,67 +1075,55 @@ function calculateScore() {
         ulceration: parseInt(document.getElementById('ulceration').value)
     };
 
-    const rawMalignancy = Object.values(scores).reduce((a, b) => a + b, 0);
-    const maxRaw = isPartial ? 73 : 103;
-    const riskScore = Math.round((rawMalignancy / maxRaw) * 100);
+    // v3.11.0: un solo calcolo, quattro consumatori. Prima ogni renderer si
+    // ricostruiva la propria idea di rischio (e il referto rileggeva il DOM).
+    const risk = computeRisk({
+        scores,
+        isPartial,
+        driver: document.getElementById('bastian_driver').value,
+        cna: document.getElementById('bastian_cna').value
+    });
 
-    document.getElementById('totalScore').textContent = riskScore;
+    document.getElementById('totalScore').textContent = risk.hri;
     document.getElementById('result').style.display = 'block';
 
-    generateMorphInterpretation(riskScore, scores, rawMalignancy, maxRaw, isPartial);
-    generateScoreBreakdown(scores, rawMalignancy, riskScore, maxRaw, isPartial);
+    generateMorphInterpretation(risk);
+    generateScoreBreakdown(risk);
     generateBastianAnalysis();
-    generateSummary(riskScore, scores);
-    generateReport();
+    generateSummary(risk);
+    generateReport(risk);
     document.getElementById('stickyNewCase').style.display = 'block';
 
     document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function generateMorphInterpretation(riskScore, scores, rawMalignancy, maxRaw, isPartial) {
-    const redFlags = [];
-    if (scores.maturation >= 16) redFlags.push('Maturazione assente/invertita');
-    if (scores.mitoses >= 12) redFlags.push('Mitosi ≥6/mm² e/o atipiche');
-    if (scores.necrosis >= 5) redFlags.push('Necrosi "en masse"');
+// v3.11.0 — Il riquadro dichiara di guardare SOLO la morfologia. Prima etichettava
+// il proprio giudizio come "Classe di rischio integrata" pur non ricevendo alcun dato
+// molecolare: con TERT o CNA multiple su morfologia blanda usciva verde, "BASSO —
+// Spitz Nevus / follow-up di routine", mentre il sommario sotto segnalava la
+// discordanza. Ora, quando la genetica dissente, il riquadro perde il verde e rimanda.
+function generateMorphInterpretation(risk) {
+    const partialNote = risk.isPartial ? ' — biopsia parziale' : '';
+    let html = `<strong>Heuristic Risk Index (morfologia):</strong> ${risk.hri}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${risk.rawMalignancy}/${risk.maxRaw}${partialNote})</span><br>`;
 
-    let interpretation = '';
-    let alertClass = '';
-    let riskClass = '';
-    let action = '';
-
-    if (redFlags.length > 0) {
-        alertClass = 'danger';
-        riskClass = '⚠️ Classe di rischio: ALTO — Red flags morfologici';
-        action = 'URGENTE: Staging completo, genomica raccomandata, discussione MDT, valutazione multidisciplinare dell\'indicazione a SNB (ruolo ancora controverso nelle AST — review sistematica 2024)';
-        interpretation = `<strong>RED FLAGS IDENTIFICATI:</strong><ul style="margin: 0.5rem 0 0 1.2rem;">`;
-        redFlags.forEach(f => { interpretation += `<li>${f}</li>`; });
-        interpretation += `</ul><br><strong>Azione richiesta:</strong> ${action}`;
-    } else if (riskScore >= 71) {
-        alertClass = 'danger';
-        riskClass = 'Classe di rischio: ALTO — Spitzoid Melanoma (morfologia)';
-        action = 'Staging completo + genomica + discussione MDT';
-        interpretation = `<strong>Heuristic Risk Index:</strong> ${riskScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/${maxRaw}${isPartial ? ' — biopsia parziale' : ''})</span><br><strong>Classe di rischio integrata:</strong> ${riskClass}<br><strong>Raccomandazioni:</strong> ${action}`;
-    } else if (riskScore >= 51) {
-        alertClass = 'warning';
-        riskClass = 'Classe di rischio: INTERMEDIO-ALTO — AST with concerning features';
-        action = 'Genomica raccomandata; valutazione multidisciplinare indicazione SNB (ruolo controverso nelle AST); follow-up stretto';
-        interpretation = `<strong>Heuristic Risk Index:</strong> ${riskScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/${maxRaw}${isPartial ? ' — biopsia parziale' : ''})</span><br><strong>Classe di rischio integrata:</strong> ${riskClass}<br><strong>Raccomandazioni:</strong> ${action}`;
-    } else if (riskScore >= 31) {
-        alertClass = 'warning';
-        riskClass = 'Classe di rischio: INTERMEDIO — Atypical Spitz Tumor (AST)';
-        action = 'Escissione completa + follow-up stretto; considerare genomica per documentazione';
-        interpretation = `<strong>Heuristic Risk Index:</strong> ${riskScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/${maxRaw}${isPartial ? ' — biopsia parziale' : ''})</span><br><strong>Classe di rischio integrata:</strong> ${riskClass}<br><strong>Raccomandazioni:</strong> ${action}`;
-    } else {
-        alertClass = 'success';
-        riskClass = 'Classe di rischio: BASSO — Spitz Nevus';
-        action = 'Follow-up clinico routine';
-        interpretation = `<strong>Heuristic Risk Index:</strong> ${riskScore}/100 <span style="opacity: 0.6; font-size: 0.85em;">(raw: ${rawMalignancy}/${maxRaw}${isPartial ? ' — biopsia parziale' : ''})</span><br><strong>Classe di rischio integrata:</strong> ${riskClass}<br><strong>Raccomandazioni:</strong> ${action}`;
+    if (risk.redFlags.length) {
+        html += `<strong>RED FLAGS IDENTIFICATI:</strong><ul style="margin: 0.3rem 0 0.5rem 1.2rem;">`;
+        risk.redFlags.forEach(f => { html += `<li>${f}</li>`; });
+        html += `</ul>`;
     }
+    html += `<strong>Classe di rischio morfologica:</strong> ${risk.morph.label}<br>`;
+    if (risk.discordance) {
+        html += `<strong style="color:var(--warning,#b7791f);">⚠️ Discordanza morfologia/genetica:</strong> ${risk.molecularSignals.join(', ')} — la classe integrata è nel Sommario.<br>`;
+    }
+    html += `<strong>Raccomandazioni (morfologiche):</strong> ${risk.morph.action}`;
 
-    document.getElementById('morphInterpretation').innerHTML = `<div class="interpretation ${alertClass}">${interpretation}</div>`;
+    document.getElementById('morphInterpretation').innerHTML =
+        `<div class="interpretation ${risk.morph.alertClass}">${html}</div>`;
 }
 
-function generateScoreBreakdown(scores, rawMalignancy, riskScore, maxRaw, isPartial) {
+function generateScoreBreakdown(risk) {
+    const scores = risk.scores, rawMalignancy = risk.rawMalignancy,
+          riskScore = risk.hri, maxRaw = risk.maxRaw, isPartial = risk.isPartial;
     const labels = {
         maturation: 'Maturazione A→B→C', symmetry: 'Simmetria', circumscription: 'Circoscrizione',
         giant_cells: 'Cellule giganti multinucleate', mitoses: 'Mitosi derma profondo',
@@ -1146,7 +1137,7 @@ function generateScoreBreakdown(scores, rawMalignancy, riskScore, maxRaw, isPart
 
     let html = '<div class="section-title">Breakdown Punteggi</div>';
     html += `<div style="margin-bottom: 1rem; padding: 0.8rem; background: var(--accent-soft); border-radius: 0.5rem; font-size: 0.85rem;">
-        <strong>Sistema di scoring v3.10.0:</strong><br>
+        <strong>Sistema di scoring v3.11.0:</strong><br>
         Somma punti morfologici: ${rawMalignancy}/${maxRaw}${isPartial ? ' <em>(biopsia parziale)</em>' : ''}<br>
         <strong>Heuristic Risk Index: ${riskScore}/100 = round((${rawMalignancy}/${maxRaw}) × 100)</strong><br>
         <em style="opacity: 0.8;">Le soglie sono operative e interne al tool — non derivano da validazione prospettica.</em>
@@ -1315,17 +1306,17 @@ function generateBastianAnalysis() {
     document.getElementById('bastianAnalysis').innerHTML = analysis;
 }
 
-function generateSummary(riskScore, scores) {
-    const driverMutation = document.getElementById('bastian_driver').value;
-    const cnaProfile = document.getElementById('bastian_cna').value;
-    const isPartial = document.getElementById('biopsy_type').value === 'partial';
-
+// v3.11.0 — Il sommario consuma computeRisk(): prima riproduceva la propria scala
+// e non riceveva le red flag morfologiche, per cui un caso con necrosi "en masse"
+// poteva uscire come "Spitz Nevus" mentre il riquadro sopra diceva URGENTE.
+function generateSummary(risk) {
     let summary = '<div class="section-title">📋 Sommario Integrato</div>';
 
     summary += `<div class="alert alert-info">
-        <strong>Heuristic Risk Index (morfologia):</strong> ${riskScore}/100${isPartial ? ' <em>(biopsia parziale)</em>' : ''}<br>
-        <strong>Driver Mutation:</strong> ${driverMutation || 'Non disponibile'}<br>
-        <strong>CNA Profile:</strong> ${cnaProfile || 'Non disponibile'}
+        <strong>Heuristic Risk Index (morfologia):</strong> ${risk.hri}/100${risk.isPartial ? ' <em>(biopsia parziale)</em>' : ''}<br>
+        <strong>Red flags morfologiche:</strong> ${risk.redFlags.length ? risk.redFlags.join('; ') : 'nessuna'}<br>
+        <strong>Driver Mutation:</strong> ${risk.driver || 'Non disponibile'}<br>
+        <strong>CNA Profile:</strong> ${risk.cna || 'Non disponibile'}
     </div>`;
 
     summary += `<div class="alert alert-warning" style="font-size: 0.85rem;">
@@ -1333,68 +1324,14 @@ function generateSummary(riskScore, scores) {
         Lo score supporta e documenta il ragionamento diagnostico, non lo sostituisce. Le soglie numeriche sono operative e interne al tool; non derivano da validazione prospettica su casistica esterna.
     </div>`;
 
-    // v3.10.0: TERT non fa override automatico "MELANOMA" — produce "strong molecular evidence"
-    let finalDiagnosis = '';
-    let confidence = '';
-
-    const strongMolecular = driverMutation === 'tert' || cnaProfile === 'multiple_cna' || cnaProfile === 'chr_6_loss';
-
-    if (strongMolecular) {
-        if (riskScore >= 51) {
-            // Morfologia concorda — diagnosi più sicura
-            finalDiagnosis = '⚠️ Strong molecular evidence of high-risk Spitz neoplasm / probable Spitz melanoma — morfologia concordante';
-            confidence = 'Alta (genomica + morfologia convergenti)';
-        } else {
-            // Morfologia non concordante — segnalare discordanza
-            finalDiagnosis = '⚠️ Strong molecular evidence of high-risk Spitz neoplasm — DISCORDANZA morfologia/genetica: richiede revisione esperta';
-            confidence = 'Incerta (discordanza morfologica-molecolare — second opinion raccomandata)';
-        }
-    } else if (riskScore >= 71) {
-        finalDiagnosis = 'Spitzoid Melanoma (morfologia)';
-        confidence = driverMutation ? 'Moderata-Alta' : 'Moderata (solo morfologia — genomica raccomandata)';
-    } else if (riskScore >= 51) {
-        finalDiagnosis = 'Atypical Spitz Tumor with concerning features';
-        confidence = 'Moderata (genomica raccomandata)';
-    } else if (cnaProfile === 'single_11p_gain' && riskScore <= 30) {
-        finalDiagnosis = driverMutation === 'hras'
-            ? 'Spitz Nevus (HRAS/11p low-risk profile)'
-            : 'Spitz-associated low-risk profile (isolated 11p gain)';
-        confidence = driverMutation === 'hras' ? 'Alta (morfologia + genetica concordanti)' : 'Moderata';
-    } else if (driverMutation === 'hras' && riskScore <= 30) {
-        finalDiagnosis = 'Spitz-associated low-risk profile (HRAS-mutated)';
-        confidence = 'Moderata-Alta';
-    } else if (driverMutation === 'kinase_fusion' && riskScore <= 30) {
-        finalDiagnosis = 'Spitz-lineage lesion with low-risk molecular profile (kinase fusion)';
-        confidence = 'Moderata';
-    } else if (riskScore <= 30 && !driverMutation) {
-        finalDiagnosis = 'Spitz Nevus';
-        confidence = 'Moderata-Alta';
-    } else {
-        finalDiagnosis = 'Atypical Spitz Tumor (AST)';
-        confidence = 'Moderata';
-    }
-
-    // Fix 4: GNAQ/GNA11 esclude il recinto Spitz nel summary
-    const nonSpitzLineage = driverMutation === 'gnaq_gna11';
-    if (nonSpitzLineage) {
-        if (strongMolecular || riskScore >= 51) {
-            finalDiagnosis = 'Melanocytic neoplasm with non-Spitz lineage signal and high-risk features (consider blue-nevus-associated melanoma / alternative lineage)';
-            confidence = 'Moderata (non-Spitz driver — richiede revisione diagnostica allargata)';
-        } else {
-            finalDiagnosis = 'Melanocytic neoplasm with non-Spitz lineage signal (consider blue nevus lineage / diagnosi alternativa — questo tool non è ottimizzato per questa categoria)';
-            confidence = 'Moderata';
-        }
-    }
-
-    summary += `<div class="alert alert-warning">
-        <strong>Classe di rischio integrata:</strong> ${finalDiagnosis}<br>
-        <strong>Livello di Confidenza:</strong> ${confidence}<br><br>
+    summary += `<div class="alert alert-${risk.integrated.alertClass}" id="integratedRiskBlock">
+        <strong>Classe di rischio integrata:</strong> ${risk.integrated.label}<br>
+        <strong>Livello di Confidenza:</strong> ${risk.integrated.confidence}<br><br>
         <strong>⚠️ REMINDER:</strong> La classe di rischio richiede correlazione clinica, revisione morfologica esperta e contestualizzazione del caso specifico.
     </div>`;
 
-    // Framework Urso/Ackerman per score intermedi
-    const noStrongGenetics = !strongMolecular;
-    if (riskScore >= 31 && riskScore <= 70 && noStrongGenetics && !nonSpitzLineage) {
+    // Framework Urso/Ackerman per score intermedi senza segnali forti
+    if (risk.hri >= 31 && risk.hri <= 70 && !risk.strongMolecular && !risk.redFlags.length && !risk.nonSpitzLineage) {
         summary += `<div class="alert alert-info" style="font-size: 0.85rem; margin-top: 1rem;">
             <strong>📖 Il territorio intermedio (HRI 31-70) — framework Urso/Ackerman</strong><br><br>
             <em>"Esistono solo 3 tipi di lesioni pigmentate: il nevo, il melanoma, e il non lo so."</em> — <strong>Bernard Ackerman</strong><br><br>
@@ -1407,7 +1344,6 @@ function generateSummary(riskScore, scores) {
         </div>`;
     }
 
-    // Note cliniche
     const userNotes = document.getElementById('user_notes').value.trim();
     if (userNotes) {
         summary += `<div style="margin-top:1rem;padding:1rem;background:var(--chip-bg);border:1px solid var(--border);border-radius:0.5rem;">
@@ -1568,9 +1504,19 @@ function resetForm() {
 }
 
 // ========== REFERTO DIAGNOSTICO ==========
-function generateReport() {
+// v3.11.0 — Il referto RICEVE la classe di rischio. Prima la rileggeva dal proprio
+// HTML con querySelector('.alert-warning strong'), che pescava il primo <strong> del
+// blocco medico-legale: il test falliva sempre e il campo usciva "Non calcolata" in
+// ogni singolo caso, con un fallback che si legge come uno stato legittimo.
+function generateReport(riskArg) {
+    const risk = riskArg || computeRisk({
+        scores: Object.fromEntries(MORPH_KEYS.map(k => [k, parseInt(document.getElementById(k).value, 10) || 0])),
+        isPartial: document.getElementById('biopsy_type').value === 'partial',
+        driver: document.getElementById('bastian_driver').value,
+        cna: document.getElementById('bastian_cna').value
+    });
     // Raccoglie tutti i dati dal form
-    const isPartial = document.getElementById('biopsy_type').value === 'partial';
+    const isPartial = risk.isPartial;
     const driverMutation = document.getElementById('bastian_driver').value;
     const cnaProfile = document.getElementById('bastian_cna').value;
     const userNotes = document.getElementById('user_notes').value.trim();
@@ -1585,9 +1531,7 @@ function generateReport() {
         return el && el.value !== '' ? el.options[el.selectedIndex].text.replace(/\s*\(\d.*$/, '').trim() : 'Non valutato';
     };
 
-    // Recupera score dal display (già calcolato)
-    const scoreEl = document.getElementById('totalScore');
-    const hri = scoreEl ? scoreEl.textContent : '--';
+    const hri = risk.hri;
 
     // Mappa driver → testo leggibile
     const driverLabels = {
@@ -1608,18 +1552,7 @@ function generateReport() {
         'chr_6_loss': 'Perdita del cromosoma 6'
     };
 
-    // Recupera classe di rischio dal summary
-    let riskClass = 'Non calcolata';
-    const summaryEl = document.getElementById('summaryContent');
-    if (summaryEl) {
-        const alertWarn = summaryEl.querySelector('.alert-warning strong');
-        if (alertWarn && alertWarn.textContent.includes('Classe di rischio')) {
-            const parent = alertWarn.parentElement;
-            const txt = parent.innerHTML;
-            const match = txt.match(/Classe di rischio integrata:<\/strong>\s*([^<\n]+)/);
-            if (match) riskClass = match[1].trim();
-        }
-    }
+    const riskClass = `${risk.integrated.label}\nLivello di confidenza: ${risk.integrated.confidence}`;
 
     // Mappa valori morfologici → frasi descrittive
     const matVal = getVal('maturation');
@@ -1700,11 +1633,10 @@ function generateReport() {
         symLine = `Architettura: ${symDesc}; margini: ${circDesc}.\n`;
     }
 
-    // Determina red flags
-    const redFlags = [];
-    if (['16','20'].includes(matVal)) redFlags.push('maturazione assente/invertita');
-    if (['12','15'].includes(mitVal)) redFlags.push('mitosi ≥6/mm² e/o atipiche');
-    if (necVal === '5') redFlags.push('necrosi "en masse"');
+    // v3.11.0: le red flag arrivano dal motore. Qui c'era una QUARTA copia della
+    // regola, scritta come confronto fra stringhe (['16','20'].includes(matVal)):
+    // cambiando il valore di una option divergeva in silenzio dalle altre tre.
+    const redFlags = risk.redFlags.map(f => f.toLowerCase());
     const redFlagLine = redFlags.length > 0
         ? `\nRED FLAGS MORFOLOGICI: ${redFlags.join('; ').toUpperCase()}.\n`
         : '';
@@ -1773,7 +1705,7 @@ La diagnosi finale richiede correlazione con i dati clinici, la revisione morfol
 
 RACCOMANDAZIONI GESTIONALI
 ${'─'.repeat(40)}
-${getRaccomandazione(hri, driverMutation, cnaProfile, redFlags)}
+${risk.recommendations.map(r => '- ' + r).join('\n')}
 
 ${'─'.repeat(55)}
 AVVERTENZA: Questo referto è generato da uno strumento di supporto decisionale (ausilio diagnostico). Non sostituisce il giudizio clinico del patologo né la refertazione ufficiale. Non ha valore medico-legale autonomo.
@@ -1784,20 +1716,8 @@ AVVERTENZA: Questo referto è generato da uno strumento di supporto decisionale 
     document.getElementById('reportSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function getRaccomandazione(hri, driver, cna, redFlags) {
-    const hriNum = parseInt(hri);
-    const strongMol = driver === 'tert' || cna === 'multiple_cna' || cna === 'chr_6_loss';
-
-    if (redFlags.length > 0 || (strongMol && hriNum >= 51)) {
-        return `- Completamento staging (esame clinico, imaging secondo indicazione clinica)\n- Genomica molecolare raccomandata (se non già eseguita)\n- Discussione multidisciplinare (MDT)\n- Valutazione multidisciplinare dell'indicazione a biopsia del linfonodo sentinella (ruolo ancora controverso nelle neoplasie Spitz atipiche; cfr. Mazza et al., J Clin Med 2024)\n- Follow-up clinico-strumentale ravvicinato`;
-    } else if (hriNum >= 51 || strongMol) {
-        return `- Genomica molecolare raccomandata (se non già eseguita)\n- Valutazione multidisciplinare dell'indicazione a biopsia del linfonodo sentinella (ruolo ancora controverso nelle AST; cfr. Mazza et al., J Clin Med 2024)\n- Follow-up clinico stretto`;
-    } else if (hriNum >= 31) {
-        return `- Escissione completa con margini adeguati (se non già eseguita)\n- Considerare genomica molecolare per documentazione\n- Follow-up clinico`;
-    } else {
-        return `- Follow-up clinico di routine\n- Nessuna procedura aggiuntiva urgente indicata sulla base dei criteri morfologici e molecolari disponibili`;
-    }
-}
+// v3.11.0: getRaccomandazione() e' confluita in computeRisk(): le raccomandazioni
+// del referto e quelle mostrate a schermo vengono ora dalla stessa fonte.
 
 function copyReport() {
     const text = document.getElementById('reportText').value;

@@ -1,4 +1,4 @@
-# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.10.0
+# 🔬 Spitz vs Melanoma Diagnostic Algorithm v3.11.0
 
 **Algoritmo diagnostico integrato per la stratificazione del rischio nelle lesioni melanocitiche spitzoidi**
 
@@ -311,3 +311,17 @@ Non approvato come dispositivo medico. Solo per uso educativo e ricerca.
 **⭐ Se trovi utile questo tool, considera di lasciare una star su GitHub! ⭐**
 
 </div>
+
+## Changelog
+
+### v3.11.0 — *Una sola classe di rischio; motore estratto e testato*
+
+Il motore è stato estratto in **`engine.js`** (nessuna dipendenza dal DOM) e coperto da una suite eseguibile con `npm test` — 81 asserzioni. `computeRisk()` è ora l'unica fonte della classe di rischio: riquadro morfologico, sommario integrato e referto ne consumano il risultato invece di ricostruirlo.
+
+- **[FIX CRITICO] Il referto non conteneva mai la classe di rischio.** La recuperava rileggendo il proprio HTML con `summaryContent.querySelector('.alert-warning strong')`, che pesca il primo `<strong>` del **blocco medico-legale** — il cui testo non contiene "Classe di rischio". Il test falliva sempre e il campo usciva **«Non calcolata» in tutti e 19 gli scenari provati**, con un fallback che si legge come uno stato legittimo anziché come un guasto. Ora il referto riceve il valore.
+- **[FIX CRITICO] Le red flag morfologiche non raggiungevano la classe integrata.** `generateSummary` non le riceveva né le ricalcolava: una lesione con necrosi *"en masse"* usciva come **"Spitz Nevus"** nel sommario mentre il riquadro sopra segnalava URGENTE; tre red flag insieme davano "Atypical Spitz Tumor". Ora producono *"Morfologia ad alto rischio (red flag): probabile Spitz melanoma — genomica indispensabile"*, e con TERT o CNA multiple concordanti la confidenza sale ad Alta.
+- **[FIX] Il riquadro in alto dichiara di essere morfologico e cede il verde quando la genetica dissente.** Etichettava il proprio giudizio come *"Classe di rischio **integrata**"* pur non ricevendo alcun dato molecolare: con TERT o CNA multiple su morfologia blanda usciva verde, *"BASSO — Spitz Nevus / follow-up di routine"*, mentre il sommario sotto segnalava la discordanza. Ora si intitola "Classe di rischio morfologica", passa ad ambra e rimanda alla classe integrata.
+- **[FIX] Quarta copia della regola delle red flag rimossa** dal generatore di referto, dov'era scritta come confronto fra stringhe (`['16','20'].includes(matVal)`): cambiando il valore di una option sarebbe divergita in silenzio dalle altre.
+- **[FIX] `getRaccomandazione()` confluita in `computeRisk()`**: le raccomandazioni mostrate a schermo e quelle del referto vengono dalla stessa fonte.
+- **[VERIFICATO] Denominatori corretti.** La somma dei massimi delle nove voci è esattamente 103, e 73 escludendo simmetria e circoscrizione nella biopsia parziale; le soglie delle red flag corrispondono a valori realmente selezionabili. Ora ci sono test che lo bloccano.
+

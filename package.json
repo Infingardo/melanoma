@@ -1,0 +1,9 @@
+{
+  "name": "spitz-melanoma-tool",
+  "version": "3.11.0",
+  "private": true,
+  "description": "Algoritmo diagnostico Spitz vs melanoma spitzoide (Massi & LeBoit 2014, Bastian 2014)",
+  "scripts": {
+    "test": "node tests/run.mjs"
+  }
+}
